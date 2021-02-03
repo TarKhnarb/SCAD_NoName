@@ -38,7 +38,7 @@ module move(u= [0, 0, 0], k= 1, orient= CENTER){
 }
 
 /***********************************************
-* paramScale(u: vector, can be used for a specific orient defined in Constants.scad)
+* paramScale(orient: vector, can be used for a specific orient defined in Constants.scad)
 *
 * Example:
 *   1. scale a cube with a specific orientation (3*UP + 4*LEFT)
