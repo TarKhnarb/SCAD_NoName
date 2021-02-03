@@ -30,33 +30,27 @@ use<Basics.scad>
 ************************************************/
 module move(u= [0, 0, 0], k= 1, orient= CENTER){
 
-    for(i = 0, i < $children){
+    for(i= [0 : $children-1]){
         
         translate(u + k*orient)
-            children();
+            children(i);
     }
 }
 
 /***********************************************
-* paramScale( u: vector, can be used for a specific scale
-
-*       k: scalar, allows the orientation vector
-*          to be mutilated by this scalar
+* paramScale( u: vector, can be used for a specific scale)
 *
-*       orient: vector, unit vector defined in
-*               Constant.scad)
-*
-* Examples:
+* Example:
 *   1. scale a cube with a specific vector ([2, 3.4, 0])
-*       paramScale(u= [2, 3.4, 0]){ cube(1); };
+*       paramScale(orient= 3*UP + 4*LEFT){ cube(1); };
 *
 ************************************************/
-module paramScale(u= [0, 0, 0]){
+module paramScale(orient= ALLPOS){
 
 
-    for(i = 0, i < $children){
+    for(i= [0 : $children-1]){
 
-        scale(u)
-            children();
+        scale(ALLPOS*orient)
+            children(i);
     }
 }
