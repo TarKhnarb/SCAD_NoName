@@ -61,6 +61,7 @@ function matrix(scal= [1, 1, 1],
                               [shYalX,                ifNullGetUnit(scal.y), shYalZ,                trans.y],
                               [shZalX,                shZalY,                ifNullGetUnit(scal.z), trans.z],
                               [0,                     0,                     0,                     1]];
+
 /*
 * matRotX(ang: trigonometric rotation angle around X (in degrees))
 *
@@ -135,4 +136,4 @@ function matScale(k= 1) = [[ifNullGetUnit(k), 0,                0,              
 *
 * Returns: the associated linear transformation matrix
  */
-function multMatrix(trans= [0, 0, 0], rot= [0, 0, 0], scal= [1, 1, 1]) = matTrans(v= trans)*matRot(v= rot)*matScale(v= scal);
+function multMatrix(trans= [0, 0, 0], rot= [0, 0, 0], scal= [1, 1, 1]) = matTrans(v= trans) + matRot(ang= rot) + matScale(v= scal);
