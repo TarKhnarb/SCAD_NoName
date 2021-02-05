@@ -30,7 +30,7 @@ use<Basics.scad>
 ************************************************/
 module move(u= [0, 0, 0], k= 1, orient= CENTER){
 
-    for(i= [0 : $children-1]){
+    for(i= [0 : $children - 1]){
         
         translate(u + k*orient)
             children(i);
@@ -47,7 +47,7 @@ module move(u= [0, 0, 0], k= 1, orient= CENTER){
 ************************************************/
 module paramScale(orient= ALLPOS){
 
-    for(i= [0 : $children-1]){
+    for(i= [0 : $children - 1]){
 
         scale(ALLPOS*orient)
             children(i);

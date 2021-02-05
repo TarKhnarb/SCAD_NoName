@@ -5,6 +5,7 @@
 
 use<Transforms.scad>
 use<Vector.scad>
+use<Basics.scad>
 include<Constants.scad>
 
 module chamferBase(length= 1, width= 1, height= 1, orient= CENTER){
@@ -13,15 +14,58 @@ module chamferBase(length= 1, width= 1, height= 1, orient= CENTER){
 
     rotate([0, 0, 45])
         translate([size[0]/16, size[1]/16, -0.2 + size[2]]*(1/2))
-        cube(size, center= true);
+            cube(size, center= true);
 }
 
-module chamfer(size= [1, 1, 1], ){
+module colorCube(size= 1){
+    
+    s = size/2;
+
+    union(){
+
+        color([0, 0, 0])
+            cube([s, s, s]);
+
+        color([1, 0, 0])
+            translate([-s, 0, 0])
+                cube([s, s, s]);
+
+        color([0, 1, 0])
+            translate([0, -s, 0])
+                cube([s, s, s]);
+
+        color([0, 0, 1])
+            translate([0, 0, -s])
+                cube([s, s, s]);
+
+        color([1, 1, 0])
+            translate([-s, -s, 0])
+                cube([s, s, s]);
+
+        color([1, 0, 1])
+            translate([-s, 0, -s])
+                cube([s, s, s]);
+
+        color([0, 1, 1])
+            translate([0, - s, - s])
+                cube([s, s, s]);
+
+        color([1, 1, 1])
+            translate([- s, - s, - s])
+                cube([s, s, s]);
+    }
+}
+
+
+module chamfer(){
     
 //    difference(){
         
-        cube(5);
-        chamferBase(height= 5);
+    multmatrix(m= matrix()){
+
+        colorCube(1);
+    }
+        //chamferBase(height= 5);
 //    }
 }
 

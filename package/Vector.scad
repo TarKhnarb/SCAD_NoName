@@ -6,9 +6,9 @@
 use<Basics.scad>
 
     // Make the vector uv
-function makeVector(u= [0, 0, 0], v= [0, 0, 0]) = v-u;
+function makeVector(u= [0, 0, 0], v= [0, 0, 0]) =  v - u;
 
-function middleVector(u= [1, 1, 1], v= [1, 1, 1]) = (u+v)/2;
+function middleVector(u= [1, 1, 1], v= [1, 1, 1]) = (u + v)/2;
 
 //function produitVectoriel EXIST: cross
 
