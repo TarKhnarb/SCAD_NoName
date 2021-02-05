@@ -10,10 +10,10 @@ include<Constants.scad>
 
 module chamferBase(length= 1, width= 1, height= 1, orient= CENTER){
 
-    size = [sqrt(2)*length + 0.2, sqrt(2)*width + 0.2, height + 0.2];
+    size = [sqrt(2)*(length + 0.2), sqrt(2)*(width + 0.2), height + 0.2];
 
-    rotate([0, 0, 45])
-        translate([size[0]/16, size[1]/16, -0.2 + size[2]]*(1/2))
+	translate([-0.1,-0.1,0])
+		rotate([0, 0, 45])
             cube(size, center= true);
 }
 
@@ -61,7 +61,7 @@ module chamfer(){
     
 //    difference(){
         
-    multmatrix(m= matrix()){
+    multmatrix(m= matrix(0,0,-1)){
 
         colorCube(1);
     }
@@ -69,4 +69,8 @@ module chamfer(){
 //    }
 }
 
-chamfer();
+difference(){
+    
+    cube([10, 10, 10]);
+    chamferBase(length=3, width=3);
+}
