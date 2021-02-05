@@ -6,15 +6,17 @@
 use<Transforms.scad>
 use<Vector.scad>
 use<Basics.scad>
+use<Matrix.scad>
 include<Constants.scad>
 
-module chamferBase(length= 1, width= 1, height= 1, orient= CENTER){
+module chamferBase(length= 1, width= 1, heigth= 1, orient= CENTER){
 
-    size = [sqrt(2)*(length + 0.2), sqrt(2)*(width + 0.2), height + 0.2];
+    size = [sqrt(2)*(length + 0.2), sqrt(2)*(width + 0.2), heigth + 0.2];
 
-	translate([-0.1,-0.1,0])
-		rotate([0, 0, 45])
+
+    multmatrix(m= matTrans(v= [-0.1, -0.1, heigth/2])*matRotZ(ang= 45)){
             cube(size, center= true);
+	}
 }
 
 module colorCube(size= 1){
@@ -57,20 +59,13 @@ module colorCube(size= 1){
 }
 
 
-module chamfer(){
+module chamfer(size= 1, heigth= 1, pos= [0,0,0]){
     
-//    difference(){
-        
-    multmatrix(m= matrix(0,0,-1)){
-
-        colorCube(1);
-    }
-        //chamferBase(height= 5);
-//    }
+	difference(){
+        translate([1, 1, 1])
+        colorCube(2);
+        chamferBase(length= size, width= size, heigth= heigth, orient= CENTER);
+	}
 }
 
-difference(){
-    
-    cube([10, 10, 10]);
-    chamferBase(length=3, width=3);
-}
+chamfer(heigth=2);
