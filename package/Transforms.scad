@@ -47,7 +47,6 @@ module move(u= [0, 0, 0], k= 1, orient= CENTER){
 ************************************************/
 module paramScale(orient= ALLPOS){
 
-
     for(i= [0 : $children-1]){
 
         scale(ALLPOS*orient)
