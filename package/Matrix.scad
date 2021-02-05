@@ -136,4 +136,4 @@ function matScale(k= 1) = [[ifNullGetUnit(k), 0,                0,              
 *
 * Returns: the associated linear transformation matrix
  */
-function multMatrix(trans= [0, 0, 0], rot= [0, 0, 0], scal= [1, 1, 1]) = matTrans(v= trans) + matRot(ang= rot) + matScale(v= scal);
+function multMatrix(trans= [0, 0, 0], rot= [0, 0, 0], scal= [1, 1, 1]) = matRot(ang= rot)*matScale(v= scal)*matTrans(v= trans);
