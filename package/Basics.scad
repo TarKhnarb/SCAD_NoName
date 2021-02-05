@@ -10,7 +10,7 @@ function isDef(u) = (u != undef);
     // return true if the variable is undefined, flase otherwise
 function isUndef(u) = ((version_num() > 20190100) ? (u == undef) : !isDef(u));
 
-function echoMsg(msg) = ((version_num() > 20190100)? echo(msg) : 0);
+function echoMsg(msg) = (isDef(msq) ? echo(msg) : 0);
 
 module echoError(msg, pfx="ERROR"){
 
@@ -30,25 +30,3 @@ function assertion(succ, msg) = (version_num() > 20190100) ? let(FAILED = succ) 
 *   Mainly used for testing scale paraleters
 */
 function ifNullGetUnit(value) = (isUndef(value) || (value == 0) ? 1 : value);
-
-/*
-* matrix(scaleX:
-*
-*
-*
-*/
-function matrix(scalX= 1,
-                scalY= 1,
-                scalZ= 1,
-                transX= 0,
-                transY= 0,
-                transZ= 0,
-                shYalX= 0,
-                shZalX= 0,
-                shXalY= 0,
-                shZalY= 0,
-                shXalZ= 0,
-                shYalZ= 0) = [[ifNullGetUnit(scalX), shXalY, shXalZ, transX],
-                              [shYalX, ifNullGetUnit(scalY), shYalZ, transY],
-                              [shZalX, shZalY, ifNullGetUnit(scalZ), transZ],
-                              [0,      0,      0,      1]];
