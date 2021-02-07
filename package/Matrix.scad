@@ -4,6 +4,7 @@
 */
 
 use<Basics.scad>
+include<Constants.scad>
 
 /*
 * Representation of a linear transformatiopn matrix :
@@ -129,11 +130,6 @@ function matScale(k= 1) = [[ifNullGetUnit(k), 0,                0,              
                            [0,                0,                ifNullGetUnit(k), 0],
                            [0,                0,                0,                1]];
 
-/*
-* matTrans(trans: respectively the translation on [X, Y, Z] axis,
-*          rot: respectively the trigonometric rotation angles around [X, Y, Z] (in degrees),
-*          scal:  respectively the [X, Y, Z] scaling)
-*
-* Returns: the associated linear transformation matrix
- */
-function multMatrix(trans= [0, 0, 0], rot= [0, 0, 0], scal= [1, 1, 1]) = matRot(ang= rot)*matScale(v= scal)*matTrans(v= trans);
+function scaleEdge(k, e) = matrix(trans= [k*e[0][3],
+                                          k*e[1][3],
+                                          k*e[2][3]]);

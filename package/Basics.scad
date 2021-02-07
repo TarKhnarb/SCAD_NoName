@@ -5,7 +5,7 @@
 */
 
     // Return true if the variable is defined, false otherwise
-function isDef(u) = (u != undef);
+function isDef(u) = (version_num() > 20190100) ? !isUndef(u) : (u != undef);
 
     // return true if the variable is undefined, flase otherwise
 function isUndef(u) = ((version_num() > 20190100) ? (u == undef) : !isDef(u));
@@ -22,6 +22,18 @@ function echoError(msg, pfx= "ERROR") = echoMsg(str("<p style=\"background-color
 
 function assertion(succ, msg) = (version_num() > 20190100) ? let(FAILED = succ) assert(FAILED, msg) : 0;
 
+module assertion(succ, msg){
+
+    if(version_num() > 20190100) {
+
+        FAILED = succ;
+        assert(FAILED, msg);
+    }
+    else if(!succ){
+
+        echo_error(msg);
+    }
+}
 
 /*
 * ifNullGetUnit(value: var iable to test)
