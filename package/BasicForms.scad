@@ -42,6 +42,7 @@ module colorCube(size= 1){
     }
 }
 
+    // Chanfers :
 
 module chamferBase(chamfer, size){
 
@@ -49,7 +50,7 @@ module chamferBase(chamfer, size){
        cube([sqrt(2)*chamfer, sqrt(2)*chamfer, size + 0.01], center= true);
 }
 
-module chamferCube(size= [1, 1, 1], chamfer= 1, edges= EDGE_All){
+module chamferCube(size= [1, 1, 1], chamfer= 0.1, edges= EDGE_All){
 
     assertion(chamfer < min(size)/2, "chamfer must be less than half the smallest size of the cube ");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
@@ -132,6 +133,44 @@ module chamferCube(size= [1, 1, 1], chamfer= 1, edges= EDGE_All){
     }
 }
 
+
+module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
+
+    assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube ");
+    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
+    assertion(fn > 1, "nb of chamfer must be greater than 1");
+
+    step = 360/fn;
+
+    difference(){
+
+        cylinder(r= r, h= h, $fn= fn, center= true);
+
+        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+            
+            if(edges[i] == EDGE_Top){
+
+                for(j= [0 : fn - 1]){
+
+                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
+                        chamferBase(chamfer, 2*r);
+                }
+            }
+            if(edges[i] == EDGE_Bot){
+
+                for(j= [0 : fn - 1]){
+
+                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
+                        chamferBase(chamfer, 2*r);
+                }
+            }
+        }
+    }
+}
+
+
+    // Bevels :
+
 module bevelBase(bevel, size, fn){
     
     mTranslate([bevel/2, bevel/2, 0])
@@ -144,7 +183,7 @@ module bevelBase(bevel, size, fn){
         }        
 }
 
-module bevelCube(size= [1, 1, 1], bevel= 1, fn= 100, edges= EDGE_All){
+module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
 
     assertion(bevel < min(size)/2, "bevel must be less than half the smallest size of the cube ");
     assertion(fn > 0, "fn must be greater than 0");
@@ -173,7 +212,7 @@ module bevelCube(size= [1, 1, 1], bevel= 1, fn= 100, edges= EDGE_All){
 
             cube(size, center= true);
 
-            for(i= [0 : len(edges) - 1]){
+            for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
 
                 if(edges[i] == EDGE_Top){
 
@@ -289,6 +328,91 @@ module bevelCube(size= [1, 1, 1], bevel= 1, fn= 100, edges= EDGE_All){
     }
 }
 
-//mTranslate([.3, 0, 0]) chamferBase(chamfer= .1, size= 1);
-//bevelBase(bevel= .1, size= 1, fn= 100);
-test(bevel= .1, edges= [EDGE_FrtLft]);
+
+module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 50, edges= [EDGE_Top, EDGE_Bot]){
+
+    assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
+    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
+    assertion(fn > 1, "nb of chamfer must be greater than 1");
+
+    step = 360/fn;
+    length= 2*PI*r/fn;
+
+    difference(){
+
+        cylinder(r= r, h= h, $fn= fn, center= true);
+
+        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+            
+            if(edges[i] == EDGE_Top){
+
+                for(j= [0 : fn - 1]){
+
+                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([-90, 0, 90]))
+                        bevelBase(bevel, length, fn);
+                }
+            }
+            if(edges[i] == EDGE_Bot){
+
+                for(j= [0 : fn - 1]){
+
+                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 0, 90]))
+                        bevelBase(bevel, length, fn);
+                }
+            }
+        }
+    }
+}
+
+module cylyndBevelBase(r, bevel, fn){
+
+    mTranslate([0, 0, -bevel])
+    difference(){
+
+        
+        mTranslate([0, 0, (bevel + 0.01)/2])
+            cylinder(r= r + 0.01, h= bevel + 0.01, $fn= fn, center= true);
+
+            
+        union(){
+            
+            cylinder(r= r - bevel, h= 2*bevel, $fn= fn, center= true);
+            
+            rotate_extrude($fn= fn){
+                
+                mTranslate([r - bevel, 0, 0])
+                    circle(r= bevel, $fn= fn);
+            }
+        }
+    }
+}
+
+module bevelCylinder2(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
+
+    assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
+    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
+    assertion(fn > 1, "nb of chamfer must be greater than 1");
+
+    step = 360/fn;
+    length= 2*PI*r/fn;
+
+    difference(){
+
+        cylinder(r= r, h= h, $fn= fn, center= true);
+
+        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+            
+            if(edges[i] == EDGE_Top){
+                
+                mTranslate([0, 0, h/2])
+                    cylyndBevelBase(r= r, bevel= bevel, fn= fn);
+            }
+            if(edges[i] == EDGE_Bot){
+
+                mTranslate([0, 0, -h/2])
+                    rotX(180)
+                        cylyndBevelBase(r= r, bevel= bevel, fn= fn);
+            }
+        }
+    }
+}
