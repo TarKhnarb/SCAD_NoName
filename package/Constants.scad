@@ -44,7 +44,6 @@ ALLNEG = [-1, -1, -1];
     // Edges
 
 // Edges of plans
-EDGE_ = 1;
 EDGE_Top    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]; // Top edges position
 EDGE_Bot    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, -1], [0, 0, 0, 1]]; // Bottom edges position
 EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Back edges position
