@@ -44,12 +44,26 @@ module colorCube(size= 1){
 
     // Chamfers :
 
+/*
+* chamferBase(...)
+*
+* Only for functions
+*
+* Result: base for chamfer
+*/
 module chamferBase(chamfer, size){
 
     rotZ(45)
        cube([sqrt(2)*chamfer, sqrt(2)*chamfer, size + 0.01], center= true);
 }
 
+/*
+* chamferCube(size: the size of the cube according to [X, Y, Z]
+*             chamfer: chamfer size (chamfer < min(size)/2)
+*             edges: vector of the edges to be chamfered)
+*
+* Result: custom chamfered cube
+*/
 module chamferCube(size= [1, 1, 1], chamfer= 0.1, edges= EDGE_All){
 
     assertion(chamfer < min(size)/2, "chamfer must be less than half the smallest size of the cube ");
@@ -201,6 +215,14 @@ module chamferCube(size= [1, 1, 1], chamfer= 0.1, edges= EDGE_All){
     }
 }
 
+/*
+* chamferCylinder(h: height of the cylinder
+*                 r: radius of the cylinder
+*                 chamfer: chamfer size (chamfer < r/2)
+*                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot)
+*
+* Result: custom chamfered cylinder
+*/
 module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
 
     assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube ");
@@ -237,6 +259,13 @@ module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE
 
     // Bevels :
 
+/*
+* bevelBase(...)
+*
+* Only for functions
+*
+* Result: base for linear bevel
+*/
 module bevelBase(bevel, size, fn){
     
     mTranslate([bevel/2, bevel/2, 0])
@@ -249,6 +278,14 @@ module bevelBase(bevel, size, fn){
         }        
 }
 
+/*
+* bevelCube(size: the size of the cube according to [X, Y, Z]
+*           bevel: bevel radius (bevel < min(size)/2)
+*           fn: precision of the bevel pitch
+*           edges: vector of the edges to be beveled)
+*
+* Result: custom beveled cube
+*/
 module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
 
     assertion(bevel < min(size)/2, "bevel must be less than half the smallest size of the cube ");
@@ -448,41 +485,13 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
     }
 }
 
-module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 50, edges= [EDGE_Top, EDGE_Bot]){
-
-    assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
-    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
-    assertion(fn > 1, "nb of chamfer must be greater than 1");
-
-    step = 360/fn;
-    length= 2*PI*r/fn;
-
-    difference(){
-
-        cylinder(r= r, h= h, $fn= fn, center= true);
-
-        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
-            
-            if(edges[i] == EDGE_Top){
-
-                for(j= [0 : fn - 1]){
-
-                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([-90, 0, 90]))
-                        bevelBase(bevel, length, fn);
-                }
-            }
-            if(edges[i] == EDGE_Bot){
-
-                for(j= [0 : fn - 1]){
-
-                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 0, 90]))
-                        bevelBase(bevel, length, fn);
-                }
-            }
-        }
-    }
-}
-
+/*
+* cylinderBevelBase(...)
+*
+* Only for functions
+*
+* Result: base for beveledcylinder
+*/
 module cylyndBevelBase(r, bevel, fn){
 
     mTranslate([0, 0, -bevel])
@@ -506,7 +515,16 @@ module cylyndBevelBase(r, bevel, fn){
     }
 }
 
-module bevelCylinder2(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
+/*
+* chamferCylinder(h: height of the cylinder
+*                 r: radius of the cylinder
+*                 bevel: bevel radius (chamfer < r/2)
+*                 fn: precision of the bevel pitch
+*                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot)
+*
+* Result: custom beveled cylinder
+*/
+module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
 
     assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
