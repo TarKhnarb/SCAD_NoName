@@ -42,7 +42,7 @@ module colorCube(size= 1){
     }
 }
 
-    // Chanfers :
+    // Chamfers :
 
 module chamferBase(chamfer, size){
 
