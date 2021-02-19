@@ -7,7 +7,7 @@ use<Basics.scad>
 include<Constants.scad>
 
 /*
-* Representation of a linear transformatiopn matrix :
+* Representation of a linear transformation matrix :
 *
 *      [[Scale X]	        [Shear X along Y]	[Shear X along Z]	[Translate X]
 *       [Shear Y along X]	[Scale Y]	        [Shear Y along Z]	[Translate Y]

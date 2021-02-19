@@ -6,15 +6,15 @@
     // Vectors
 CENTER = [0, 0, 0];
 
-UP = [0, 0, 1];
+TOP = [0, 0, 1];
 
-DOWN = [0, 0, -1];
+BOTTOM = [0, 0, -1];
 
-FWD = [0, 1, 0];
+FRONT = [0, 1, 0];
 
 RIGHT = [1, 0, 0];
 
-BWD = [0, -1, 0];
+BACK = [0, -1, 0];
 
 LEFT = [-1, 0, 0];
 
@@ -84,3 +84,11 @@ EDGE_LftFrt     = EDGE_FrtLft;
 
 EDGE_All        = [EDGE_FrtLft, EDGE_TopLft, EDGE_BotLft];
 
+    // Rotations
+
+ROT_Top     = [0,   0,   0];
+ROT_Bot     = [180, 0,   0];
+ROT_Frt     = [90,  0,   0];
+ROT_Back    = [-90, 0,   0];
+ROT_Rgt     = [0,   90,  0];
+ROT_Lft     = [0,   -90, 0];
