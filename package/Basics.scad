@@ -10,7 +10,7 @@ function isDef(u) = (version_num() > 20190100) ? !isUndef(u) : (u != undef);
     // return true if the variable is undefined, flase otherwise
 function isUndef(u) = ((version_num() > 20190100) ? (u == undef) : !isDef(u));
 
-function echoMsg(msg) = (isDef(msq) ? echo(msg) : 0);
+function echoMsg(msg) = (isDef(msg) ? echo(msg) : 0);
 
 module echoError(msg, pfx="ERROR"){
 
@@ -42,3 +42,34 @@ module assertion(succ, msg){
 *   Mainly used for testing scale paraleters
 */
 function ifNullGetUnit(value) = (isUndef(value) || (value == 0) ? 1 : value);
+
+    // Geometrical values
+
+/*
+* regularDiameter(nbS: number of sides,
+*                 lengthS: length of a side)
+*
+* Result:
+*   Diameter of the circumscribed circle of the regular polygon with nbS sides
+*/
+function regularDiameter(nbS= 4, lengthS= 1) =
+    (nbS > 2 ? (
+                lengthS/cos(360/(2*nbS))
+           ) : (
+                echoError("nbS must be greater than 2"))
+    );
+
+/*
+* regularRadius(nbS: number of sides,
+*               lengthS: length of a side)
+*
+* Result:
+*   Radius of the circumscribed circle of the regular polygon with nbS sides
+*/
+function regularRadius(nbS= 4, lengthS= 1) =
+    (nbS > 2 ? (
+                lengthS/(2*cos(360/(2*nbS)))
+           ) : (
+                echoError("nbS must be greater than 2"))
+    );
+   

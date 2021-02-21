@@ -291,7 +291,6 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
     assertion(bevel < min(size)/2, "bevel must be less than half the smallest size of the cube ");
     assertion(fn > 0, "fn must be greater than 0");
     assertion(len(edges) != 0, "bevel must be less than half the smallest size of the cube ");
-    rots  = [[0, 0, 0], [-90, 0, 0], [90, 0, 0]];
 
     if(edges == EDGE_All){
 
@@ -553,3 +552,107 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot
         }
     }
 }
+
+    // Linear pipe
+/*
+*
+*              |<--------------->| r
+*              |    |<---------->| r1
+*                   |____________|  _
+*              |    /     /<---->|  A
+*              |   /     /   r2  |  |
+*                 /     /        |  |   h
+*              | /pipe /            |
+*              |/_____/__________| _V_
+*              /     /           |
+*             /thick/
+*
+ */
+/*
+* linearPipe(r: bottom outer radius of the pipe,
+*            thick: thickness of the pipe,
+*            r1: if def, top outer radius of the pipe,
+*            r2: if def thickness isn't used, top inner radius od the pipe,
+*            h: height of the pipe,
+*            fn: precision of the cylinders,
+*            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*            center: center the piece at [0, 0, 0])
+*
+*  Result:
+*   A parametrized linear pipe.
+*/
+module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, rot= ROT_Top, center= false){
+    
+    mRotate(rot)
+        if(isDef(r1)){
+
+            difference(){
+
+                if(isDef(r2)){
+
+                    assertion(r1 > r2, "r1 should be strictly greater than r2");
+                    
+                    
+                    x = tan(atan((r - (r1 - r2) - r2)/h))*0.01;
+                    
+                    difference(){
+                        
+                        cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
+                        
+                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                            cylinder(r1= r - (r1 - r2) + x, r2= r2 - x, h= h + 0.02, center= center, $fn= fn);
+                    }
+                }
+                else{
+                    
+                    assertion(r1 > thick, "r1 should be strictly greater than thick");
+                    
+                    x = tan(atan((r - thick - (r1 - thick))/h))*0.01;
+                    
+                    difference(){
+                        
+                        cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
+                        
+                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                            cylinder(r1= r - thick + x, r2= r1 - thick - x, h= h + 0.02, center= center, $fn= fn);
+                    }
+                }
+            }
+        }
+        else{
+            
+            if(isDef(r2)){
+                
+                assertion(r > r2, "r should be strictly greater than r2");
+                
+                difference(){
+                    
+                    cylinder(r= r, h= h, center= center, $fn= fn);
+
+                    mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                        cylinder(r= r2, h= h + 0.02, center= center, $fn= fn);
+                }
+            }
+            else{
+                
+                assertion(r > thick, "r should be strictly greater than thick");
+                
+                difference(){
+                    
+                    cylinder(r= r, h= h, center= center, $fn= fn);
+
+                    mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                        cylinder(r= r - thick, h= h + 0.02, center= center, $fn= fn);
+                }
+            }
+            
+        }
+}
+// Exemple:
+/*
+* Create a centered pipe of height= 10, oriented at the Left with a thickness of 0.5, a bottom radius of r=2 and a top radius r1= 1
+ */
+/*
+linearPipe(r= 2, r1= 1, thick= 0.5, h= 10, center= true, rot= ROT_Lft);
+*/
