@@ -459,12 +459,28 @@ module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, r
         }
     }
 }
-// Exemple:
+// Exemples:
 /*
-* Pierce at the Right of a cube(size= [1, 2, 2]) an axle hole(D= 1, deltaD= 0.02) chanfered at 30° at the top of the hole,
-* (<=> top edge with a right orientation gives a chamfered hole at the right)
+* 1. Pierce at the Right of a cube(size= [1, 2, 2]) an axle hole(Daxe= 1, deltaD= 0.02) chanfered at 30° at the top of the hole,
+*    (<=> top edge with a right orientation gives a chamfered hole at the right)
 */
 /*
-cylindricalAxleHole(pos= [0.5, 0, 0], D= 1, deltaD= 0.02, chamfer= true, rot= ROT_Rgt, edges= [EDGE_Top])
+cylindricalAxleHole(pos= [0.5, 0, 0], Daxe= 1, deltaD= 0.02, chamfer= true, rot= ROT_Rgt, edges= [EDGE_Top])
+    cube(size= [1, 2, 2], center= true);
+*/
+
+/*
+* 2. Pierce at the Right of a cube(size= [1, 2, 2]) an square axle hole(Daxe= 1, deltaD= 0.02) chanfered at 60° at the top of the hole
+*/
+/*
+cylindricalAxleHole(pos= [0.5, 0, 0], Daxe= 1, deltaD= 0.02, fn= 4, chamfer= true, chamferAng= 60, rot= ROT_Rgt + [0, 0, 45], edges= [EDGE_Top])
+    cube(size= [1, 2, 2], center= true);
+*/
+
+/*
+* 3. Pierce at the Right of a cube(size= [1, 2, 2]) an hexagon axle hole(Daxe= 1, deltaD= 0.02) chanfered at 30° at the bottom of the hole
+*/
+/*
+cylindricalAxleHole(pos= [0.5, 0, 0], Daxe= 1, deltaD= 0.02, fn= 6, chamfer= true, rot= ROT_Rgt + [0, 0, 30], edges= [EDGE_Bot])
     cube(size= [1, 2, 2], center= true);
 */
