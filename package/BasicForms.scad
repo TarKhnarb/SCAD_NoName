@@ -225,8 +225,8 @@ module chamferCube(size= [1, 1, 1], chamfer= 0.1, edges= EDGE_All){
 */
 module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
 
-    assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube ");
-    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
+    assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube");
+    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
     assertion(fn > 1, "nb of chamfer must be greater than 1");
 
     step = 360/fn;
