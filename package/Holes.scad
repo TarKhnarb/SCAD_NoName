@@ -45,7 +45,7 @@ module hole(pos= [[0, 0, 0]], rots= [ROT_Top]){
 * Pierce at the top and the bottom of a cube(size= 2) with a cylinder(r= 1, h= 0.5)
 */
 /*
-hole([[0, 0, 1], [0, 0, -1]]){
+hole([[0, 0, 1], [0, 0, -1]], [ROT_Top, ROT_Top]){
     
     cube(2, center= true);
     
@@ -57,6 +57,22 @@ hole([[0, 0, 1], [0, 0, -1]]){
 }
 */
 
+    // Chamfer representation
+/*
+*     _   _ _ _ _ _ _ _ _ _ _
+*     A   |\            \
+*     |   |  \           |
+*  l  |   |    \         | chamferAng
+*  g  |   |      \      /
+*  t  |   |        \   /
+*  h  |   |          \
+*    _v_  |            \
+*         |             |
+*         |<----------->|
+*           chamferSize
+*/
+
+
     // CylinderHole
 
 /*
@@ -64,8 +80,9 @@ hole([[0, 0, 1], [0, 0, -1]]){
 *              r: radius of the cylinder,
 *              h: depth of the hole,
 *              fn: precision for the cylinder,
-*              chamfer: if true set a chamfer of 30°,
+*              chamfer: if true set a chamfer,
 *              chamferSize: width of the chamfer,
+*              chamferAng: angle of the chamfer should be ranged in ]0, 90[,
 *              rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
 *                   [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction) 
 *
@@ -75,9 +92,12 @@ hole([[0, 0, 1], [0, 0, -1]]){
 * Note:
 *   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
 */
-module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferSize= 0.1, rot= ROT_Top){
-    
-    assertion(chamferSize < h*sqrt(3)/3, "chamferSize must be less than h*sqrt(3)/3");
+module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top){
+
+    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    lgth = tan(chamferAng);
+    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
     
     hole([pos], [rot]){
         
@@ -91,12 +111,12 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
                     
                     cylinder(r= r + chamferSize, h= 0.01, $fn= fn);
                         
-                    mTranslate([0, 0, -(0.01 + chamferSize*sqrt(3)/3)])
-                        cylinder(r1= r - sqrt(3)/300, r2= r + chamferSize, h= 0.01 + chamferSize*sqrt(3)/3, $fn= fn);
+                    mTranslate([0, 0, -(0.01 + chamferSize*lgth)])
+                        cylinder(r1= r - lgth*0.01, r2= r + chamferSize, h= 0.01 + chamferSize*lgth, $fn= fn);
                 }
                 
                 mTranslate([0, 0, -h])
-                    cylinder(r= r, h= (h - chamferSize*sqrt(3)/3), $fn= fn);
+                    cylinder(r= r, h= (h - chamferSize*lgth), $fn= fn);
             }
         }
         else{
@@ -112,7 +132,7 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
 * Pierce at the Left of a cube(size= 5) with a cylinder(r= 1, h= 2) and chamfer it with an angle of 30° and a width of 0.5
 */
 /*
-cylinderHole(pos= [-2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0.5, rot= ROT_Lft)
+cylinderHole(pos= [-2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0.5, chamferAng= 60, rot= ROT_Lft)
     cube(5, center= true);
 */
 
@@ -122,17 +142,22 @@ cylinderHole(pos= [-2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 
 * cubeHole(pos: position to set the hole,
 *          c: size of the cube,
 *          h: depth of the hole,
-*          chamfer: if true set a chamfer of 30°,
+*          chamfer: if true set a chamfer,
 *          chamferSize: width of the chamfer,
+*          chamferAng: angle of the chamfer should be ranged in ]0, 90[,
 *          rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
 *               [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction) 
 *
 * Result: 
 *   A cube hole chamfered or not
 */
-module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, rot= ROT_Top){
+module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top){
     
-    assertion(chamferSize < h*sqrt(3)/3, "chamferSize must be less than h*sqrt(3)/3");
+    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    lgth = tan(chamferAng);
+    
+    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
     
     r = c*sqrt(2)/2;
     chamfSize = chamferSize*sqrt(2);
@@ -148,12 +173,12 @@ module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, ro
                     
                     cylinder(r= r + chamfSize, h= 0.01, $fn= 4);
                         
-                    mTranslate([0, 0, -(0.01 + chamferSize*sqrt(3)/3)])
-                    cylinder(r1= r - sqrt(3)/300, r2= r + chamfSize, h= 0.01 + chamferSize*sqrt(3)/3, $fn= 4);
+                    mTranslate([0, 0, -(0.01 + chamferSize*lgth)])
+                    cylinder(r1= r - lgth*0.01, r2= r + chamfSize, h= 0.01 + chamferSize*lgth, $fn= 4);
                 }
                 
                 mTranslate([0, 0, -h])
-                    cylinder(r= r, h= (h - chamferSize*sqrt(3)/3), $fn= 4);
+                    cylinder(r= r, h= (h - chamferSize*lgth), $fn= 4);
             }
         }
         else{
@@ -179,17 +204,22 @@ cubeHole(pos= [0, 0, -2.5], c= 1, h= 2, chamfer= true, chamferSize= 0.5, rot= RO
 * squareHole(pos: position to set the hole,
 *            size: size of the square according to the vector [width X, width Y],
 *            h: depth of the hole,
-*            chamfer: if true set a chamfer of 30°,
+*            chamfer: if true set a chamfer,
 *            chamferSize: width of the chamfer,
+*            chamferAng: angle of the chamfer should be ranged in ]0, 90[,
 *            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
 *                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction)
 *
 * Result:
 *   A square hole chamfered or not
 */
-module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSize= 0.01, rot= ROT_Top){
-    
-    assertion(chamferSize < h*sqrt(3)/3, "chamferSize must be less than h*sqrt(3)/3");
+module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSize= 0.01, chamferAng= 30, rot= ROT_Top){
+
+    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    lgth = tan(chamferAng);
+
+    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
 
     hole([pos], [rot]){
         
@@ -200,12 +230,12 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
             union(){
                 
                 mTranslate([-size.x/2, -size.y/2, -h])
-                    cube(size= [size.x, size.y, h + 0.01 - chamferSize*sqrt(3)/3]);
+                    cube(size= [size.x, size.y, h + 0.01 - chamferSize*lgth]);
 
-                polyhedron(points= [[-size.x/2,                 -size.y/2,                  -chamferSize*sqrt(3)/3],    // Bottom of the chamfer
-                                    [-size.x/2,                 size.y/2,                   -chamferSize*sqrt(3)/3],
-                                    [size.x/2,                  size.y/2,                   -chamferSize*sqrt(3)/3],
-                                    [size.x/2,                  -size.y/2,                  -chamferSize*sqrt(3)/3],
+                polyhedron(points= [[-size.x/2,                 -size.y/2,                  -chamferSize*lgth],    // Bottom of the chamfer
+                                    [-size.x/2,                 size.y/2,                   -chamferSize*lgth],
+                                    [size.x/2,                  size.y/2,                   -chamferSize*lgth],
+                                    [size.x/2,                  -size.y/2,                  -chamferSize*lgth],
                                     [-chamferSize - size.x/2,   -chamferSize - size.y/2,    0],                         // Top of the chamfer
                                     [-chamferSize - size.x/2,   chamferSize + size.y/2,     0],
                                     [chamferSize + size.x/2,    chamferSize + size.y/2,     0],
@@ -243,7 +273,7 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
 * only the Top is chamfered with an angle of 30° and a width of 0.5
 */
 /*
-squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, chamfer= false, chamferSize= 0.5, rot= ROT_Frt)
+squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, rot= ROT_Frt)
     squareHole(pos= [0, 0, 2.50], size= [1, 3], h= 2, chamfer= true, chamferSize= 0.5)
         cube(5, center= true);
 */
@@ -269,8 +299,9 @@ squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, chamfer= false, chamferSize= 
 *             D1: diameter ofthe counterbore,
 *             h1: depth of the counterbore,
 *             fn: precision for the cylinder,
-*             chamfer: if true set a chamfer of 30°,
+*             chamfer: if true set a chamfer,
 *             chamferSize: width of the chamfer,
+*             chamferAng: angle of the chamfer should be ranged in ]0, 90[,
 *             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
 *                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction)
 *
@@ -280,9 +311,13 @@ squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, chamfer= false, chamferSize= 
 * Note:
 *   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
 */
-module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer= false, chamferSize= 0.1, rot= ROT_Top){
+module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top){
 
-    assertion(chamferSize < h1*sqrt(3)/3, "chamferSize must be less than h*sqrt(3)/3");
+    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    lgth = tan(chamferAng);
+
+    assertion(chamferSize < h1*lgth, "chamferSize must be less than tan(chamferAng)*h");
     assertion(D < D1, "D must be less than D1");
     assertion(h1 < h, "h1 must be less than h");
 
@@ -301,12 +336,12 @@ module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer
 
                     cylinder(r= r1 + chamferSize, h= 0.01, $fn= fn);
 
-                    mTranslate([0, 0, -(0.01 + chamferSize*sqrt(3)/3)])
-                        cylinder(r1= r1 - sqrt(3)/300, r2= r1 + chamferSize, h= 0.01 + chamferSize*sqrt(3)/3, $fn= fn);
+                    mTranslate([0, 0, -(0.01 + chamferSize*lgth)])
+                        cylinder(r1= r1 - lgth*0.01, r2= r1 + chamferSize, h= 0.01 + chamferSize*lgth, $fn= fn);
                 }
 
                 mTranslate([0, 0, -h1])
-                    cylinder(r= r1, h= (h1 - chamferSize*sqrt(3)/3), $fn= fn);
+                    cylinder(r= r1, h= (h1 - chamferSize*lgth), $fn= fn);
 
                 mTranslate([0, 0, -h])
                     cylinder(r= r, h= h - h1 + 0.01, $fn= fn);
@@ -336,3 +371,86 @@ counterbore(pos= [0, 0, 1], chamfer= true)
     cube(2, center= true);
 */
 
+    // Cylindrical axle hole
+
+/*
+* cylindricalAxleHole(pos: position to set the axle hole,
+*                     Daxe: Axle diameter,
+*                     deltaD: gap length between the diameter of the axle and the hole diameter,
+*                     h: full depth of the hole,
+*                     fn: precision for the cylinder,
+*                     rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                          [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction)
+*                     chamfer: if true set a chamfer,
+*                     chamferSize: width of the chamfer,
+*                     chamferAng: angle of the chamfer should be ranged in ]0, 90[,
+*                     edges: if(chamfer) place the chamfer to the correspnding face (Top or Bot only)
+*
+* Result:
+*   A cylindrical axle hole chamfered or not with a diameter gap
+*
+* Note:
+*   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
+*/
+module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, rot= ROT_Top, chamfer= false, chamferSize= 0.1, chamferAng= 30, edges= [EDGE_Top, EDGE_Bot]){
+
+    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    lgth = tan(chamferAng);
+
+    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion((len(edges) != 0) && (len(edges) <= 2), "edges should only be [EDGE_Top], [EDGE_Bot] or both.");
+
+    r = (Daxe + deltaD)/2;
+
+    hole([pos], [rot]){
+
+        children();
+
+        if(chamfer){
+
+            union(){
+
+                if((edges[0] == EDGE_Top) || (edges[1] == EDGE_Top)){ // Top chamfer
+                    
+                    hull(){
+
+                        cylinder(r= r + chamferSize, h= 0.01, $fn= fn);
+
+                        mTranslate([0, 0, -(0.01 + chamferSize*lgth)])
+                            cylinder(r1= r - lgth*0.01, r2= r + chamferSize, h= 0.01 + chamferSize*lgth, $fn= fn);
+                    }     
+                }           
+
+                mTranslate([0, 0, -(h + 0.01)])             // Cylinder
+                    cylinder(r= r, h= h + 0.02 , $fn= fn);
+                
+                if((edges[0] == EDGE_Bot) || (edges[1] == EDGE_Bot)){ // Bottom chamfer
+                    
+                    hull(){
+                    
+                        mTranslate([0, 0, -(h + 0.01)])
+                            cylinder(r= r + chamferSize, h= 0.01, $fn= fn);
+                    
+                        mTranslate([0, 0, -h])
+                            cylinder(r2= r - lgth*0.01, r1= r + chamferSize, h= 0.01 + chamferSize*lgth, $fn= fn);
+                    }
+                }
+            }
+        }
+        else{
+
+            mTranslate([0, 0, -(h + 0.01)])
+                cylinder(r= r, h= h + 0.02, $fn= fn);
+        }
+    }
+}
+// Exemple:
+/*
+* Pierce at the Right of a cube(size= [1, 2, 2]) an axle hole(D= 1, deltaD= 0.02) chanfered at 30° at the top of the hole,
+* (<=> top edge with a right orientation gives a chamfered hole at the right)
+*/
+/*
+cylindricalAxleHole(pos= [0.5, 0, 0], D= 1, deltaD= 0.02, chamfer= true, rot= ROT_Rgt, edges= [EDGE_Top])
+    cube(size= [1, 2, 2], center= true);
+*/
