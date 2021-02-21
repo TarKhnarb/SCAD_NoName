@@ -31,7 +31,7 @@ module hole(pos= [[0, 0, 0]], rots= [ROT_Top]){
         
         children(0);
         
-        for(i= (($children - 1 == 0) ? [1] : [1 : $children - 1])){
+        for(i= [1 : $children - 1]){
             
             mTranslate(pos[i - 1])
                 mRotate(rots[i - 1])
@@ -97,7 +97,7 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
     assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
 
     lgth = tan(chamferAng);
-    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
     
     hole([pos], [rot]){
         
@@ -132,7 +132,7 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
 * Pierce at the Left of a cube(size= 5) with a cylinder(r= 1, h= 2) and chamfer it with an angle of 30° and a width of 0.5
 */
 /*
-cylinderHole(pos= [-2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0.5, chamferAng= 60, rot= ROT_Lft)
+cylinderHole(pos= [2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0.5, rot= ROT_Rgt)
     cube(5, center= true);
 */
 
@@ -157,7 +157,7 @@ module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, ch
 
     lgth = tan(chamferAng);
     
-    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize"); 
     
     r = c*sqrt(2)/2;
     chamfSize = chamferSize*sqrt(2);
@@ -219,7 +219,7 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
 
     hole([pos], [rot]){
         
@@ -317,7 +317,7 @@ module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize < h1*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
     assertion(D < D1, "D must be less than D1");
     assertion(h1 < h, "h1 must be less than h");
 
@@ -398,7 +398,7 @@ module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, r
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize < h*lgth, "chamferSize must be less than tan(chamferAng)*h");
+    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
     assertion((len(edges) != 0) && (len(edges) <= 2), "edges should only be [EDGE_Top], [EDGE_Bot] or both.");
 
     r = (Daxe + deltaD)/2;
