@@ -412,7 +412,7 @@ module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, r
     lgth = tan(chamferAng);
 
     assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
-    assertion((len(edges) != 0) && (len(edges) <= 2), "edges should only be [EDGE_Top], [EDGE_Bot] or both.");
+    assertion((len(edges) <= 2), "edges should only be [EDGE_Top], [EDGE_Bot] or both.");
 
     r = (Daxe + deltaD)/2;
 

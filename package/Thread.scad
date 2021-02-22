@@ -117,8 +117,13 @@ module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], center= tr
             ISOTriangularThreadmod(D, p, h,fa);
 }
 
-//ISOTriangularThread();
+/*
+difference(){
 
+    cube([1.5, 1.5, 0.5], center= true);
+    ISOTriangularThread();
+}
+*/
     // Threadtap
 
 /*
