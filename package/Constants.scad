@@ -1,26 +1,27 @@
 /*
     constants.scad
-        Constants allowing the placement of future pieces
+        Constants allowing the placement of pieces
 */
 
     // Vectors
-CENTER = [0, 0, 0];
+TRANS_Null = [0, 0, 0];
+TRANS_Top = [0, 0, 1];
+TRANS_Bot = [0, 0, -1];
+TRANS_Frt = [0, -1, 0];
+TRANS_Back = [0, 1, 0];
+TRANS_Rgt = [1, 0, 0];
+TRANS_Lft = [-1, 0, 0];
+TRANS_AllPos = [1, 1, 1];
+TRANS_AllNeg = [-1, -1, -1];
 
-TOP = [0, 0, 1];
+// Rotations
 
-BOTTOM = [0, 0, -1];
-
-FRONT = [0, 1, 0];
-
-RIGHT = [1, 0, 0];
-
-BACK = [0, -1, 0];
-
-LEFT = [-1, 0, 0];
-
-ALLPOS = [1, 1, 1];
-
-ALLNEG = [-1, -1, -1];
+ROT_Top     = [0,   0,   0];
+ROT_Bot     = [180, 0,   0];
+ROT_Frt     = [90,  0,   0];
+ROT_Back    = [-90, 0,   0];
+ROT_Rgt     = [0,   90,  0];
+ROT_Lft     = [0,   -90, 0];
 
 /*
                A
@@ -46,19 +47,19 @@ ALLNEG = [-1, -1, -1];
 // Edges of plans
 EDGE_Top    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]; // Top edges position
 EDGE_Bot    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, -1], [0, 0, 0, 1]]; // Bottom edges position
-EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Back edges position
 EDGE_Frt    = [[1, 0, 0, 0], [0, 1, 0, -1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Front edges position
+EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Back edges position
 EDGE_Rgt    = [[1, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]; // Right edges position
 EDGE_Lft    = [[1, 0, 0, -1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]; // Left edges position
 
 // Unique edge:
-EDGE_TopBack    = EDGE_Top * EDGE_Back;
 EDGE_TopFrt     = EDGE_Top * EDGE_Frt;
+EDGE_TopBack    = EDGE_Top * EDGE_Back;
 EDGE_TopRgt     = EDGE_Top * EDGE_Rgt;
 EDGE_TopLft     = EDGE_Top * EDGE_Lft;
 
-EDGE_BotBack    = EDGE_Bot * EDGE_Back;
 EDGE_BotFrt     = EDGE_Bot * EDGE_Frt;
+EDGE_BotBack    = EDGE_Bot * EDGE_Back;
 EDGE_BotRgt     = EDGE_Bot * EDGE_Rgt;
 EDGE_BotLft     = EDGE_Bot * EDGE_Lft;
 
@@ -74,21 +75,12 @@ EDGE_FrtLft     = EDGE_Frt * EDGE_Lft;
 
 EDGE_RgtTop     = EDGE_TopRgt;
 EDGE_RgtBot     = EDGE_BotRgt;
-EDGE_RgtBack    = EDGE_BackRgt;
 EDGE_RgtFrt     = EDGE_FrtRgt;
+EDGE_RgtBack    = EDGE_BackRgt;
 
 EDGE_LftTop     = EDGE_TopLft;
 EDGE_LftBot     = EDGE_BotLft;
-EDGE_LftBack    = EDGE_BackLft;
 EDGE_LftFrt     = EDGE_FrtLft;
+EDGE_LftBack    = EDGE_BackLft;
 
 EDGE_All        = [EDGE_FrtLft, EDGE_TopLft, EDGE_BotLft];
-
-    // Rotations
-
-ROT_Top     = [0,   0,   0];
-ROT_Bot     = [180, 0,   0];
-ROT_Frt     = [90,  0,   0];
-ROT_Back    = [-90, 0,   0];
-ROT_Rgt     = [0,   90,  0];
-ROT_Lft     = [0,   -90, 0];
