@@ -42,18 +42,16 @@ module hole(pos= [[0, 0, 0]], rots= [ROT_Top]){
  
 // Exemple:
 /*
-* Pierce at the top and the bottom of a cube(size= 2) with a cylinder(r= 1, h= 0.5)
+* Pierce at the top and the bottom of a cube(size= 2) with a cylinder(r= 0.5, h= 0.5)
 */
 /*
-hole([[0, 0, 1], [0, 0, -1]], [ROT_Top, ROT_Top]){
+hole([[0, 0, 0.5], [0, 0, -0.5]], [ROT_Top, ROT_Bot]){
     
     cube(2, center= true);
     
-    mTranslate([0, 0, -0.5])
-        cylinder(r= 1, h= 0.5 + 0.01, $fn= 50);
+    cylinder(r= 0.5, h= 0.5 + 0.01, $fn= 50);
     
-    mTranslate([0, 0, -0.01])
-        cylinder(r= 1, h= 0.5 + 0.01, $fn= 50);
+    cylinder(r= 0.5, h= 0.5 + 0.01, $fn= 50);
 }
 */
 
@@ -71,7 +69,7 @@ hole([[0, 0, 1], [0, 0, -1]], [ROT_Top, ROT_Top]){
 *  g  |   |      \      /
 *  t  |   |        \   /
 *  h  |   |          \
-*    _v_  |            \
+*    _v_  |____________\
 *         |             |
 *         |<----------->|
 *           chamferSize
