@@ -130,6 +130,17 @@ function matScale(k= 1) = [[ifNullGetUnit(k), 0,                0,              
                            [0,                0,                ifNullGetUnit(k), 0],
                            [0,                0,                0,                1]];
 
-function scaleEdge(k, e) = matrix(trans= [k*e[0][3],
-                                          k*e[1][3],
-                                          k*e[2][3]]);
+/*
+* scaleEdge(k: scalar,
+*           e: edge to apply the scalar)
+*
+* Returns: the associated linear transformation matrix
+ */
+function scaleEdge(k, e) = matrix(trans= [k*e[0][3], k*e[1][3], k*e[2][3]],
+                                  scal= [e[0][0], e[1][1], e[2][2]],
+                                  shYalX= e[1][0],
+                                  shZalX= e[2][0],
+                                  shXalY= e[0][1],
+                                  shZalY= e[2][1],
+                                  shXalZ= e[0][2],
+                                  shYalZ= e[1][2]);
