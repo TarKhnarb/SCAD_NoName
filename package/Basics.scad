@@ -166,3 +166,28 @@ writeOnFace(pos= [-5, 0, 0], text= "Left", color= "grey", size= 3, valign= "cent
 writeOnFace(pos= [0, 0, -5], text= "Bottom", color= "grey", size= 2, valign= "center", halign= "center", rot= ROT_Bot)
     cube(10, center= true);
 */
+
+/*
+* factorial(n: integer)
+*
+* Warning only integer or you will get an error on the recursion
+*
+* Return:
+*   The factorial of n.
+*/
+function factorial(n) = (n==0 ? 1 : factorial(n - 1)*n);
+
+/*
+* choose(n: top coefficient,
+*        k: bottom coefficient)
+*
+* Warning only integer or you will get an error on the recursion
+*
+* Return:
+*   n choose k.
+*/
+function choose(n, k) =
+((n >= k) && (k >= 0) ? (factorial(n)/(factorial(k)*factorial(n - k))
+) : (
+echoError(msg= "n must be greater or equal than k and k must be greater or equal than 0"))
+);
