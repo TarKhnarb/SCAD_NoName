@@ -187,7 +187,7 @@ function factorial(n) = (n==0 ? 1 : factorial(n - 1)*n);
 *   n choose k.
 */
 function choose(n, k) =
-((n >= k) && (k >= 0) ? (factorial(n)/(factorial(k)*factorial(n - k))
-) : (
-echoError(msg= "n must be greater or equal than k and k must be greater or equal than 0"))
-);
+    ((n >= k) && (k >= 0) ? (factorial(n)/(factorial(k)*factorial(n - k))
+                        ) : (
+                             echoError(msg= "n must be greater or equal than k and k must be greater or equal than 0"))
+    );

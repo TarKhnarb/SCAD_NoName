@@ -110,7 +110,7 @@ bezierCurve(10*pts2, 50, ang= [180, 0, 0])
 *   Points to generate an arc with a Bezier curve.
 */
 function bezierArcPts(alpha, r, A, helicoide= false, H= 0.01) =
-    let(L= tan(alpha/4)*4/3,
+    let(L= r*tan(alpha/4)*4/3,
         alphaP= atan(r/L),
         h= sqrt(r*r + L*L),
         a= (A.x == 0 ? r : r*r/A.x),
@@ -151,8 +151,8 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, p= undef, rot= fals
     assertion(r > 0, "r must be strictly greater than 0");
     assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
 
-    // TODO voir comment fix
-//    assertion(abs(mod([A.x, A.y, 0])) == r, "A must belong to the circle of radius r");
+   
+    assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
     
     h = p/(2*fn);
 
@@ -211,9 +211,8 @@ module bezierCircularCurve(A= [1, 0, 0], r= 1, rotNb= 1, p= 0.5, fn= 10, helicoi
     assertion(r > 0, "r must be strictly greater than 0");
     assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
     assertion(rotNb > 0, "rotNb must be greater than 0");
-
-    // TODO voir comment fix
-//    assertion(abs(mod([A.x, A.y, 0])) == r, "A must belong to the circle of radius r");
+    
+    assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
 
     pR = p/2;
     
@@ -238,10 +237,10 @@ module bezierCircularCurve(A= [1, 0, 0], r= 1, rotNb= 1, p= 0.5, fn= 10, helicoi
     }
 }
 
-/*
-bezierCircularCurve(p= -0.5,r= 5, rotNb= 2, fn= 100)
+//cylinder(r= 2.5, h= 2);
+bezierCircularCurve(A= [2, 0, 0],p= -0.5,r= 2, rotNb= 2, fn= 100)
     sphere(0.1, $fn= 30);
-*/
+
 /*
 color("red")
 bezierCircularCurve(r= 5, rotNb= 3, fn= 100, helicoide= true)
