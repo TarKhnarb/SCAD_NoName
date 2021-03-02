@@ -118,7 +118,7 @@ module mScale(k= [1, 1, 1]){
     }
 }
 
-module transform(m= matScale(v= [1, 1, 1])){
+module transform(m= matScale([1, 1, 1])){
 
     for(i= [0 : $children - 1]){
 

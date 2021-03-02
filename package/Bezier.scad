@@ -58,7 +58,6 @@ module bezierCurve(pts, fn= 10, ang= undef){
 //        color([1,0,0])
         hull() {
 
-
             mTranslate(pointBezier(pts, n, i * t))
             mRotate(rot * i)
             children();

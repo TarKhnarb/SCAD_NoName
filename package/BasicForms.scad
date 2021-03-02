@@ -3,6 +3,12 @@ use<Matrix.scad>
 use<Transforms.scad>
 include<Constants.scad>
 
+/*
+* colorCube(size: size of the cube)
+*
+* Result:
+*   Centered colored cube.
+*/
 module colorCube(size= 1){
 
     s = size/2;
@@ -43,6 +49,9 @@ module colorCube(size= 1){
 }
 // Exemple:
 /*
+* Adds on a colorCube(size= 10) the name of the applied rotation constant on the corresponding side
+*/
+/*
 writeOnFace(pos= [0, 0, 5], text= "Top", color= "grey", size= 3, valign= "center", halign= "center")
 writeOnFace(pos= [0, 5, 0], text= "Back", color= "grey", size= 3, valign= "center", halign= "center", rot= ROT_Back + [0, 0, 180])
 writeOnFace(pos= [0, -5, 0], text= "Front", color= "grey", size= 3, valign= "center", halign= "center", rot= ROT_Frt)
@@ -67,172 +76,213 @@ module chamferBase(chamfer, size){
 }
 
 /*
-* chamferCube(size: the size of the cube according to [X, Y, Z]
-*             chamfer: chamfer size (chamfer < min(size)/2)
-*             edges: vector of the edges to be chamfered)
+* chamferCube(size: the size of the cube according to [X, Y, Z],
+*             pos: position to place the cube,
+*             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*             chamfer: chamfer size (chamfer < min(size)/2),
+*             edges: vector of the edges to be chamfered,
+*             center: boolean, centrer or not the cube)
 *
-* Result: custom chamfered cube
+* Result:
+*   Custom chamfered cube
 */
-module chamferCube(size= [1, 1, 1], chamfer= 0.1, edges= EDGE_All){
+module chamferCube(size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, edges= EDGE_All, center= false){
 
     assertion(chamfer < min(size)/2, "chamfer must be less than half the smallest size of the cube ");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
-    
-    if(edges == EDGE_All){
 
-        difference(){
+    mTranslate((center ? pos : pos + 1/2*size)){
+        mRotate(rot){
 
-            cube(size, center= true);
-            
-            for(r= [0, 1]){
+            if (edges == EDGE_All) {
 
-                union(){
-                    
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        chamferBase(chamfer, size.y);
-                          
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        chamferBase(chamfer, size.y);  
-                    
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e=EDGE_Frt)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                    
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e=EDGE_Frt)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                    
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        chamferBase(chamfer, size.z);
-        
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        chamferBase(chamfer, size.z);
+                difference() {
+
+                    cube(size, center = true);
+
+                    for (r = [0, 1]) {
+
+                        union() {
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.x / 2,
+                            e = EDGE_Lft) * matRotX(90))
+                            chamferBase(chamfer, size.y);
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.x / 2,
+                            e = EDGE_Lft) * matRotX(90))
+                            chamferBase(chamfer, size.y);
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.y / 2,
+                            e = EDGE_Frt) * matRotY(90))
+                            chamferBase(chamfer, size.x);
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.y / 2,
+                            e = EDGE_Frt) * matRotY(90))
+                            chamferBase(chamfer, size.x);
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.y / 2, e = EDGE_Back) * scaleEdge(k = size.x / 2
+                            , e = EDGE_Lft))
+                            chamferBase(chamfer, size.z);
+
+                            transform(m = matRotZ(r * 180) * scaleEdge(k = size.y / 2, e = EDGE_Frt) * scaleEdge(k = size.x / 2,
+                            e = EDGE_Lft))
+                            chamferBase(chamfer, size.z);
+                        }
+                    }
                 }
             }
-        }
-    }
-    else{
+            else {
 
-        difference(){
+                difference() {
 
-            cube(size, center= true);
+                    cube(size, center = true);
 
-            for(i= [0 : len(edges) - 1]){
+                    for (i = [0 : len(edges) - 1]) {
 
-                if((edges[i] == EDGE_Top) || (edges[i] == EDGE_Bot)){
+                        if ((edges[i] == EDGE_Top) || (edges[i] == EDGE_Bot)) {
 
-                    for(r= [0, 1]){
+                            for (r = [0, 1]) {
 
-                        union(){
-                            
-                            transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= edges[i])*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                                chamferBase(chamfer, size.y);
-                            
-                            transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= edges[i])*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
-                                chamferBase(chamfer, size.x);
+                                union() {
+
+                                    transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = edges[i]) * scaleEdge(k =
+                                        size.x / 2, e = EDGE_Lft) * matRotX(90))
+                                    chamferBase(chamfer, size.y);
+
+                                    transform(m = matRotZ(r * 180) * scaleEdge(k = size.z / 2, e = edges[i]) * scaleEdge(k =
+                                        size.y / 2, e = EDGE_Frt) * matRotY(90))
+                                    chamferBase(chamfer, size.x);
+                                }
+                            }
+                        }
+                        else if ((edges[i] == EDGE_Back) || (edges[i] == EDGE_Frt)) {
+
+                            for (r = [0, 1]) {
+
+                                union() {
+
+                                    transform(m = matRotY(r * 180) * scaleEdge(k = size.y / 2, e = edges[i]) * scaleEdge(k =
+                                        size.x / 2, e = EDGE_Lft))
+                                    chamferBase(chamfer, size.z);
+
+                                    transform(m = matRotY(r * 180) * scaleEdge(k = size.y / 2, e = edges[i]) * scaleEdge(k =
+                                        size.z / 2, e = EDGE_Top) * matRotY(90))
+                                    chamferBase(chamfer, size.x);
+                                }
+                            }
+                        }
+                        else if ((edges[i] == EDGE_Rgt) || (edges[i] == EDGE_Lft)) {
+
+                            for (r = [0, 1]) {
+
+                                union() {
+
+                                    transform(m = matRotX(r * 180) * scaleEdge(k = size.x / 2, e = edges[i]) * scaleEdge(k =
+                                        size.y / 2, e = EDGE_Back))
+                                    chamferBase(chamfer, size.z);
+
+                                    transform(m = matRotX(r * 180) * scaleEdge(k = size.x / 2, e = edges[i]) * scaleEdge(k =
+                                        size.z / 2, e = EDGE_Top) * matRotX(90))
+                                    chamferBase(chamfer, size.y);
+                                }
+                            }
+                        }
+                        else if ((edges[i] == EDGE_TopFrt) || (edges[i] == EDGE_FrtTop)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.y / 2, e = EDGE_Frt) *
+                                matRotY(90))
+                            chamferBase(chamfer, size.x);
+                        }
+                        else if ((edges[i] == EDGE_TopBack) || (edges[i] == EDGE_BackTop)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.y / 2, e = EDGE_Back) *
+                                matRotY(90))
+                            chamferBase(chamfer, size.x);
+                        }
+                        else if ((edges[i] == EDGE_BotBack) || (edges[i] == EDGE_BackBot)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.y / 2, e = EDGE_Back) *
+                                matRotY(90))
+                            chamferBase(chamfer, size.x);
+                        }
+                        else if ((edges[i] == EDGE_BotFrt) || (edges[i] == EDGE_FrtBot)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.y / 2, e = EDGE_Frt) *
+                                matRotY(90))
+                            chamferBase(chamfer, size.x);
+                        }
+                        else if ((edges[i] == EDGE_TopRgt) || (edges[i] == EDGE_RgtTop)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.x / 2, e = EDGE_Rgt) *
+                                matRotX(90))
+                            chamferBase(chamfer, size.y);
+                        }
+                        else if ((edges[i] == EDGE_TopLft) || (edges[i] == EDGE_LftTop)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Top) * scaleEdge(k = size.x / 2, e = EDGE_Lft) *
+                                matRotX(90))
+                            chamferBase(chamfer, size.y);
+                        }
+                        else if ((edges[i] == EDGE_BotRgt) || (edges[i] == EDGE_RgtBot)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.x / 2, e = EDGE_Rgt) *
+                                matRotX(90))
+                            chamferBase(chamfer, size.y);
+                        }
+                        else if ((edges[i] == EDGE_BotLft) || (edges[i] == EDGE_LftBot)) {
+
+                            transform(m = scaleEdge(k = size.z / 2, e = EDGE_Bot) * scaleEdge(k = size.x / 2, e = EDGE_Lft) *
+                                matRotX(90))
+                            chamferBase(chamfer, size.y);
+                        }
+                        else if ((edges[i] == EDGE_BackRgt) || (edges[i] == EDGE_RgtBack)) {
+
+                            transform(m = scaleEdge(k = size.y / 2, e = EDGE_Back) * scaleEdge(k = size.x / 2, e = EDGE_Rgt))
+                            chamferBase(chamfer, size.z);
+                        }
+                        else if ((edges[i] == EDGE_BackLft) || (edges[i] == EDGE_LftBack)) {
+
+                            transform(m = scaleEdge(k = size.y / 2, e = EDGE_Back) * scaleEdge(k = size.x / 2, e = EDGE_Lft))
+                            chamferBase(chamfer, size.z);
+                        }
+                        else if ((edges[i] == EDGE_FrtRgt) || (edges[i] == EDGE_RgtFrt)) {
+
+                            transform(m = scaleEdge(k = size.y / 2, e = EDGE_Frt) * scaleEdge(k = size.x / 2, e = EDGE_Rgt))
+                            chamferBase(chamfer, size.z);
+                        }
+                        else if ((edges[i] == EDGE_FrtLft) || (edges[i] == EDGE_LftFrt)) {
+
+                            transform(m = scaleEdge(k = size.y / 2, e = EDGE_Frt) * scaleEdge(k = size.x / 2, e = EDGE_Lft))
+                            chamferBase(chamfer, size.z);
                         }
                     }
-                }
-                else if((edges[i] == EDGE_Back) || (edges[i] == EDGE_Frt)){
-
-                    for(r= [0, 1]){
-
-                        union(){
-                            
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= edges[i])*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                                chamferBase(chamfer, size.z);
-                            
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= edges[i])*scaleEdge(k= size.z/2, e= EDGE_Top)*matRotY(90))
-                                chamferBase(chamfer, size.x);
-                        }
-                    }
-                }
-                else if((edges[i] == EDGE_Rgt) || (edges[i] == EDGE_Lft)){
-
-                    for(r= [0, 1]){
-
-                        union(){
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.x/2, e= edges[i])*scaleEdge(k= size.y/2, e= EDGE_Back))
-                                chamferBase(chamfer, size.z);
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.x/2, e= edges[i])*scaleEdge(k= size.z/2, e= EDGE_Top)*matRotX(90))
-                                chamferBase(chamfer, size.y);
-                        }
-                    }
-                }
-                else if((edges[i] == EDGE_TopFrt) || (edges[i] == EDGE_FrtTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e=EDGE_Frt)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                }
-                else if((edges[i] == EDGE_TopBack) || (edges[i] == EDGE_BackTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e=EDGE_Back)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                } 
-                else if((edges[i] == EDGE_BotBack) || (edges[i] == EDGE_BackBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e=EDGE_Back)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                }
-                else if((edges[i] == EDGE_BotFrt) || (edges[i] == EDGE_FrtBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e=EDGE_Frt)*matRotY(90))
-                        chamferBase(chamfer, size.x);
-                }
-                else if((edges[i] == EDGE_TopRgt) || (edges[i] == EDGE_RgtTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotX(90))
-                        chamferBase(chamfer, size.y);
-                }
-                else if((edges[i] == EDGE_TopLft) || (edges[i] == EDGE_LftTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        chamferBase(chamfer, size.y);
-                }
-                else if((edges[i] == EDGE_BotRgt) || (edges[i] == EDGE_RgtBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotX(90))
-                        chamferBase(chamfer, size.y);
-                }
-                else if((edges[i] == EDGE_BotLft) || (edges[i] == EDGE_LftBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        chamferBase(chamfer, size.y);
-                }
-                else if((edges[i] == EDGE_BackRgt) || (edges[i] == EDGE_RgtBack)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Rgt))
-                        chamferBase(chamfer, size.z);
-                }
-                else if((edges[i] == EDGE_BackLft) || (edges[i] == EDGE_LftBack)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        chamferBase(chamfer, size.z);
-                }
-                else if((edges[i] == EDGE_FrtRgt) || (edges[i] == EDGE_RgtFrt)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt))
-                        chamferBase(chamfer, size.z);
-                }
-                else if((edges[i] == EDGE_FrtLft) || (edges[i] == EDGE_LftFrt)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        chamferBase(chamfer, size.z);
                 }
             }
         }
     }
 }
+/*
+chamferCube(size= [1, 2, 2], chamfer= 0.1, edges= [EDGE_Top, EDGE_Bot]);
+*/
 
 /*
-* chamferCylinder(h: height of the cylinder
-*                 r: radius of the cylinder
-*                 chamfer: chamfer size (chamfer < r/2)
-*                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot)
+chamferCube(chamfer= 0.2);
+*/
+
+/*
+* chamferCylinder(h: height of the cylinder,
+*                 r: radius of the cylinder],
+*                 pos: position to place the cube,
+*                 rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*                      [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                 chamfer: chamfer size (chamfer < r/2),
+*                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot,
+*                 center: boolean, centrer or not the cube)
 *
 * Result: custom chamfered cylinder
 */
-module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
+module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot], center= false){
 
     assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
@@ -240,31 +290,41 @@ module chamferCylinder(h= 1, r= 1, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE
 
     step = 360/fn;
 
-    difference(){
+    mTranslate((center ? pos : pos + [r, r, h/2])){
+        mRotate(rot){
+            difference(){
 
-        cylinder(r= r, h= h, $fn= fn, center= true);
+                cylinder(r= r, h= h, $fn= fn, center= true);
 
-        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
-            
-            if(edges[i] == EDGE_Top){
+                for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+                    
+                    if(edges[i] == EDGE_Top){
 
-                for(j= [0 : fn - 1]){
+                        for(j= [0 : fn - 1]){
 
-                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
-                        chamferBase(chamfer, 2*r);
-                }
-            }
-            if(edges[i] == EDGE_Bot){
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
+                                chamferBase(chamfer, 2*r);
+                        }
+                    }
+                    if(edges[i] == EDGE_Bot){
 
-                for(j= [0 : fn - 1]){
+                        for(j= [0 : fn - 1]){
 
-                    transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
-                        chamferBase(chamfer, 2*r);
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
+                                chamferBase(chamfer, 2*r);
+                        }
+                    }
                 }
             }
         }
     }
 }
+/*
+chamferCylinder(r= 2);
+*/
+/*
+chamferCylinder(h= 3, chamfer= 0.4, edges= [EDGE_Top]);
+*/
 
     // Bevels :
 
@@ -288,210 +348,223 @@ module bevelBase(bevel, size, fn){
 }
 
 /*
-* bevelCube(size: the size of the cube according to [X, Y, Z]
-*           bevel: bevel radius (bevel < min(size)/2)
-*           fn: precision of the bevel pitch
-*           edges: vector of the edges to be beveled)
+* bevelCube(size: the size of the cube according to [X, Y, Z],
+*           pos: position to place the cube,
+*           rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*                [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*           bevel: bevel radius (bevel < min(size)/2),
+*           fn: precision of the bevel pitch,
+*           edges: vector of the edges to be beveled,
+*           center: boolean, centrer or not the cube)
 *
 * Result: custom beveled cube
 */
-module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
+module bevelCube(size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, bevel= 0.1, fn= 100, edges= EDGE_All, center= false){
 
     assertion(bevel < min(size)/2, "bevel must be less than half the smallest size of the cube ");
     assertion(fn > 0, "fn must be greater than 0");
     assertion(len(edges) != 0, "bevel must be less than half the smallest size of the cube ");
 
-    if(edges == EDGE_All){
+    mTranslate((center ? pos : pos + 1/2*size)){
+        mRotate(rot){
+            if(edges == EDGE_All){
 
-        difference(){
+                difference(){
 
-            cube(size, center= true);
-
-            for(r= [0, 1]){
-
-                union(){
-                    
-                        // Top
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
-                        bevelBase(bevel, size.y, fn);
-                            
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
-                        bevelBase(bevel, size.x, fn);
-                    
-                    // Bot
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(-90))
-                                bevelBase(bevel, size.x, fn);
-                        
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        bevelBase(bevel, size.y, fn);
-                    
-                    // Frt
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
-                        bevelBase(bevel, size.z, fn);
-                    transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        bevelBase(bevel, size.z, fn);
-                }
-            }
-        }
-    }
-    else{
-
-        difference(){
-
-            cube(size, center= true);
-
-            for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
-
-                if(edges[i] == EDGE_Top){
+                    cube(size, center= true);
 
                     for(r= [0, 1]){
 
                         union(){
                             
+                                // Top
                             transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
                                 bevelBase(bevel, size.y, fn);
-                            
+                                    
                             transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
                                 bevelBase(bevel, size.x, fn);
-                        }
-                        
-                    }
-                }
-                else if(edges[i] == EDGE_Bot){
-
-                    for(r= [0, 1]){
-
-                        union(){
                             
+                            // Bot
                             transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(-90))
-                                bevelBase(bevel, size.x, fn);
-                        
+                                        bevelBase(bevel, size.x, fn);
+                                
                             transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
                                 bevelBase(bevel, size.y, fn);
+                            
+                            // Frt
+                            transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
+                                bevelBase(bevel, size.z, fn);
+                            transform(m= matRotZ(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
+                                bevelBase(bevel, size.z, fn);
                         }
                     }
                 }
-                else if(edges[i] == EDGE_Back){
+            }
+            else{
 
-                    for(r= [0, 1]){
+                difference(){
 
-                        union(){
+                    cube(size, center= true);
+
+                    for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+
+                        if(edges[i] == EDGE_Top){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
+                                        bevelBase(bevel, size.y, fn);
+                                    
+                                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
+                                        bevelBase(bevel, size.x, fn);
+                                }
+                                
+                            }
+                        }
+                        else if(edges[i] == EDGE_Bot){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(-90))
+                                        bevelBase(bevel, size.x, fn);
+                                
+                                    transform(m= matRotZ(r*180)*scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
+                                        bevelBase(bevel, size.y, fn);
+                                }
+                            }
+                        }
+                        else if(edges[i] == EDGE_Back){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotY(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0,90,-90]))
+                                        bevelBase(bevel, size.x, fn);
+                                    
+                                    transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotZ(-90))
+                                        bevelBase(bevel, size.z, fn);
+                                }
+                            }
+                        }
+                        else if(edges[i] == EDGE_Frt){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotY(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
+                                        bevelBase(bevel, size.x, fn);
+                                    
+                                    transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
+                                        bevelBase(bevel, size.z, fn);
+                                }
+                            }
+                        }
+                        else if(edges[i] == EDGE_Rgt){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotX(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([-90, 0, 90]))
+                                        bevelBase(bevel, size.y, fn);
+                                    
+                                    transform(m= matRotX(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
+                                        bevelBase(bevel, size.z, fn);   
+                                }
+                            }
+                        }
+                        else if(edges[i] == EDGE_Lft){
+
+                            for(r= [0, 1]){
+
+                                union(){
+                                    
+                                    transform(m= matRotX(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
+                                        bevelBase(bevel, size.y, fn);
+                                    
+                                    transform(m= matRotX(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
+                                        bevelBase(bevel, size.z, fn);
+                                }
+                            }
+                        }
+                        else if((edges[i] == EDGE_TopBack) || (edges[i] == EDGE_BackTop)){
                             
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0,90,-90]))
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0,90,-90]))
                                 bevelBase(bevel, size.x, fn);
-                            
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotZ(-90))
-                                bevelBase(bevel, size.z, fn);
                         }
-                    }
-                }
-                else if(edges[i] == EDGE_Frt){
-
-                    for(r= [0, 1]){
-
-                        union(){
+                        else if((edges[i] == EDGE_TopFrt) || (edges[i] == EDGE_FrtTop)){
                             
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
                                 bevelBase(bevel, size.x, fn);
-                            
-                            transform(m= matRotY(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
+                        }
+                        else if((edges[i] == EDGE_BotBack) || (edges[i] == EDGE_BackBot)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0, -90, -90]))
+                                bevelBase(bevel, size.x, fn);
+                        }
+                        else if((edges[i] == EDGE_BotFrt) || (edges[i] == EDGE_FrtBot)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(-90))
+                                bevelBase(bevel, size.x, fn);
+                        }
+                        else if((edges[i] == EDGE_TopRgt) || (edges[i] == EDGE_RgtTop)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([-90, 0, 90]))
+                                bevelBase(bevel, size.y, fn);
+                        }
+                        else if((edges[i] == EDGE_TopLft) || (edges[i] == EDGE_LftTop)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
+                                bevelBase(bevel, size.y, fn);
+                        }
+                        else if((edges[i] == EDGE_BotRgt) || (edges[i] == EDGE_RgtBot)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([90, 0, 90]))
+                                bevelBase(bevel, size.y, fn);
+                        }
+                        else if((edges[i] == EDGE_BotLft) || (edges[i] == EDGE_LftBot)){
+
+                            transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
+                                bevelBase(bevel, size.y, fn);
+                        }
+                        else if((edges[i] == EDGE_BackRgt) || (edges[i] == EDGE_RgtBack)){
+
+                            transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(180))
+                                bevelBase(bevel, size.z, fn);
+                        }                
+                        else if((edges[i] == EDGE_BackLft) || (edges[i] == EDGE_LftBack)){
+
+                            transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotZ(-90))
+                                bevelBase(bevel, size.z, fn);
+                        }                
+                        else if((edges[i] == EDGE_FrtRgt) || (edges[i] == EDGE_RgtFrt)){
+
+                            transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
+                                bevelBase(bevel, size.z, fn);
+                        }                
+                        else if((edges[i] == EDGE_FrtLft) || (edges[i] == EDGE_LftFrt)){
+
+                            transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
                                 bevelBase(bevel, size.z, fn);
                         }
                     }
-                }
-                else if(edges[i] == EDGE_Rgt){
-
-                    for(r= [0, 1]){
-
-                        union(){
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([-90, 0, 90]))
-                                bevelBase(bevel, size.y, fn);
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
-                                bevelBase(bevel, size.z, fn);   
-                        }
-                    }
-                }
-                else if(edges[i] == EDGE_Lft){
-
-                    for(r= [0, 1]){
-
-                        union(){
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
-                                bevelBase(bevel, size.y, fn);
-                            
-                            transform(m= matRotX(r*180)*scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                                bevelBase(bevel, size.z, fn);
-                        }
-                    }
-                }
-                else if((edges[i] == EDGE_TopBack) || (edges[i] == EDGE_BackTop)){
-                    
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0,90,-90]))
-                        bevelBase(bevel, size.x, fn);
-                }
-                else if((edges[i] == EDGE_TopFrt) || (edges[i] == EDGE_FrtTop)){
-                    
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(90))
-                        bevelBase(bevel, size.x, fn);
-                }
-                else if((edges[i] == EDGE_BotBack) || (edges[i] == EDGE_BackBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Back)*matRot([0, -90, -90]))
-                        bevelBase(bevel, size.x, fn);
-                }
-                else if((edges[i] == EDGE_BotFrt) || (edges[i] == EDGE_FrtBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.y/2, e= EDGE_Frt)*matRotY(-90))
-                        bevelBase(bevel, size.x, fn);
-                }
-                else if((edges[i] == EDGE_TopRgt) || (edges[i] == EDGE_RgtTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([-90, 0, 90]))
-                        bevelBase(bevel, size.y, fn);
-                }
-                else if((edges[i] == EDGE_TopLft) || (edges[i] == EDGE_LftTop)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Top)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(-90))
-                        bevelBase(bevel, size.y, fn);
-                }
-                else if((edges[i] == EDGE_BotRgt) || (edges[i] == EDGE_RgtBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRot([90, 0, 90]))
-                        bevelBase(bevel, size.y, fn);
-                }
-                else if((edges[i] == EDGE_BotLft) || (edges[i] == EDGE_LftBot)){
-
-                    transform(m= scaleEdge(k= size.z/2, e= EDGE_Bot)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotX(90))
-                        bevelBase(bevel, size.y, fn);
-                }
-                else if((edges[i] == EDGE_BackRgt) || (edges[i] == EDGE_RgtBack)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(180))
-                        bevelBase(bevel, size.z, fn);
-                }                
-                else if((edges[i] == EDGE_BackLft) || (edges[i] == EDGE_LftBack)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Back)*scaleEdge(k= size.x/2, e= EDGE_Lft)*matRotZ(-90))
-                        bevelBase(bevel, size.z, fn);
-                }                
-                else if((edges[i] == EDGE_FrtRgt) || (edges[i] == EDGE_RgtFrt)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Rgt)*matRotZ(90))
-                        bevelBase(bevel, size.z, fn);
-                }                
-                else if((edges[i] == EDGE_FrtLft) || (edges[i] == EDGE_LftFrt)){
-
-                    transform(m= scaleEdge(k= size.y/2, e= EDGE_Frt)*scaleEdge(k= size.x/2, e= EDGE_Lft))
-                        bevelBase(bevel, size.z, fn);
                 }
             }
         }
-
     }
 }
+/*
+bevelCube(size= [1, 2, 2], edges= [EDGE_Top, EDGE_Bot]);
+*/
+/*
+bevelCube(bevel= 0.2);
+*/
 
 /*
 * cylinderBevelBase(...)
@@ -500,16 +573,14 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, edges= EDGE_All){
 *
 * Result: base for beveledcylinder
 */
-module cylyndBevelBase(r, bevel, fn){
+module cylindBevelBase(r, bevel, fn){
 
     mTranslate([0, 0, -bevel])
     difference(){
-
         
         mTranslate([0, 0, (bevel + 0.01)/2])
             cylinder(r= r + 0.01, h= bevel + 0.01, $fn= fn, center= true);
-
-            
+        
         union(){
             
             cylinder(r= r - bevel, h= 2*bevel, $fn= fn, center= true);
@@ -524,43 +595,59 @@ module cylyndBevelBase(r, bevel, fn){
 }
 
 /*
-* chamferCylinder(h: height of the cylinder
-*                 r: radius of the cylinder
-*                 bevel: bevel radius (chamfer < r/2)
-*                 fn: precision of the bevel pitch
-*                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot)
+* bevelCylinder(h: height of the cylinder,
+*               r: radius of the cylinder,
+*               pos: position to place the cube,
+*               rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*                    [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*               bevel: bevel radius (chamfer < r/2),
+*               fn: precision of the cylinder pitch,
+*               fnB: precision of the bevel pitch,
+*               edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot,
+*               center: boolean, centrer or not the cube)
 *
 * Result: custom beveled cylinder
 */
-module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot]){
+module bevelCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, bevel= 0.1, fn= 100, fnB= 100, edges= [EDGE_Top, EDGE_Bot], center= false){
 
     assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
-    assertion(fn > 1, "nb of chamfer must be greater than 1");
+    assertion(fn > 1, "nb of segment for the bevel must be greater than 1");
+    assertion(fnB > 1, "nb of segment for the bevel must be greater than 1");
 
     step = 360/fn;
     length= 2*PI*r/fn;
 
-    difference(){
+    mTranslate((center ? pos : pos + [r, r, h/2])){
+        mRotate(rot){
+            difference(){
 
-        cylinder(r= r, h= h, $fn= fn, center= true);
+                cylinder(r= r, h= h, $fn= fn, center= true);
 
-        for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
-            
-            if(edges[i] == EDGE_Top){
-                
-                mTranslate([0, 0, h/2])
-                    cylyndBevelBase(r= r, bevel= bevel, fn= fn);
-            }
-            if(edges[i] == EDGE_Bot){
+                for(i= ((len(edges) - 1) == 0 ? [0] : [0 : len(edges) - 1])){
+                    
+                    if(edges[i] == EDGE_Top){
+                        
+                        mTranslate([0, 0, h/2])
+                            cylindBevelBase(r, bevel, fnB);
+                    }
+                    if(edges[i] == EDGE_Bot){
 
-                mTranslate([0, 0, -h/2])
-                    rotX(180)
-                        cylyndBevelBase(r= r, bevel= bevel, fn= fn);
+                        mTranslate([0, 0, -h/2])
+                            rotX(180)
+                                cylindBevelBase(r, bevel, fnB);
+                    }
+                }
             }
         }
     }
 }
+/*
+bevelCylinder(r= 0.5);
+*/
+/*
+bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
+*/
 
     // Linear pipe
 /*
@@ -583,6 +670,7 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot
 *            r1: if def, top outer radius of the pipe,
 *            r2: if def thickness isn't used, top inner radius od the pipe,
 *            h: height of the pipe,
+*            pos: position to place the cube,
 *            fn: precision of the cylinders,
 *            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
 *                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
@@ -591,72 +679,76 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot
 *  Result:
 *   A parametrized linear pipe.
 */
-module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, rot= ROT_Top, center= false){
+module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, pos=[0, 0, 0], fn= 50, rot= ROT_Top, center= false){
     
-    mRotate(rot)
-        if(isDef(r1)){
-
-            difference(){
-
-                if(isDef(r2)){
-
-                    assertion(r1 > r2, "r1 should be strictly greater than r2");
-                    
-                    
-                    x = tan(atan((r - (r1 - r2) - r2)/h))*0.01;
-                    
-                    difference(){
-                        
-                        cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
-                        
-                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
-                            cylinder(r1= r - (r1 - r2) + x, r2= r2 - x, h= h + 0.02, center= center, $fn= fn);
-                    }
-                }
-                else{
-                    
-                    assertion(r1 > thick, "r1 should be strictly greater than thick");
-                    
-                    x = tan(atan((r - thick - (r1 - thick))/h))*0.01;
-                    
-                    difference(){
-                        
-                        cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
-                        
-                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
-                            cylinder(r1= r - thick + x, r2= r1 - thick - x, h= h + 0.02, center= center, $fn= fn);
-                    }
-                }
-            }
-        }
-        else{
+    mTranslate(pos){
+        mRotate(rot){
             
-            if(isDef(r2)){
-                
-                assertion(r > r2, "r should be strictly greater than r2");
-                
-                difference(){
-                    
-                    cylinder(r= r, h= h, center= center, $fn= fn);
+            if(isDef(r1)){
 
-                    mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
-                        cylinder(r= r2, h= h + 0.02, center= center, $fn= fn);
+                difference(){
+
+                    if(isDef(r2)){
+
+                        assertion(r1 > r2, "r1 should be strictly greater than r2");
+                        
+                        
+                        x = tan(atan((r - (r1 - r2) - r2)/h))*0.01;
+                        
+                        difference(){
+                            
+                            cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
+                            
+                            mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                                cylinder(r1= r - (r1 - r2) + x, r2= r2 - x, h= h + 0.02, center= center, $fn= fn);
+                        }
+                    }
+                    else{
+                        
+                        assertion(r1 > thick, "r1 should be strictly greater than thick");
+                        
+                        x = tan(atan((r - thick - (r1 - thick))/h))*0.01;
+                        
+                        difference(){
+                            
+                            cylinder(r1= r, r2= r1, h= h, center= center, $fn= fn);
+                            
+                            mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                                cylinder(r1= r - thick + x, r2= r1 - thick - x, h= h + 0.02, center= center, $fn= fn);
+                        }
+                    }
                 }
             }
             else{
                 
-                assertion(r > thick, "r should be strictly greater than thick");
-                
-                difference(){
+                if(isDef(r2)){
                     
-                    cylinder(r= r, h= h, center= center, $fn= fn);
+                    assertion(r > r2, "r should be strictly greater than r2");
+                    
+                    difference(){
+                        
+                        cylinder(r= r, h= h, center= center, $fn= fn);
 
-                    mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
-                        cylinder(r= r - thick, h= h + 0.02, center= center, $fn= fn);
+                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                            cylinder(r= r2, h= h + 0.02, center= center, $fn= fn);
+                    }
                 }
+                else{
+                    
+                    assertion(r > thick, "r should be strictly greater than thick");
+                    
+                    difference(){
+                        
+                        cylinder(r= r, h= h, center= center, $fn= fn);
+
+                        mTranslate((center ? [0, 0, 0] : [0, 0, -0.01]))
+                            cylinder(r= r - thick, h= h + 0.02, center= center, $fn= fn);
+                    }
+                }
+                
             }
-            
         }
+    }
 }
 // Exemple:
 /*
@@ -664,4 +756,7 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, rot= ROT
  */
 /*
 linearPipe(r= 2, r1= 1, thick= 0.5, h= 10, center= true, rot= ROT_Lft);
+*/
+/*
+linearPipe(r= 2, r1= 3, r2= 2.9, h= 4, center= true);
 */
