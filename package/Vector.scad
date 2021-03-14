@@ -2,7 +2,6 @@
     Vector.scad
         All vector fonctionalities
 */
-
 use<Basics.scad>
 
 /*

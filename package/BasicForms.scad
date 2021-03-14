@@ -1,5 +1,6 @@
 use<Basics.scad>
 use<Matrix.scad>
+use<Vector.scad>
 use<Transforms.scad>
 include<Constants.scad>
 
@@ -88,7 +89,7 @@ module chamferBase(chamfer, size){
 *   Custom chamfered cube
 */
 module chamferCube(size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, edges= EDGE_All, center= false){
-
+    
     assertion(chamfer < min(size)/2, "chamfer must be less than half the smallest size of the cube ");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
 
@@ -270,6 +271,56 @@ chamferCube(size= [1, 2, 2], chamfer= 0.1, edges= [EDGE_Top, EDGE_Bot]);
 chamferCube(chamfer= 0.2);
 */
 
+module chamferAngBase2(chamfer, fs, ang= 45){
+    
+    
+    L = chamfer/cos(ang) + 0.02;
+    b = chamfer*sin(ang);
+    l = b + 0.02;
+    
+    gamma = atan(l/L);
+    
+    d = sqrt(L*L/4 + l*l/4);
+    
+    A = [d*cos(ang - gamma), -d*sin(ang - gamma), 0];  // A'
+    
+    B = [chamfer + 0.01*cos(ang), -0.01*sin(ang), 0];           // A"
+    
+    O = [-d*cos(gamma - ang)*B.x, d*sin(gamma - ang)*B.y, 0];           // O" en partant de A"
+    
+    v = [cos(90 - ang)*(l-0.04)/2, sin(90 - ang)*(l-0.04)/2, 0]; // Fonctionne uniquement pour 45°
+
+    mTranslate(makeVector(A, B))
+        rotZ(-ang)
+            cube([L, l, fs + 0.02], center=true);
+}
+
+module chamferAngBase(chamfer, fs, ang= 45){
+    
+    side = chamfer/cos(ang) + 0.06;
+    
+    x = [chamfer, 0, 0];
+    y = [0.03*cos(ang), -0.03*sin(ang), 0];
+    z = [side*cos(135-ang)*sqrt(2)/2, side*sin(135-ang)*sqrt(2)/2, 0];
+    
+    
+    
+    h = chamfer*tan(ang) + (-y.y);
+
+    union(){
+            
+        difference(){
+                    
+            mTranslate([-0.01, -0.01, -(fs + 0.02)/2])
+                cube([chamfer + 0.015, h, fs + 0.02]);
+            
+            mTranslate(x + y + z)
+                mRotate([0, 0, -ang])
+                    cube([side, side, fs + 0.03], center= true);
+            }
+        }
+}
+
 /*
 * chamferCylinder(h: height of the cylinder,
 *                 r: radius of the cylinder],
@@ -277,13 +328,15 @@ chamferCube(chamfer= 0.2);
 *                 rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
 *                      [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                 chamfer: chamfer size (chamfer < r/2),
+*                 chamferAng: chamfer angle [20, 60],
 *                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot,
 *                 center: boolean, centrer or not the cube)
 *
 * Result: custom chamfered cylinder
 */
-module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, fn= 100, edges= [EDGE_Top, EDGE_Bot], center= false){
+module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, chamferAng= 45, fn= 50, edges= [EDGE_Top, EDGE_Bot], center= false){
 
+    assertion((19 < chamferAng) && (chamferAng < 61), "chamferAng must be between [20, 60]°");
     assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube");
     assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
     assertion(fn > 1, "nb of chamfer must be greater than 1");
@@ -302,16 +355,16 @@ module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, f
 
                         for(j= [0 : fn - 1]){
 
-                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
-                                chamferBase(chamfer, 2*r);
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 0, 180]))
+                                chamferAngBase2(chamfer, r*tan(step), chamferAng);
                         }
                     }
                     if(edges[i] == EDGE_Bot){
 
                         for(j= [0 : fn - 1]){
 
-                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRotX(90))
-                                chamferBase(chamfer, 2*r);
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 180, 0]))
+                                chamferAngBase2(chamfer, r*tan(step), chamferAng);
                         }
                     }
                 }
@@ -319,9 +372,12 @@ module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, f
         }
     }
 }
-/*
-chamferCylinder(r= 2);
-*/
+
+chamferCylinder(chamferAng= 20,center= true);
+
+//chamferCylinder(r= 2,chamferAng= 20);
+
+
 /*
 chamferCylinder(h= 3, chamfer= 0.4, edges= [EDGE_Top]);
 */
