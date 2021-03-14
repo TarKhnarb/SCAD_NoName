@@ -275,8 +275,7 @@ module chamferAngBase2(chamfer, fs, ang= 45){
     
     
     L = chamfer/cos(ang) + 0.02;
-    b = chamfer*sin(ang);
-    l = b + 0.02;
+    l = chamfer*sin(ang) + 0.02;
     
     gamma = atan(l/L);
     
@@ -285,10 +284,6 @@ module chamferAngBase2(chamfer, fs, ang= 45){
     A = [d*cos(ang - gamma), -d*sin(ang - gamma), 0];  // A'
     
     B = [chamfer + 0.01*cos(ang), -0.01*sin(ang), 0];           // A"
-    
-    O = [-d*cos(gamma - ang)*B.x, d*sin(gamma - ang)*B.y, 0];           // O" en partant de A"
-    
-    v = [cos(90 - ang)*(l-0.04)/2, sin(90 - ang)*(l-0.04)/2, 0]; // Fonctionne uniquement pour 45°
 
     mTranslate(makeVector(A, B))
         rotZ(-ang)
