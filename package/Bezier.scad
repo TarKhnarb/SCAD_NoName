@@ -1,6 +1,7 @@
 use<Basics.scad>
 use<Vector.scad>
 use<Transforms.scad>
+use<Thread.scad>
 include<Constants.scad>
 
 /*
@@ -48,14 +49,20 @@ module bezierCurve(pts, fn= 10, ang= undef){
     }
 
     t = 1/fn;
-    
-    theta = angleVectors(pts[n], pts[0]);
-    
     rot = (isDef(ang) ? ang*1/fn : [0, 0, 0]);
+    
+    if($preview){
+        
+        for(i= [0 : len(pts) - 1]){
+            
+            color("green")
+                mTranslate(pts[i])
+                    children();
+        }
+    }
 
     for(i = [0 : fn - 1]){
 
-//        color([1,0,0])
         hull() {
 
             mTranslate(pointBezier(pts, n, i * t))
@@ -70,25 +77,21 @@ module bezierCurve(pts, fn= 10, ang= undef){
 }
 
 
-/*
 pts = [[0,-2,0], [-2,-5,10], [3,9,2], [6,3,1], [-3,-1,2], [3,-2,1.5]];
 
-
+/*
 for(i = [0 : len(pts) - 1]){
     
     color("green")
     mTranslate(2*pts[i])
         cube(1, $fn= 50,center= true);
-}
+}*/
 
 
-bezierCurve(2*pts, 50)
-    sphere(0.5, $fn= 50);
-*/
 
+
+pts2 = [[1, 0, 0], [1, 1.1, 0], [0, 1.1, 0], [-1, 1.5, 0], [-1, 2, 0]];
 /*
-pts2 = [[1, 0, 0], [2, 1.1, 0], [0, 1.1, -1], [-1, 1.5, 0], [-1, 2, 0]];
-
 for(i = [0 : len(pts2) - 1]){
     
     color("green")
@@ -96,7 +99,7 @@ for(i = [0 : len(pts2) - 1]){
         cube(1, $fn= 50,center= true);
 }
 
-bezierCurve(10*pts2, 50, ang= [180, 0, 0])
+bezierCurve(10*pts2, 50, ang= [90, 0, 0])
     cube(1, center= true);
 */
 
@@ -108,28 +111,27 @@ bezierCurve(10*pts2, 50, ang= [180, 0, 0])
 * Return:
 *   Points to generate an arc with a Bezier curve.
 */
-function bezierArcPts(alpha, r, A, helicoide= false, H= 0.01) =
-    let(L= r*tan(alpha/4)*4/3,
+function bezierArcPts(alpha, r, A) =
+    let(L= r*tan(alpha/4)*(4/3),
         alphaP= atan(r/L),
         h= sqrt(r*r + L*L),
         a= (A.x == 0 ? r : r*r/A.x),
         b= (A.x == 0 ? L : A.y/A.x),
         yP= (a*b + sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
-        yM= (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
-        t= (helicoide ? H : 0))
+        yM= (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1))
     (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y must both be differnet than 0")       // A.x && A.y == 0 => centre du cercle
                          ) : (
-                              (A.y > 0 ? ([[-L, A.y, A.z + t], [L, A.y, A.z - t]]                       // Tests pour placer P,P' si A.x == 0
+                              (A.y > 0 ? ([[-L, A.y, A.z], [L, A.y, A.z]]                       // Tests pour placer P,P' si A.x == 0
                                      ) : (
-                                          [[L, A.y, A.z + t], [-L, A.y, A.z - t]]))))
+                                          [[L, A.y, A.z], [-L, A.y, A.z]]))))
 
-            ) : ((A.y == 0 ? ((A.x > 0 ? ([[A.x, L, A.z + t], [A.x, -L, A.z - t]]                       // Tests pour placer P,P' si A.y == 0
+            ) : ((A.y == 0 ? ((A.x > 0 ? ([[A.x, L, A.z], [A.x, -L, A.z]]                       // Tests pour placer P,P' si A.y == 0
                                      ) : (
-                                          [[A.x, -L, A.z + t], [A.x, L, A.z - t]]))
+                                          [[A.x, -L, A.z], [A.x, L, A.z]]))
                          ) : (                                                                  // Tests pour placer P,P' suivant le signe de A.x
-                              (A.x > 0 ? ([[a - b * yP, yP, A.z + t], [a - b * yM, yM, A.z - t]]
+                              (A.x > 0 ? ([[a - b * yP, yP, A.z], [a - b * yM, yM, A.z]]
                                      ) : (
-                                          [[a - b * yM, yM, A.z + t], [a - b * yP, yP, A.z - t]])))))
+                                          [[a - b * yM, yM, A.z], [a - b * yP, yP, A.z]])))))
     );
 
 /*
@@ -144,106 +146,53 @@ function bezierArcPts(alpha, r, A, helicoide= false, H= 0.01) =
 * Result:
 *   Arc from radius r and angle ang of children().
 */
-module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, p= undef, rot= false, theta= [0, 0, 0], helicoide= false){
+module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, rot= false, theta= [0, 0, 0]){
 
     assertion((0 < alpha) && (alpha < 181), "alpha must belong to ]0, 180]");
     assertion(r > 0, "r must be strictly greater than 0");
     assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
-
-   
     assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
-    
-    h = p/(2*fn);
 
-    A_ = bezierArcPts(alpha, r, A, helicoide= helicoide, H= h);
-    As = [A.x*cos(alpha) - A.y*sin(alpha), A.x*sin(alpha)+ A.y*cos(alpha), (isDef(p) ? A.z + p : A.z)];
+    A_ = bezierArcPts(alpha, r, A);
+    As = [A.x*cos(alpha) - A.y*sin(alpha), A.x*sin(alpha)+ A.y*cos(alpha), A.z];
     As_ = bezierArcPts(alpha, r, As);
 
     toDraw = [A, A_[0], As_[1], As];
-    
-    /*for(i= [0 : len(toDraw) - 1]){
+
+     // Affiche les points de contrôle
+    if($preview){
         
-        color("green")
-            mTranslate(toDraw[i])
-                children();
-    }*/
+        for(i= [0 : len(toDraw) - 1]){
+            
+            color("green")
+                mTranslate(toDraw[i])
+                    children();
+        }
+    }
 
     bezierCurve(toDraw, fn, ang= (rot ? theta : undef))
         children();
 }
+
+//bezierArcCurve(alpha= 180, fn = 50)
+//    sphere(0.1, $fn= 50);
 /*
-bezierArcCurve(alpha= 105, fn = 50)
+if($preview)
+        echo("test");
+    bezierArcCurve(alpha= 90, fn = 50, rot= true, theta=[0, 0, 90])
+    cube(0.1, center= true);*/
+//    sphere(0.1, $fn= 50);
+
+/*
+bezierArcCurve(alpha= 180, fn = 50)
     sphere(0.1, $fn= 50);
 */
+
 /*
 color("blue")
-bezierArcCurve(alpha= 180, rot= true, p= 1, theta= [0, 90, 45], fn = 50)
-    sphere(0.1, $fn= 50);
-*/
-
-/*
-* placeCircularPts(A: starting point,
-*                p: pitch report between A^A'= (180),
-*                n: number of circle turns (/top control points),
-*                k: recursion parameter)
-*
-* Return:
-*   Top control points for the circular curve. A circle is decomposed into half circles (bezierArcCurve(alpha=180))
-*/
-function placeCircularPts(A, p, n, k= 0) =
-    (k < 2*n-1 ? (concat([[A.x, A.y, p*k]*matVectRotZ(-180*k)], placeCircularPts(A, p, n, k + 1))
-         ) : (
-              [[A.x, A.y, p*k]*matVectRotZ(180*k)])
-    );
-/*
-* bezierCircularCurve(A: starting point,
-*                     r: radius of the circle,
-*                     rotNb: number of rotations,
-*                     p: pitch of a turn,
-*                     fn: number of children()/points on the curve)
-*
-* Result:
-*
- */
-module bezierCircularCurve(A= [1, 0, 0], r= 1, rotNb= 1, p= 0.5, fn= 10, helicoide= false){
-    
-    assertion(r > 0, "r must be strictly greater than 0");
-    assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
-    assertion(rotNb > 0, "rotNb must be greater than 0");
-    
-    assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
-
-    pR = p/2;
-    
-    T = placeCircularPts(A, pR, rotNb);
-    
-    t = len(T) - 1;
- 
- /*   
-    for(i= [0 : t]){
-        
-        mTranslate(T[i])  
-            children();
-    }*/
-
-    union(){
-
-        for(i= [0 : t]){
-            
-            bezierArcCurve(A= T[i], alpha= 180, r= r, fn= fn, p= pR, rot= true, theta=[0,0,180], helicoide= helicoide)
-                children();
-        }
-    }
-}
-
-//cylinder(r= 2.5, h= 2);
-bezierCircularCurve(A= [2, 0, 0],p= -0.5,r= 2, rotNb= 2, fn= 100)
-    sphere(0.1, $fn= 30);
-
-/*
-color("red")
-bezierCircularCurve(r= 5, rotNb= 3, fn= 100, helicoide= true)
-    sphere(0.1, $fn= 30);
+    bezierArcCurve(alpha= 180, rot= true, p= 1, theta= [0, 0, 0], fn = 50)
+        mRotate([0, 45,0])
+            cube(0.1, center= true);
 */
 
 //______________ TEST algo Casteljau ______________
@@ -261,10 +210,10 @@ function recPointBezierAtI(pts, t, n) =
               pts[0])
     );
 
-function pointBezierAtI(pts, t) = let(n = len(pts)) [recPointBezierAtI(pts, t, n)];
+function pointBezierAtI(pts, t) = let(n = len(pts)/*, echo(t)*/) [recPointBezierAtI(pts, t, n)];
 
 function concatBezier(pts, t, fn, k= 1) = 
-    (k < fn - 1 ? (concat(pointBezierAtI(pts, k*t), concatBezier(pts, t, fn, k + 1))
+    (k < fn - 1 ? (concat(pointBezierAtI(pts, k*t), concatBezier(pts, t, fn, k + 1)) 
            ) : (
                 pointBezierAtI(pts, k*t))
 );
@@ -279,18 +228,14 @@ module bezierCurve2(pts, fn= 10){
     
     finalPts = concat([pts[0]], concatBezier(pts, t, fn, n), [pts[n-1]]);
     
+   
     union(){
     for(i = [0 : len(finalPts) - 1]){
         
+        echo(mod(makeVector(finalPts[i],finalPts[i+1])));
         color([1,0,0])
         mTranslate(finalPts[i])
             children();
     }
       }
 }
-
-/*
-color("blue")
-bezierCurve2(10*pts, 50)
-    sphere(0.5, $fn= 50);
-*/
