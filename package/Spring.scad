@@ -31,13 +31,18 @@ module spring(A= [1,0,0], r= 1, nbTurn= 1, p= 1, fa= 1){
     }
 }
 
-module circularSpringBase(r, fn, length){
+/*
+spring(r= 1, nbTurn= 3, p= 1)
+    sphere(0.1);
+*/
+
+module circularCompressionSpringBase(r, fn, length){
     mRotate([-90,0,0])
         linear_extrude(length)
             circle(r=r, $fn=fn);
 }
 
-module circularSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTurnEnd= undef, p= 1, fa= 1, fn= 20){
+module circularCompressionSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTurnEnd= undef, p= 1, fa= 1, fn= 20){
     
     assertion(R > 0, "R must be strictly greater than 0");
     assertion(r > 0, "r must be strictly greater than 0");
@@ -58,11 +63,11 @@ module circularSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTur
             
             mTranslate(stepper(A, -i*fa, 2*r))
                 mRotate([0, 0, -i*fa])
-                    circularSpringBase(r, fn, length);
+                    circularCompressionSpringBase(r, fn, length);
             
             mTranslate(stepper(A, -(i + 1) * fa, 2*r))
                 mRotate([0, 0, -(i + 1)*fa])
-                    circularSpringBase(r, fn, length);
+                    circularCompressionSpringBase(r, fn, length);
         }
     }
     
@@ -73,28 +78,31 @@ module circularSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTur
             
             mTranslate(stepper(A, i*fa, p))
                 mRotate([0, 0, i*fa])
-                    circularSpringBase(r, fn, length);
+                    circularCompressionSpringBase(r, fn, length);
             
             mTranslate(stepper(A, (i + 1) * fa, p))
                 mRotate([0, 0, (i + 1)*fa])
-                    circularSpringBase(r, fn, length);
+                    circularCompressionSpringBase(r, fn, length);
         }
     }
     
     //Dessous
-    endIncr = (isDef(endIncr) ? (nbTurnEnd360/fa) : (nbTurnStart360/fa));
+    endIncr = (isDef(nbTurnEnd) ? (nbTurnEnd*360/fa) : (nbTurnStart*360/fa));
+    B=A + [0, 0, nbTurn*p];
     for(i=[0 : endIncr -1]){
         hull(){
             
-            mTranslate(stepper(A, -i*fa, 2*r))
-                mRotate([0, 0, -i*fa])
-                    circularSpringBase(r, fn, length);
+            mTranslate(stepper(B, i*fa, 2*r))
+                mRotate([0, 0, i*fa])
+                    circularCompressionSpringBase(r, fn, length);
             
-            mTranslate(stepper(A, -(i + 1) * fa, 2*r))
-                mRotate([0, 0, -(i + 1)*fa])
-                    circularSpringBase(r, fn, length);
+            mTranslate(stepper(B, (i + 1) * fa, 2*r))
+                mRotate([0, 0, (i + 1)*fa])
+                    circularCompressionSpringBase(r, fn, length);
         }
     }
 }
 
-circularSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
+//circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
+
+//circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
