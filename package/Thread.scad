@@ -15,7 +15,6 @@ function polyhedronAtI(ang, Pts, p, k= 0) =
     );
 
     // ISO triangular
-
 function getISOTriangularDim(D, p) = [p*sqrt(3)/2,             // H:  Hauteur théorique du filet
                                       p*15*sqrt(3)/32,         // H1: Hauteur réele du filet
                                       p*3*sqrt(3)/8,           // H2: Hauteur de filet en contact
@@ -87,11 +86,23 @@ module ISOTriangularThreadMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
         }
 }
 
-module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], gap= 0, center= false){
+/*
+* module ISOTriangularThread(D: thread diameter,
+*                            p: thread Pitch,
+*                            h: thread height,
+*                            fa: angular accuracy between each sub-module,
+*                            pos: position to place the thread,
+*                            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                            gap: gap to be applied to the initial position of the thread on the X axis,
+*                            center: if true center the thread)
+*/
+module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
-        ISOTriangularThreadMod(D, p, h, fa, gap);
+        mRotate(rot)
+            ISOTriangularThreadMod(D, p, h, fa, gap);
 }
 /*
 D = 20;
@@ -174,9 +185,21 @@ module ISOTriangularThreadTapMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
         }
 }
 
-module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], gap= 0, center= false){
+/*
+* module ISOTriangularThreadTap(D: thread tap diameter,
+*                               p: thread tap Pitch,
+*                               h: thread tap height,
+*                               fa: angular accuracy between each sub-module,
+*                               pos: position to place the thread tap,
+*                               rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                               gap: gap to be applied to the initial position of the thread tap on the X axis,
+*                               center: if true center the thread)
+*/
+module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
+        mRotate(rot)
             ISOTriangularThreadTapMod(D, p, h, fa, gap);
 }
 /*
