@@ -139,6 +139,7 @@ function bezierArcPts(alpha, r, A) =
 *                alpha: angle of the arc, ]0, 180],
 *                r: radius of the arc,
 *                fn: number of children()/points on the curve,
+*                pos: position to set the center of the curve,
 *                p: pitch between A.z and A'.z, if undef A and A' are on the XY plan
 *                rot: rotations [rotX, rotY, rotZ], applied between the first children and the last one, if undef no rotation applied,
 *                theta: if rot, apply theta angle for the rotations of children(), default to [0, 0, 0])
@@ -146,9 +147,9 @@ function bezierArcPts(alpha, r, A) =
 * Result:
 *   Arc from radius r and angle ang of children().
 */
-module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, rot= false, theta= [0, 0, 0]){
+module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot= false, theta= [0, 0, 0]){
 
-    assertion((0 < alpha) && (alpha < 181), "alpha must belong to ]0, 180]");
+    assertion((-181 < alpha) && (alpha < 181), "alpha must belong to ]0, 180]");
     assertion(r > 0, "r must be strictly greater than 0");
     assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
     assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
@@ -165,17 +166,19 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, rot= false, theta= 
         for(i= [0 : len(toDraw) - 1]){
             
             color("green")
-                mTranslate(toDraw[i])
+                mTranslate(toDraw[i] + pos)
                     children();
         }
     }
 
-    bezierCurve(toDraw, fn, ang= (rot ? theta : undef))
-        children();
+
+    mTranslate(pos)
+        bezierCurve(toDraw, fn, ang= (rot ? theta : undef))
+            children();
 }
 
-//bezierArcCurve(alpha= 180, fn = 50)
-//    sphere(0.1, $fn= 50);
+//bezierArcCurve(pos = [0, -1, 0],alpha= 90, fn = 10)
+//    sphere(0.1, $fn= 10);
 /*
 if($preview)
         echo("test");
