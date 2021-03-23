@@ -88,7 +88,7 @@ module ISOTriangularThreadMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 
 /*
 * module ISOTriangularThread(D: thread diameter,
-*                            p: thread Pitch,
+*                            p: thread pitch,
 *                            h: thread height,
 *                            fa: angular accuracy between each sub-module,
 *                            pos: position to place the thread,
@@ -98,12 +98,13 @@ module ISOTriangularThreadMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 *                            center: if true center the thread)
 */
 module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
-
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
             ISOTriangularThreadMod(D, p, h, fa, gap);
 }
+
+//ISOTriangularThread(D= 4, p= 0.7, h= 5, fa= 4, rot= ROT_Lft);
 /*
 D = 20;
 fa = 10;
@@ -202,6 +203,8 @@ module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= RO
         mRotate(rot)
             ISOTriangularThreadTapMod(D, p, h, fa, gap);
 }
+
+//ISOTriangularThreadTap(D= 4, p= 0.7, h= 5, fa= 4);
 /*
 D= 6;
 fa= 20;
