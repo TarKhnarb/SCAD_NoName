@@ -368,7 +368,7 @@ module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, c
     }
 }
 
-chamferCylinder(chamferAng= 20,center= true);
+//chamferCylinder(chamferAng= 20,center= true);
 
 //chamferCylinder(r= 2,chamferAng= 20);
 

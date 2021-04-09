@@ -3,19 +3,22 @@
         Constants allowing the placement of pieces
 */
 
+    // Orientation
+HORIZONTAL  = [123];    // Arbitrary values
+VERTICAL    = [-123];
+
     // Vectors
-TRANS_Null = [0, 0, 0];
-TRANS_Top = [0, 0, 1];
-TRANS_Bot = [0, 0, -1];
-TRANS_Frt = [0, -1, 0];
-TRANS_Back = [0, 1, 0];
-TRANS_Rgt = [1, 0, 0];
-TRANS_Lft = [-1, 0, 0];
+TRANS_Null   = [0, 0, 0];
+TRANS_Top    = [0, 0, 1];
+TRANS_Bot    = [0, 0, -1];
+TRANS_Frt    = [0, -1, 0];
+TRANS_Back   = [0, 1, 0];
+TRANS_Rgt    = [1, 0, 0];
+TRANS_Lft    = [-1, 0, 0];
 TRANS_AllPos = [1, 1, 1];
 TRANS_AllNeg = [-1, -1, -1];
 
-// Rotations
-
+    // Rotations
 ROT_Top     = [0,   0,   0];
 ROT_Bot     = [180, 0,   0];
 ROT_Frt     = [90,  0,   0];

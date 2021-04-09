@@ -177,6 +177,8 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot
             children();
 }
 
+
+
 //bezierArcCurve(pos = [0, -1, 0],alpha= 90, fn = 10)
 //    sphere(0.1, $fn= 10);
 /*
@@ -193,7 +195,7 @@ bezierArcCurve(alpha= 180, fn = 50)
 
 /*
 color("blue")
-    bezierArcCurve(alpha= 180, rot= true, p= 1, theta= [0, 0, 0], fn = 50)
+    bezierArcCurve(alpha= 180, rot= true, theta= [0, 0, 0], fn = 50)
         mRotate([0, 45,0])
             cube(0.1, center= true);
 */
