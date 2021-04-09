@@ -140,64 +140,72 @@ module circularCompressionSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStar
     circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
 */
 
-function spiralPoints(A, r, i)= [[A.x - r - i*4*r,   A.y,                A.z],
-                                 [A.x,               A.y + 2*r + i*4*r,    A.z],
-                                 [A.x + 3*r + i*4*r, A.y,            A.z],
-                                 [A.x,           A.y + (-4)*r*(1+i), A.z]];
+function spiralPoints(A, r, i)= [[A.x - r - i*4*r,      A.y,                A.z],
+                                 [A.x,                  A.y + 2*r + i*4*r,  A.z],
+                                 [A.x + 3*r + i*4*r,    A.y,                A.z],
+                                 [A.x,                  A.y + (-4)*r*(1+i), A.z]];
 
 function spiralCenters(A, r)= [[A.x,     A.y,     A.z],
-                               [A.x,     A.y - r, A.z],
-                               [A.x - r, A.y - r, A.z],
-                               [A.x - r, A.y,     A.z]];
+                                    [A.x,     A.y - r, A.z],
+                                    [A.x - r, A.y - r, A.z],
+                                    [A.x - r, A.y,     A.z]];
 
-module baseSpiral(A, nbTurn, r, fn){
+module baseSpiral(A, nbTurn, r, fn, dir){
+
     union(){
-        union(){
-            center= spiralCenters(A, r);
 
+        union(){
+
+            center= spiralCenters(A, r);
             for(i= [0 : nbTurn - 1]){
-                pts= spiralPoints(A, r, i);
-                echo(r + i*4*r, pts[0], center[0]);
-                bezierArcCurve(A= pts[0], alpha= -90, r= r + i*4*r, fn=fn, pos= center[0])
+
+                pts = spiralPoints(A, r, i);
+                bezierArcCurve(A= pts[0], alpha= dir*90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, dir*90])
                     children();
-                echo(2*r + i*4*r, pts[1], center[1]);
-                bezierArcCurve(A= pts[1], alpha= -90, r= 2*r + i*4*r, fn=fn, pos= center[1])
+
+                bezierArcCurve(A= pts[1], alpha= dir*90, r= (2*r + i*4*r), fn= fn, pos= center[1], rot= true, theta= [0, 0, dir*90])
                     children();
-                echo(3*r + i*4*r, pts[2], center[2]);
-                bezierArcCurve(A= pts[2], alpha= -90, r= 3*r + i*4*r, fn=fn, pos= center[2])
+
+                bezierArcCurve(A= pts[2], alpha= dir*90, r= (3*r + i*4*r), fn= fn, pos= center[2], rot= true, theta= [0, 0, dir*90])
                     children();
-                echo((1 + i)*4*r, pts[3], center[3]);
-                bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn=fn, pos= center[3])
+
+                bezierArcCurve(A= pts[3], alpha= dir*90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, dir*90])
                     children();
             }
         }
     }
 }
 
-module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, pos= [0,0,0], rot= ROT_Top, fn= 20) {
-    assertion($children==1, "this module requires a minimum of one sub-objects(/'children()')");
-    assertion((len(A)==3), "The lenght of A should be equal to 3");
+module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top, fn= 20){
+    
+    assertion($children == 1, "this module requires a minimum of one sub-objects(/'children()')");
+    assertion((len(A) == 3), "The lenght of A should be equal to 3");
     assertion(nbTurn > 0, "nbTurn should be greater than 0");
     assertion(!(isDef(r) && isDef(p)) || !(isUndef(r) && isUndef(p)), "Only one of the parameters (r, p) should be defined");
-    assertion((len(pos)==3), "The lenght of pos should be equal to 3");
-    assertion((len(rot)==3), "The lenght of rot should be equal to 3");
+    assertion((len(pos) == 3), "The lenght of pos should be equal to 3");
+    assertion((len(rot) == 3), "The lenght of rot should be equal to 3");
+    assertion((direction == CLOCKWIRE) || (direction == ANTICLOCKWIRE), "The direction shoulb only be CLOCKWIRE or ANTICLOCKWIRE");
     
     mTranslate(pos)
         mRotate(rot){
+            
             if(isDef(r)){
+                
                 assertion(r > 0, "r should be greater than 0");
             
-                baseSpiral(A, nbTurn, r, fn)
+                baseSpiral(A, nbTurn, r, fn, direction[0])
                     children();
             }
-            else {
+            else{
+                
                 assertion(p > 0, "p should be greater than 0");
 
-                baseSpiral(A, nbTurn, p/4, fn)
+                baseSpiral(A, nbTurn, p/4, fn, direction[0])
                     children();
             }
         }
 }
 
-spiral(nbTurn= 10, r= 0.04)
-    sphere(0.01, $fn= 20);
+spiral(nbTurn= 5, r= 0.04)
+    cube(0.01, center= true);
+//    sphere(0.01, $fn= 20);

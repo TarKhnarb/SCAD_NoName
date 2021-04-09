@@ -2,6 +2,9 @@
     constants.scad
         Constants allowing the placement of pieces
 */
+    // Rotation direction
+CLOCKWIRE = [-1];
+ANTICLOCKWIRE = [1];
 
     // Orientation
 HORIZONTAL  = [123];    // Arbitrary values

@@ -425,7 +425,7 @@ module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], gap= 0, 
             trapezoidalThreadTapmod(D, p, h, fa, gap);      
 }
 
-trapezoidalThreadTap(D= 6, p=1, h=4, fa= 10);
+//trapezoidalThreadTap(D= 6, p=1, h=5, fa= 10);
 /*
 union(){
     
@@ -591,7 +591,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
             }
 }
 /*
-knurling(h= 1, ang= 35, moduleNb= 10, p = 0.4, fa= 20){
+knurling(h= 1, ang= 35, moduleNb= 10, p = 0.4, fa= 10){
 
     mTranslate([0, 0, 0.1])
     cylinder(r= 1, h=1, $fn= 360/10);
@@ -600,6 +600,7 @@ knurling(h= 1, ang= 35, moduleNb= 10, p = 0.4, fa= 20){
 
 mTranslate([1, 0, 0]) rotX(35) cube(0.1);
 */
+
 /*
 knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
     
@@ -608,7 +609,7 @@ knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
 }
 */
 /*
-knurling(r= 1, h= 1, p= 0.2, orient= HORIZONTAL, moduleNb= 4, fa= 10){
+knurling(r= 1, h= 1, p= 0.5, orient= HORIZONTAL, moduleNb= 6, fa= 10){
     
     cylinder(r= 1, $fn= 30);
     mTranslate([-0.025, -0.025, 0]) cube(0.05);
