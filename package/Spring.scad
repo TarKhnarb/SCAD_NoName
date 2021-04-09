@@ -27,24 +27,26 @@ module helicoid(A= [1,0,0], r= 1, nbTurn= 1, p= 1, fa= 1){
     assertion((360%fa)==0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
     
     iMax= nbTurn*360/fa;
-    for(i=[0 : iMax - 1]){
-        
-        hull(){
+    union(){
+        for(i=[0 : iMax - 1]){
             
-            mTranslate(stepper(A, i*fa, p))
-                mRotate([0, 0, i*fa])
-                    children();
-            
-            mTranslate(stepper(A, (i + 1) * fa, p))
-                mRotate([0, 0, (i + 1)*fa])
-                    children();
+            hull(){
+                
+                mTranslate(stepper(A, i*fa, p))
+                    mRotate([0, 0, i*fa])
+                        children();
+                
+                mTranslate(stepper(A, (i + 1) * fa, p))
+                    mRotate([0, 0, (i + 1)*fa])
+                        children();
+            }
         }
     }
 }
 
 /*
-*  helicoid(r= 1, nbTurn= 3, p= 1)
-*      sphere(0.1);
+    helicoid(r= 1, nbTurn= 3, p= 1)
+        sphere(0.1);
 */
 
 module circularCompressionSpringBase(r, fn, length){
@@ -81,56 +83,121 @@ module circularCompressionSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStar
     assertion((isDef(nbTurnEnd) ? (nbTurnEnd > 0) : (true)), "nbTurnEnd must be stricly greater than 0"); 
     
     length= (R-r)*tan(fa);
-    
-    //Dessus
     startIncr = nbTurnStart*360/fa;
-    for(i=[0 : startIncr -1]){
-        hull(){
-            
-            mTranslate(stepper(A, -i*fa, 2*r))
-                mRotate([0, 0, -i*fa])
-                    circularCompressionSpringBase(r, fn, length);
-            
-            mTranslate(stepper(A, -(i + 1) * fa, 2*r))
-                mRotate([0, 0, -(i + 1)*fa])
-                    circularCompressionSpringBase(r, fn, length);
-        }
-    }
-    
     middleIncr = nbTurn*360/fa;
-    for(i=[0 : middleIncr - 1]){
-        
-        hull(){
-            
-            mTranslate(stepper(A, i*fa, p))
-                mRotate([0, 0, i*fa])
-                    circularCompressionSpringBase(r, fn, length);
-            
-            mTranslate(stepper(A, (i + 1) * fa, p))
-                mRotate([0, 0, (i + 1)*fa])
-                    circularCompressionSpringBase(r, fn, length);
-        }
-    }
-    
-    //Dessous
     endIncr = (isDef(nbTurnEnd) ? (nbTurnEnd*360/fa) : (nbTurnStart*360/fa));
     B=A + [0, 0, nbTurn*p];
-    for(i=[0 : endIncr -1]){
-        hull(){
+
+    union(){
+        //Bottom
+        for(i=[0 : startIncr -1]){
+            hull(){
+                
+                mTranslate(stepper(A, -i*fa, 2*r))
+                    mRotate([0, 0, -i*fa])
+                        circularCompressionSpringBase(r, fn, length);
+                
+                mTranslate(stepper(A, -(i + 1) * fa, 2*r))
+                    mRotate([0, 0, -(i + 1)*fa])
+                        circularCompressionSpringBase(r, fn, length);
+            }
+        }
+        
+        //Middle
+        for(i=[0 : middleIncr - 1]){
             
-            mTranslate(stepper(B, i*fa, 2*r))
-                mRotate([0, 0, i*fa])
-                    circularCompressionSpringBase(r, fn, length);
-            
-            mTranslate(stepper(B, (i + 1) * fa, 2*r))
-                mRotate([0, 0, (i + 1)*fa])
-                    circularCompressionSpringBase(r, fn, length);
+            hull(){
+                
+                mTranslate(stepper(A, i*fa, p))
+                    mRotate([0, 0, i*fa])
+                        circularCompressionSpringBase(r, fn, length);
+                
+                mTranslate(stepper(A, (i + 1) * fa, p))
+                    mRotate([0, 0, (i + 1)*fa])
+                        circularCompressionSpringBase(r, fn, length);
+            }
+        }
+        
+        //Top
+        for(i=[0 : endIncr -1]){
+            hull(){
+                
+                mTranslate(stepper(B, i*fa, 2*r))
+                    mRotate([0, 0, i*fa])
+                        circularCompressionSpringBase(r, fn, length);
+                
+                mTranslate(stepper(B, (i + 1) * fa, 2*r))
+                    mRotate([0, 0, (i + 1)*fa])
+                        circularCompressionSpringBase(r, fn, length);
+            }
         }
     }
 }
 /*
-*   circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
+    circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
 */
 /*
-*   circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
+    circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
 */
+
+function spiralPoints(A, r, i)= [[A.x - r - i*4*r,   A.y,                A.z],
+                                 [A.x,               A.y + 2*r + i*4*r,    A.z],
+                                 [A.x + 3*r + i*4*r, A.y,            A.z],
+                                 [A.x,           A.y + (-4)*r*(1+i), A.z]];
+
+function spiralCenters(A, r)= [[A.x,     A.y,     A.z],
+                               [A.x,     A.y - r, A.z],
+                               [A.x - r, A.y - r, A.z],
+                               [A.x - r, A.y,     A.z]];
+
+module baseSpiral(A, nbTurn, r, fn){
+    union(){
+        union(){
+            center= spiralCenters(A, r);
+
+            for(i= [0 : nbTurn - 1]){
+                pts= spiralPoints(A, r, i);
+                echo(r + i*4*r, pts[0], center[0]);
+                bezierArcCurve(A= pts[0], alpha= -90, r= r + i*4*r, fn=fn, pos= center[0])
+                    children();
+                echo(2*r + i*4*r, pts[1], center[1]);
+                bezierArcCurve(A= pts[1], alpha= -90, r= 2*r + i*4*r, fn=fn, pos= center[1])
+                    children();
+                echo(3*r + i*4*r, pts[2], center[2]);
+                bezierArcCurve(A= pts[2], alpha= -90, r= 3*r + i*4*r, fn=fn, pos= center[2])
+                    children();
+                echo((1 + i)*4*r, pts[3], center[3]);
+                bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn=fn, pos= center[3])
+                    children();
+            }
+        }
+    }
+}
+
+module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, pos= [0,0,0], rot= ROT_Top, fn= 20) {
+    assertion($children==1, "this module requires a minimum of one sub-objects(/'children()')");
+    assertion((len(A)==3), "The lenght of A should be equal to 3");
+    assertion(nbTurn > 0, "nbTurn should be greater than 0");
+    assertion(!(isDef(r) && isDef(p)) || !(isUndef(r) && isUndef(p)), "Only one of the parameters (r, p) should be defined");
+    assertion((len(pos)==3), "The lenght of pos should be equal to 3");
+    assertion((len(rot)==3), "The lenght of rot should be equal to 3");
+    
+    mTranslate(pos)
+        mRotate(rot){
+            if(isDef(r)){
+                assertion(r > 0, "r should be greater than 0");
+            
+                baseSpiral(A, nbTurn, r, fn)
+                    children();
+            }
+            else {
+                assertion(p > 0, "p should be greater than 0");
+
+                baseSpiral(A, nbTurn, p/4, fn)
+                    children();
+            }
+        }
+}
+
+spiral(nbTurn= 10, r= 0.04)
+    sphere(0.01, $fn= 20);
