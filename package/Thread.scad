@@ -465,25 +465,18 @@ function knurlStepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
 
 module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 10, pos= [0, 0, 0], rot= ROT_Top){
 
-    assertion($children == 2, "You must first pass the part to be knurled and then the shape to be repeated for knurling");
+    assertion($children == 2, "You should first pass the part to be knurled and then the shape to be repeated for knurling");
     assertion(!(isDef(ang) && isDef(orient)), "You cannot set diamond and linear knurling at the same time");
-    assertion((len(pos) == 3), "You must given a 3D vector according [X, Y, Z]");
-    assertion((h >= p), "The pitch must be smaller than or equal to the height");
-    assertion((0 < fa) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-//    assertion((moduleNb % 2 == 0), "The number of knurling grooves must be an even number");    
-
-    if(isDef(ang)){
-
-        assertion(((ang != 30) || (ang != 45)), "The angle of the diamond knurl must be 30 or 45°");
-    }
+    assertion((len(pos) == 3), "You should given a 3D vector according [X, Y, Z]");
+    assertion((h >= p), "The pitch should be smaller than or equal to the height");
+    assertion((0 < fa) && (fa < 180), "fa should be within the following interval : [-180, 0[ U ]0, 180[");
 
     if(isDef(orient)){
 
-        assertion(((orient != VERTICAL) || (orient != HORIZONTAL)), "The orient of the linear knurl must be HORIZONTAL or VERTICAL");
+        assertion(((orient != VERTICAL) || (orient != HORIZONTAL)), "The orient of the linear knurl should be HORIZONTAL or VERTICAL");
     }
 
     A = [r, 0, 0];
-  //  fn = 360/moduleNb;
 
     mTranslate(pos)
         mRotate(rot)
@@ -493,45 +486,38 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
 
                 if(isDef(ang)){
 
-                    assertion((360 % moduleNb == 0), "The remainder of the Euclidean division of 360 per moduleNb must be equal to 0");
+                    assertion(((20 <= ang) || (ang <= 60)), "The angle of the diamond knurl should be between 20 and 60°");
+                    assertion((360 % moduleNb == 0), "The remainder of the Euclidean division of 360 per moduleNb should be equal to 0");
                     
                     rotAng = 360/moduleNb;
                     
-                    l = mod(makeVector(A, [r*cos(fa), r*sin(fa), 0])); //2*r*sin(fa/2);      // Pose problème.
+                    l = 2*r*sin(fa/2);
                     fn = 360/fa;
                     length = l*tan(ang);
-                    p = fn*length;
-                    nbTurn = h/p;
+                    pa = fn*length;
+                    nbTurn = h/pa;
                     iMax = nbTurn*fn;
-                    /*
-                    
-                    fn = 360/fa;    // nb de rep/tours
-                    nbTurn = h/p;
-                    iMax = nbTurn*fn;
-                    length = h/
-                    */
-                    echo(rotAng, length, nbTurn, fn, iMax);
-                    #union(){
 
+                    echo(rotAng, length, nbTurn, fn, iMax);
+                    union(){
+                    
                         for(i= [0 : moduleNb - 1]){
 
                             k = pow(-1, i);
                             rotZ(i*rotAng)
                             union(){
-                                for(j= [0 : iMax]){
+                                for(j= [0 : iMax - 1]){
 
                                     hull(){
 
-                                        mTranslate(knurlStepper(A, k*j*fa, p))
+                                        mTranslate(knurlStepper(A, k*j*fa, pa))
                                             rotZ(k*j*fa)
-                                            rotX(k*ang)
-//                                            mRotate([k*ang, 0, k*j*fa])
+                                                rotX(k*ang)
                                                 children(1);
 
-                                        mTranslate(knurlStepper(A, k*(j + 1)*fa, p))
+                                        mTranslate(knurlStepper(A, k*(j + 1)*fa, pa))
                                             rotZ(k*(j + 1)*fa)
-                                            rotX(k*ang)
-//                                            mRotate([k*ang, 0, k*(j + 1)*fa])
+                                                rotX(k*ang)
                                                 children(1);
                                     }
                                 }
@@ -590,16 +576,17 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                 }
             }
 }
-/*
-knurling(h= 1, ang= 35, moduleNb= 10, p = 0.4, fa= 10){
 
-    mTranslate([0, 0, 0.1])
+
+knurling(h= 1.2, ang= 30, moduleNb= 10, p = 0.4, fa= 5){
+
+//    mTranslate([0, 0, 0.05])
     cylinder(r= 1, h=1, $fn= 360/10);
     mTranslate([0.01, 0, 0])rotZ(90)rotX(45)cube([0.001, 0.1, 0.1], center= true);
 }
 
-mTranslate([1, 0, 0]) rotX(35) cube(0.1);
-*/
+color("red")
+mTranslate([1, 0, 0]) rotX(30) cube(0.1);
 
 /*
 knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
