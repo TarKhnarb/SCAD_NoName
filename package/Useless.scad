@@ -44,3 +44,48 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 50, edges= [EDGE_Top, EDGE_Bot]
         }
     }
 }
+
+
+//______________ TEST algo Casteljau ______________
+function linearCombination(A, B, u, v) = A*u + B*v;
+
+function linearInterpolation(A, B, t) = linearCombination(A, B, t, 1 - t);
+
+function reduction(pts, t) = [for(i= [0 : len(pts) - 2])
+                                linearInterpolation(pts[i], pts[i + 1], 1 - t)];
+
+function recPointBezierAtI(pts, t, n) =
+    (n > 1 ? (recPointBezierAtI(reduction(pts, t), t, n-1)
+         ) : (
+              pts[0])
+    );
+
+function pointBezierAtI(pts, t) = let(n = len(pts)/*, echo(t)*/) [recPointBezierAtI(pts, t, n)];
+
+function concatBezier(pts, t, fn, k= 1) =
+    (k < fn - 1 ? (concat(pointBezierAtI(pts, k*t), concatBezier(pts, t, fn, k + 1))
+              ) : (
+                   pointBezierAtI(pts, k*t))
+    );
+
+module bezierCurve2(pts, fn= 10){
+
+    assertion(1 < fn, "nbSegment must be greater than 1");
+    assertion(len(pts) > 1, "You must give at least two points");
+
+    n = len(pts);
+    t = 1/fn;
+
+    finalPts = concat([pts[0]], concatBezier(pts, t, fn, n), [pts[n-1]]);
+
+
+    union(){
+        for(i = [0 : len(finalPts) - 1]){
+
+            echo(mod(makeVector(finalPts[i],finalPts[i+1])));
+            color([1,0,0])
+                mTranslate(finalPts[i])
+                children();
+        }
+    }
+}

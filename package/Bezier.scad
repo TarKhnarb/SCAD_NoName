@@ -41,11 +41,13 @@ module bezierCurve(pts, fn= 10, ang= undef){
 
     n = len(pts) - 1;
 
-    assertion(1 < fn, "nbSegment must be greater than 1");
-    assertion(n > 0, "You must give at least two points");
+    assertion(1 < fn, "nbSegment should be greater than 1");
+    assertion(n > 0, "You should give at least two points");
+    assertion(len($children) == 1, "You should give a single 'children()'");
+
     if(isDef(ang)){
         
-        assertion(len(ang) == 3, "ang must correspond to the following vector [angX, angY, angZ]");
+        assertion(len(ang) == 3, "ang should correspond to the following vector [angX, angY, angZ]");
     }
 
     t = 1/fn;
@@ -53,7 +55,7 @@ module bezierCurve(pts, fn= 10, ang= undef){
     
     if($preview){
         
-        for(i= [0 : len(pts) - 1]){
+        for(i= [0 : n]){
             
             color("green")
                 mTranslate(pts[i])
@@ -65,20 +67,18 @@ module bezierCurve(pts, fn= 10, ang= undef){
 
         hull() {
 
-            mTranslate(pointBezier(pts, n, i * t))
-            mRotate(rot * i)
-            children();
+            mTranslate(pointBezier(pts, n, i*t))
+                mRotate(rot*i)
+                    children();
             
-            mTranslate(pointBezier(pts, n, (i + 1) * t))
-            mRotate(rot * (i + 1))
-            children();
+            mTranslate(pointBezier(pts, n, (i + 1)*t))
+                mRotate(rot*(i + 1))
+                    children();
         }
     }
 }
 
-
 pts = [[0,-2,0], [-2,-5,10], [3,9,2], [6,3,1], [-3,-1,2], [3,-2,1.5]];
-
 /*
 for(i = [0 : len(pts) - 1]){
     
@@ -86,9 +86,6 @@ for(i = [0 : len(pts) - 1]){
     mTranslate(2*pts[i])
         cube(1, $fn= 50,center= true);
 }*/
-
-
-
 
 pts2 = [[1, 0, 0], [1, 1.1, 0], [0, 1.1, 0], [-1, 1.5, 0], [-1, 2, 0]];
 /*
@@ -119,7 +116,7 @@ function bezierArcPts(alpha, r, A) =
         b= (A.x == 0 ? L : A.y/A.x),
         yP= (a*b + sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
         yM= (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1))
-    (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y must both be differnet than 0")       // A.x && A.y == 0 => centre du cercle
+    (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y should both be differnet than 0")       // A.x && A.y == 0 => centre du cercle
                          ) : (
                               (A.y > 0 ? ([[-L, A.y, A.z], [L, A.y, A.z]]                       // Tests pour placer P,P' si A.x == 0
                                      ) : (
@@ -129,13 +126,13 @@ function bezierArcPts(alpha, r, A) =
                                      ) : (
                                           [[A.x, -L, A.z], [A.x, L, A.z]]))
                          ) : (                                                                  // Tests pour placer P,P' suivant le signe de A.x
-                              (A.x > 0 ? ([[a - b * yP, yP, A.z], [a - b * yM, yM, A.z]]
+                              (A.x > 0 ? ([[a - b*yP, yP, A.z], [a - b*yM, yM, A.z]]
                                      ) : (
-                                          [[a - b * yM, yM, A.z], [a - b * yP, yP, A.z]])))))
+                                          [[a - b*yM, yM, A.z], [a - b*yP, yP, A.z]])))))
     );
 
 /*
-* bezierArcCurve(A: starting point (it must belong to the circle of center= [0, 0, A.z (+ p)] and radius= r, must be different from [0, 0, A.z]),
+* bezierArcCurve(A: starting point (it should belong to the circle of center= [0, 0, A.z (+ p)] and radius= r, should be different from [0, 0, A.z]),
 *                alpha: angle of the arc, ]0, 180],
 *                r: radius of the arc,
 *                fn: number of children()/points on the curve,
@@ -149,10 +146,10 @@ function bezierArcPts(alpha, r, A) =
 */
 module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot= false, theta= [0, 0, 0]){
 
-    assertion((-181 < alpha) && (alpha < 181), "alpha must belong to ]0, 180]");
-    assertion(r > 0, "r must be strictly greater than 0");
-    assertion(A != TRANS_Null, "'A' must be different than the center of the cicle ([0,0,0])");
-    assertion(abs(mod([A.x, A.y])) == r, "A must belong to the circle of radius r");
+    assertion((-181 < alpha) && (alpha < 181), "alpha should belong to ]0, 180]");
+    assertion(r > 0, "r should be strictly greater than 0");
+    assertion(A != TRANS_Null, "'A' should be different than the center of the cicle ([0,0,0])");
+    assertion(abs(mod([A.x, A.y])) == r, "A should belong to the circle of radius r");
 
     A_ = bezierArcPts(alpha, r, A);
     As = [A.x*cos(alpha) - A.y*sin(alpha), A.x*sin(alpha)+ A.y*cos(alpha), A.z];
@@ -177,8 +174,6 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot
             children();
 }
 
-
-
 //bezierArcCurve(pos = [0, -1, 0],alpha= 90, fn = 10)
 //    sphere(0.1, $fn= 10);
 /*
@@ -200,47 +195,103 @@ color("blue")
             cube(0.1, center= true);
 */
 
-//______________ TEST algo Casteljau ______________
-function linearCombination(A, B, u, v) = A*u + B*v;
-
-function linearInterpolation(A, B, t) = linearCombination(A, B, t, 1 - t);
-
-function reduction(pts, t) = 
-    [for(i= [0 : len(pts) - 2]) 
-        linearInterpolation(pts[i], pts[i + 1], 1 - t)];
-
-function recPointBezierAtI(pts, t, n) =
-    (n > 1 ? (recPointBezierAtI(reduction(pts, t), t, n-1)
-         ) : (
-              pts[0])
+function sumParametricPoint(M, n, m, u, v, i, j= 0) =
+    ((j < m) ? (bernstein(i, n, u)*bernstein(j, m, v)*M[i][j] + sumParametricPoint(M, n, m, u, v, i, j + 1)
+           ) : (
+                bernstein(i, n, u)*bernstein(j, m, v)*M[i][j])
     );
 
-function pointBezierAtI(pts, t) = let(n = len(pts)/*, echo(t)*/) [recPointBezierAtI(pts, t, n)];
-
-function concatBezier(pts, t, fn, k= 1) = 
-    (k < fn - 1 ? (concat(pointBezierAtI(pts, k*t), concatBezier(pts, t, fn, k + 1)) 
+function parametricPoint(M, n, m, u, v, i= 0) =
+    ((i < n) ? (sumParametricPoint(M, n, m, u, v, i) + parametricPoint(M, n, m, u, v, i + 1)
            ) : (
-                pointBezierAtI(pts, k*t))
-);
+                sumParametricPoint(M, n, m, u, v, i))
+    );
 
-module bezierCurve2(pts, fn= 10){
+/*
+* bezierSurface(M: matrix of control points (should be at least a square matrix of order 2),
+*               U: accuracy between two points in a row of the matrix M, should be within ]0, 1[,
+*               V: accuracy between two points in a column of the matrix M, should be within ]0, 1[,
+*               fn: number of children()/points on the curve)
+*
+* Result:
+*   Bezier surface according M and children()
+*/
+module bezierSurface(M, U= undef, V= undef, fn= 10){
 
-    assertion(1 < fn, "nbSegment must be greater than 1");
-    assertion(len(pts) > 1, "You must give at least two points");
+    n = len(M) - 1;
+    m = len(M[0]) - 1;
 
-    n = len(pts);
-    t = 1/fn;
-    
-    finalPts = concat([pts[0]], concatBezier(pts, t, fn, n), [pts[n-1]]);
-    
-   
-    union(){
-    for(i = [0 : len(finalPts) - 1]){
-        
-        echo(mod(makeVector(finalPts[i],finalPts[i+1])));
-        color([1,0,0])
-        mTranslate(finalPts[i])
-            children();
+    assertion(1 < fn, "nbSegment should be greater than 1");
+    assertion(n > 0, "You should give at least two rows in the matrix M");
+    assertion(m > 0, "You should give at least two columns in the matrix M");
+    assertion($children == 1, "You should give a single 'children()'");
+
+    if(isDef(U)){
+
+        assertion((0 < U) && (U < 1), "U should be within ]0, 1[");
     }
-      }
+
+    if(isDef(V)){
+
+        assertion((0 < V) && (V < 1), "V should be within ]0, 1[");
+    }
+
+    for(i= [1 : n]){
+
+        assertion((len(M[i]) - 1) == m, "The matrix passed as parameter isn't correct, please check that it is consistent");
+    }
+
+    u = (isDef(U) ? U : 1/fn);
+    v = (isDef(V) ? V : 1/fn);
+
+    fu = (isDef(U) ? 1/U : undef);
+    fv = (isDef(V) ? 1/V : undef);
+
+    if($preview){
+
+        for(i= [0 : n]){
+
+            for(j = [0 : m]){
+
+                color("green")
+                    mTranslate(M[i][j])
+                        children();
+            }
+        }
+    }
+
+        // TODO voir si ce n'est pas plus interessant de faire la construction via des surface de Bezier triangulaire
+    for(i= (isDef(fu) ? [0 : fu - 1] : [0 : fn - 1])){
+
+        for(j= (isDef(fv) ? [0 : fv - 1] : [0 : fn - 1])) {
+
+            hull(){
+
+                mTranslate(parametricPoint(M, n, m, i*u, j*v))
+                children();
+
+
+                mTranslate(parametricPoint(M, n, m, i*u, (j + 1)*v))
+                children();
+
+
+                mTranslate(parametricPoint(M, n, m, (i + 1)*u, j*v))
+                children();
+
+
+                mTranslate(parametricPoint(M, n, m, (i + 1)*u, (j + 1)*v))
+                children();
+            }
+        }
+    }
 }
+
+matrix= [[[-1,   1,  1],     [0, 1,  0.5],   [1, 1,  -1]],
+         [[-1,   0,  0],     [0, 0,  1],     [1, 0,  0.5]],
+         [[-1,   -1, -1],    [0, -1, -1.5],  [1, -1, -0.5]]];
+/*
+bezierSurface(M= matrix,fn= 20)
+    sphere(0.1, $fn= 20);
+*/
+bezierSurface(M= matrix, U= 0.2, V= 0.5)
+    sphere(0.1, $fn= 20);

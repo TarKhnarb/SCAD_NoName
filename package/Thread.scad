@@ -322,16 +322,28 @@ module trapezoidalThreadmod(D= 1, p= 0.2, h= 1, fa= 1, gap= 0){
         }
 }
 
-module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], gap= 0, center= false){
+/*
+* module trapezoidalThread(D: thread tap diameter,
+*                          p: thread tap Pitch,
+*                          h: thread tap height,
+*                          fa: angular accuracy between each sub-module,
+*                          pos: position to place the thread tap,
+*                          rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                               [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                          gap: gap to be applied to the initial position of the thread tap on the X axis,
+*                          center: if true center the thread)
+*/
+module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
+        mRotate(rot)
             trapezoidalThreadmod(D, p, h, fa, gap);
            
 }
 
 
-//trapezoidalThread(fa= 10, p = 0.4);
+//trapezoidalThread(fa= 10, p = 0.4, rot= ROT_Bot);
 /*
 difference(){
     
@@ -418,10 +430,22 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
         }
 }
 
-module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], gap= 0, center= false){
+/*
+* module trapezoidalThreadTap(D: thread tap diameter,
+*                             p: thread tap Pitch,
+*                             h: thread tap height,
+*                             fa: angular accuracy between each sub-module,
+*                             pos: position to place the thread tap,
+*                             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                             gap: gap to be applied to the initial position of the thread tap on the X axis,
+*                             center: if true center the thread)
+*/
+module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
+        mRotate(rot)
             trapezoidalThreadTapmod(D, p, h, fa, gap);      
 }
 
@@ -577,7 +601,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
             }
 }
 
-
+/*
 knurling(h= 1.2, ang= 30, moduleNb= 10, p = 0.4, fa= 5){
 
 //    mTranslate([0, 0, 0.05])
@@ -587,7 +611,7 @@ knurling(h= 1.2, ang= 30, moduleNb= 10, p = 0.4, fa= 5){
 
 color("red")
 mTranslate([1, 0, 0]) rotX(30) cube(0.1);
-
+*/
 /*
 knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
     
