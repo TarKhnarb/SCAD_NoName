@@ -79,7 +79,7 @@ module chamferBase(chamfer, size){
 /*
 * chamferCube(size: the size of the cube according to [X, Y, Z],
 *             pos: position to place the cube,
-*             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*             rot: use sum of constants ROT_* for orient the cube OR custom rotation vector as
 *                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *             chamfer: chamfer size (chamfer < min(size)/2),
 *             edges: vector of the edges to be chamfered,
@@ -90,8 +90,8 @@ module chamferBase(chamfer, size){
 */
 module chamferCube(size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, edges= EDGE_All, center= false){
     
-    assertion(chamfer < min(size)/2, "chamfer must be less than half the smallest size of the cube ");
-    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
+    assertion(chamfer < min(size)/2, "chamfer should be less than half the smallest size of the cube ");
+    assertion(len(edges) != 0, "chamfer should be less than half the smallest size of the cube");
 
     mTranslate((center ? pos : pos + 1/2*size)){
         mRotate(rot){
@@ -320,7 +320,7 @@ module chamferAngBase(chamfer, fs, ang= 45){
 * chamferCylinder(h: height of the cylinder,
 *                 r: radius of the cylinder],
 *                 pos: position to place the cube,
-*                 rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*                 rot: use sum of constants ROT_* for orient the cylinder OR custom rotation vector as
 *                      [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                 chamfer: chamfer size (chamfer < r/2),
 *                 chamferAng: chamfer angle [20, 60],
@@ -331,10 +331,10 @@ module chamferAngBase(chamfer, fs, ang= 45){
 */
 module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, chamferAng= 45, fn= 50, edges= [EDGE_Top, EDGE_Bot], center= false){
 
-    assertion((19 < chamferAng) && (chamferAng < 61), "chamferAng must be between [20, 60]°");
-    assertion(chamfer < r/2, "chamfer must be less than half the smallest size of the cube");
-    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube");
-    assertion(fn > 1, "nb of chamfer must be greater than 1");
+    assertion((19 < chamferAng) && (chamferAng < 61), "chamferAng should be within [20, 60]°");
+    assertion(chamfer < r/2, "chamfer should be less than half the smallest size of the cube");
+    assertion(len(edges) != 0, "chamfer should be less than half the smallest size of the cube");
+    assertion(fn > 1, "nb of chamfer should be greater than 1");
 
     step = 360/fn;
 
@@ -350,7 +350,7 @@ module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, c
 
                         for(j= [0 : fn - 1]){
 
-                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Top)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 0, 180]))
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(h/2, EDGE_Top)*scaleEdge(r, EDGE_Rgt)*matRot([90, 0, 180]))
                                 chamferAngBase2(chamfer, r*tan(step), chamferAng);
                         }
                     }
@@ -358,7 +358,7 @@ module chamferCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, chamfer= 0.1, c
 
                         for(j= [0 : fn - 1]){
 
-                            transform(m= matRotZ((j + 1)*step)*scaleEdge(k= h/2, e= EDGE_Bot)*scaleEdge(k= r, e= EDGE_Rgt)*matRot([90, 180, 0]))
+                            transform(m= matRotZ((j + 1)*step)*scaleEdge(h/2, EDGE_Bot)*scaleEdge(r,    EDGE_Rgt)*matRot([90, 180, 0]))
                                 chamferAngBase2(chamfer, r*tan(step), chamferAng);
                         }
                     }
@@ -401,7 +401,7 @@ module bevelBase(bevel, size, fn){
 /*
 * bevelCube(size: the size of the cube according to [X, Y, Z],
 *           pos: position to place the cube,
-*           rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*           rot: use sum of constants ROT_* for orient the cube OR custom rotation vector as
 *                [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *           bevel: bevel radius (bevel < min(size)/2),
 *           fn: precision of the bevel pitch,
@@ -412,9 +412,9 @@ module bevelBase(bevel, size, fn){
 */
 module bevelCube(size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, bevel= 0.1, fn= 100, edges= EDGE_All, center= false){
 
-    assertion(bevel < min(size)/2, "bevel must be less than half the smallest size of the cube ");
-    assertion(fn > 0, "fn must be greater than 0");
-    assertion(len(edges) != 0, "bevel must be less than half the smallest size of the cube ");
+    assertion(bevel < min(size)/2, "bevel should be less than half the smallest size of the cube ");
+    assertion(fn > 0, "fn should be greater than 0");
+    assertion(len(edges) != 0, "bevel should be less than half the smallest size of the cube ");
 
     mTranslate((center ? pos : pos + 1/2*size)){
         mRotate(rot){
@@ -649,7 +649,7 @@ module cylindBevelBase(r, bevel, fn){
 * bevelCylinder(h: height of the cylinder,
 *               r: radius of the cylinder,
 *               pos: position to place the cube,
-*               rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
+*               rot: use sum of constants ROT_* for orient the cylinder OR custom rotation vector as
 *                    [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *               bevel: bevel radius (chamfer < r/2),
 *               fn: precision of the cylinder pitch,
@@ -661,10 +661,10 @@ module cylindBevelBase(r, bevel, fn){
 */
 module bevelCylinder(h= 1, r= 1, pos= [0, 0, 0], rot= ROT_Top, bevel= 0.1, fn= 100, fnB= 100, edges= [EDGE_Top, EDGE_Bot], center= false){
 
-    assertion(bevel < r/2, "chamfer must be less than half the smallest size of the cube ");
-    assertion(len(edges) != 0, "chamfer must be less than half the smallest size of the cube ");
-    assertion(fn > 1, "nb of segment for the bevel must be greater than 1");
-    assertion(fnB > 1, "nb of segment for the bevel must be greater than 1");
+    assertion(bevel < r/2, "chamfer should be less than half the smallest size of the cube ");
+    assertion(len(edges) != 0, "chamfer should be less than half the smallest size of the cube ");
+    assertion(fn > 1, "nb of segment for the bevel should be greater than 1");
+    assertion(fnB > 1, "nb of segment for the bevel should be greater than 1");
 
     step = 360/fn;
     length= 2*PI*r/fn;
@@ -723,7 +723,7 @@ bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
 *            h: height of the pipe,
 *            pos: position to place the cube,
 *            fn: precision of the cylinders,
-*            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*            rot: use sum of constants ROT_* for orient the pipe OR custom rotation vector as
 *                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *            center: center the piece at [0, 0, 0])
 *

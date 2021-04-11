@@ -41,7 +41,7 @@ function getISOTriangularDim(D, p) = [p*sqrt(3)/2,             // H:  Hauteur th
 *   |____________|___|/__________>
 *               4     5          x
 */
-module ISOTriangularThreadMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
+module ISOTriangularThreadMod(D, p, h, fa, gap){
 
     assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
     assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
@@ -93,7 +93,7 @@ module ISOTriangularThreadMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 *                            h: thread height,
 *                            fa: angular accuracy between each sub-module,
 *                            pos: position to place the thread,
-*                            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                            rot: use sum of constants ROT_* for orient the thread OR custom rotation vector as
 *                                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                            gap: gap to be applied to the initial position of the thread on the X axis,
 *                            center: if true center the thread)
@@ -145,10 +145,7 @@ union(){
 *   |________________\|___|___________>
 *                    5     4          x
 */
-module ISOTriangularThreadTapMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
-
-    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
+module ISOTriangularThreadTapMod(D, p, h, fa, gap){
 
     d = getISOTriangularDim(D, p);
     nbTurns = 2 + h/p;
@@ -193,12 +190,15 @@ module ISOTriangularThreadTapMod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 *                               h: thread tap height,
 *                               fa: angular accuracy between each sub-module,
 *                               pos: position to place the thread tap,
-*                               rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                               rot: use sum of constants ROT_* for orient the threadTap OR custom rotation vector as
 *                                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                               gap: gap to be applied to the initial position of the thread tap on the X axis,
 *                               center: if true center the thread)
 */
 module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
+
+    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
+    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
@@ -271,7 +271,7 @@ function getTrapezoidalDim(D, p, a) =
 *   |____________|___|___________>
 *               5     6          x
 */
-module trapezoidalThreadmod(D= 1, p= 0.2, h= 1, fa= 1, gap= 0){
+module trapezoidalThreadmod(D, p, h, fa, gap){
 
     assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
     assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
@@ -328,7 +328,7 @@ module trapezoidalThreadmod(D= 1, p= 0.2, h= 1, fa= 1, gap= 0){
 *                          h: thread tap height,
 *                          fa: angular accuracy between each sub-module,
 *                          pos: position to place the thread tap,
-*                          rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                          rot: use sum of constants ROT_* for orient the thread OR custom rotation vector as
 *                               [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                          gap: gap to be applied to the initial position of the thread tap on the X axis,
 *                          center: if true center the thread)
@@ -436,7 +436,7 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 *                             h: thread tap height,
 *                             fa: angular accuracy between each sub-module,
 *                             pos: position to place the thread tap,
-*                             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
+*                             rot: use sum of constants ROT_* for orient the threadTap OR custom rotation vector as
 *                                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                             gap: gap to be applied to the initial position of the thread tap on the X axis,
 *                             center: if true center the thread)
@@ -491,7 +491,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
 
     assertion($children == 2, "You should first pass the part to be knurled and then the shape to be repeated for knurling");
     assertion(!(isDef(ang) && isDef(orient)), "You cannot set diamond and linear knurling at the same time");
-    assertion((len(pos) == 3), "You should given a 3D vector according [X, Y, Z]");
+    assertion((len(pos) == 3), "You should given pos as a 3D vector according [X, Y, Z]");
     assertion((h >= p), "The pitch should be smaller than or equal to the height");
     assertion((0 < fa) && (fa < 180), "fa should be within the following interval : [-180, 0[ U ]0, 180[");
 

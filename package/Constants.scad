@@ -29,6 +29,12 @@ ROT_Back    = [-90, 0,   0];
 ROT_Rgt     = [0,   90,  0];
 ROT_Lft     = [0,   -90, 0];
 
+    // Orient
+ORIENT_1 = [0];
+ORIENT_2 = [90];
+ORIENT_3 = [180];
+ORIENT_4 = [-90];
+
 /*
                A
               / Y
@@ -51,11 +57,11 @@ ROT_Lft     = [0,   -90, 0];
     // Edges
 
 // Edges of plans
-EDGE_Top    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]]; // Top edges position
+EDGE_Top    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]];  // Top edges position
 EDGE_Bot    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, -1], [0, 0, 0, 1]]; // Bottom edges position
 EDGE_Frt    = [[1, 0, 0, 0], [0, 1, 0, -1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Front edges position
-EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Back edges position
-EDGE_Rgt    = [[1, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]; // Right edges position
+EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]];  // Back edges position
+EDGE_Rgt    = [[1, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];  // Right edges position
 EDGE_Lft    = [[1, 0, 0, -1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]; // Left edges position
 
 // Unique edge:

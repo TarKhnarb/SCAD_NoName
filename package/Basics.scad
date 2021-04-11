@@ -191,3 +191,16 @@ function choose(n, k) =
                         ) : (
                              echoError(msg= "n must be greater or equal than k and k must be greater or equal than 0"))
     );
+
+function getTranslateRot(rot) =
+    ((rot == ROT_Top) ? ([0, 0, 1]
+                    ) : (
+                         ((rot == ROT_Bot) ? ([0, 0, -1]
+                                         ) : (
+                                              ((rot == ROT_Frt) ? ([0, -1, 0]
+                                                              ) : (
+                                                                   ((rot == ROT_Back) ? ([0, 1, 0]
+                                                                                    ) : (
+                                                                                         ((rot == ROT_Rgt) ? ([1, 0, 0]
+                                                                                                         ) : (
+                                                                                                              ([-1, 0, 0])))))))))));
