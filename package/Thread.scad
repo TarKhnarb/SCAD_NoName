@@ -43,19 +43,14 @@ function getISOTriangularDim(D, p) = [p*sqrt(3)/2,             // H:  Hauteur th
 */
 module ISOTriangularThreadMod(D, p, h, fa, gap){
 
-    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
-    
-    assertion((360 % fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
-
     d = getISOTriangularDim(D, p);
     nbTurns = 2 + h/p;
     iMax = nbTurns*(360/fa);
 
-    sides = [[0, 5, 2, 1],  [5, 4, 3, 2],                    // Face 1
-             [0, 1, 7, 6],  [1, 2, 8, 7],   [2, 3, 9, 8],   // Side
-             [3, 4, 10, 9], [4, 5, 11, 10], [0, 6, 11, 5],
-             [6, 7, 8, 11], [8, 9, 10, 11]];                // Face 2
+    sides = [[0, 5, 2,  1],  [5, 4, 3,  2],                  // Face 1
+             [0, 1, 7,  6],  [1, 2, 8,  7],   [2, 3, 9,  8], // Side
+             [3, 4, 10, 9],  [4, 5, 11, 10],  [0, 6, 11, 5],
+             [6, 7, 8,  11], [8, 9, 10, 11]];                // Face 2
     
     basePts = [[D/2 + gap,                    0,  -d[6] + p/2],
                [D/2 + gap,                    0,  d[6] + p/2],
@@ -71,7 +66,7 @@ module ISOTriangularThreadMod(D, p, h, fa, gap){
 
                 for(i= [0 : iMax]){
                    
-                    pts = concat(polyhedronAtI(ang= i*fa, Pts= basePts, p= p), polyhedronAtI(ang= (i + 1)*fa, Pts= basePts, p= p));
+                    pts = concat(polyhedronAtI(i*fa, basePts, p), polyhedronAtI((i + 1)*fa, basePts, p));
                     
                     polyhedron(points= pts, faces= sides);
                 }
@@ -99,7 +94,16 @@ module ISOTriangularThreadMod(D, p, h, fa, gap){
 *                            center: if true center the thread)
 */
 module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
-   
+
+    assertion(0 < D, "D should be greater than 0");
+    assertion((0 < p) && (p <= h), "D should be within ]0, h]");
+    assertion(0 < h, "h should be greater than 0");
+    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
+    assertion(len(pos) == 3, "pos should be a3D vector");
+    assertion(len(rot) == 3, "rot should be a3D vector");
+    assertion(0 <= gap, "gap should be greater than or equal to 0");
+
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
             ISOTriangularThreadMod(D, p, h, fa, gap);
@@ -197,8 +201,14 @@ module ISOTriangularThreadTapMod(D, p, h, fa, gap){
 */
 module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
-    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
+    assertion(0 < D, "D should be greater than 0");
+    assertion((0 < p) && (p <= h), "D should be within ]0, h]");
+    assertion(0 < h, "h should be greater than 0");
+    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
+    assertion(len(pos) == 3, "pos should be a3D vector");
+    assertion(len(rot) == 3, "rot should be a3D vector");
+    assertion(0 <= gap, "gap should be greater than or equal to 0");
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
@@ -229,26 +239,18 @@ union(){
 
     // Trapezoidal
 function getTrapezoidalThreadGap(p) =
-    ((p < 2) ? (
-                 0.15
+    ((p < 2) ? (0.15
            ) : (
-                ((p <= 5) ? (
-                              0.25
+                ((p <= 5) ? (0.25
                         ) : (
-                             ((p <= 12) ? (
-                                            0.5
-                                      ) : (
-                                            1
-                                          ))
-                            ))
-               )
+                             ((p <= 12) ? (0.5
+                                      ) : (1)))))
     );
 
-function getTrapezoidalDim(D, p, a) =
-                                    [a + p/2,                               // h: hauteur du trapèze
-                                     D - (a + p/2),                         // d1: diamètre interne du filetage
-                                     (p - (p + 2*a)*(2 - sqrt(3)))/2,   // t:  longueur du sommet du trapèze
-                                     (p + (p + 2*a)*(2 - sqrt(3)))/2];  // b:  longueur de la base du trapèze
+function getTrapezoidalDim(D, p, a) = [a + p/2,                           // h: hauteur du trapèze
+                                       D - (a + p/2),                     // d1: diamètre interne du filetage
+                                       (p - (p + 2*a)*(2 - sqrt(3)))/2,   // t:  longueur du sommet du trapèze
+                                       (p + (p + 2*a)*(2 - sqrt(3)))/2];  // b:  longueur de la base du trapèze
 
     // Thread
 
@@ -272,9 +274,6 @@ function getTrapezoidalDim(D, p, a) =
 *               5     6          x
 */
 module trapezoidalThreadmod(D, p, h, fa, gap){
-
-    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
 
     a = getTrapezoidalThreadGap(p);
     d = getTrapezoidalDim(D, p, a);
@@ -335,7 +334,15 @@ module trapezoidalThreadmod(D, p, h, fa, gap){
 */
 module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
-   
+    assertion(0 < D, "D should be greater than 0");
+    assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
+    assertion(0 < h, "h should be greater than 0");
+    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
+    assertion(len(pos) == 3, "pos should be a3D vector");
+    assertion(len(rot) == 3, "rot should be a3D vector");
+    assertion(0 <= gap, "gap should be greater than or equal to 0");
+
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
             trapezoidalThreadmod(D, p, h, fa, gap);
@@ -378,13 +385,8 @@ difference(){
 */
 module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 
-    assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within the following interval : [-180, 0[ U ]0, 180[");
-    assertion((p > 0) && (p <= h), "p must be within the following interval : ]0, h]");
-
     a = getTrapezoidalThreadGap(p);
     d = getTrapezoidalDim(D, p, a);
-    
-    assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
     
     nbTurns = 2 + h/p;
     iMax = nbTurns*(360/fa);
@@ -443,6 +445,14 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 */
 module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
+    assertion(0 < D, "D should be greater than 0");
+    assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < fa, "fa should be greater than 0");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
+    assertion(len(pos) == 3, "pos should be a3D vector");
+    assertion(len(rot) == 3, "rot should be a3D vector");
+    assertion(0 <= gap, "gap should be greater than or equal to 0");
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
@@ -482,18 +492,21 @@ union(){
 *   - If you want to make a vertical knurling of a precise length, consider subtracting the height of the knurling piece from the total height. The first piece was placed on X axis with a translation of r, the other will been placed according a Z anti-clockwire rotation of the first piece.
 *   -
 */
-
 function knurlStepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
                                     P.x * sin(ang) + P.y * cos(ang),
                                     P.z + abs(ang)*p/360];                               
 
 module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 10, pos= [0, 0, 0], rot= ROT_Top){
 
-    assertion($children == 2, "You should first pass the part to be knurled and then the shape to be repeated for knurling");
+    assertion(0 < r, "r should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion((0 < p) && (p <= h), "p should be within ]0, h]");
+    assertion(1 <= moduleNb, "moduleNb should be greater than or equal to 1");
     assertion(!(isDef(ang) && isDef(orient)), "You cannot set diamond and linear knurling at the same time");
-    assertion((len(pos) == 3), "You should given pos as a 3D vector according [X, Y, Z]");
-    assertion((h >= p), "The pitch should be smaller than or equal to the height");
-    assertion((0 < fa) && (fa < 180), "fa should be within the following interval : [-180, 0[ U ]0, 180[");
+    assertion(0 < fa, "fa should be greater than 0");
+    assertion((len(pos) == 3), "pos should be a 3D vector");
+    assertion((len(rot) == 3), "rot should be a 3D vector");
+    assertion($children == 2, "You should first pass the part to be knurled and then the shape to be repeated for knurling");
 
     if(isDef(orient)){
 
@@ -510,11 +523,10 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
 
                 if(isDef(ang)){
 
-                    assertion(((20 <= ang) || (ang <= 60)), "The angle of the diamond knurl should be between 20 and 60°");
-                    assertion((360 % moduleNb == 0), "The remainder of the Euclidean division of 360 per moduleNb should be equal to 0");
+                    assertion(((20 <= ang) || (ang <= 60)), "angle of the diamond knurl should be within [20, 60]°");
+                    assertion((360%moduleNb == 0), "The remainder of the Euclidean division of 360 per moduleNb should be equal to 0");
                     
                     rotAng = 360/moduleNb;
-                    
                     l = 2*r*sin(fa/2);
                     fn = 360/fa;
                     length = l*tan(ang);
@@ -522,7 +534,8 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                     nbTurn = h/pa;
                     iMax = nbTurn*fn;
 
-                    echo(rotAng, length, nbTurn, fn, iMax);
+                    //echo(rotAng, length, nbTurn, fn, iMax);
+
                     union(){
                     
                         for(i= [0 : moduleNb - 1]){
@@ -537,12 +550,12 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                                         mTranslate(knurlStepper(A, k*j*fa, pa))
                                             rotZ(k*j*fa)
                                                 rotX(k*ang)
-                                                children(1);
+                                                    children(1);
 
                                         mTranslate(knurlStepper(A, k*(j + 1)*fa, pa))
                                             rotZ(k*(j + 1)*fa)
                                                 rotX(k*ang)
-                                                children(1);
+                                                    children(1);
                                     }
                                 }
                             }
@@ -551,6 +564,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                 }
                 else if(isDef(orient)){
 
+                    assertion((orient == VERTICAL) || (orient == HORIZONTAL), "orient should only be VERTICAL or HORIZONTAL constant");
                     if(orient == VERTICAL){
 
                         rotAng = 360/moduleNb;

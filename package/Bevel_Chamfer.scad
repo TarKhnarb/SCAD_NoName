@@ -34,6 +34,7 @@ module bevel(r= 1, length= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, orient= ORIE
 
     assertion(0 < r, "r should be greater than 0");
     assertion(0 < length, "length should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
     assertion((len(pos) == 3), "You should given pos as a 3D vector according [X, Y, Z]");
     assertion((len(rot) == 3), "You should given rot as a 3D vector according [X, Y, Z]");
     assertion(len(orient) == 1, "You should given a ORIENT_* constant");

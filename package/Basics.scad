@@ -5,13 +5,14 @@ include<Constants.scad>
   Basics.scad
     Contain all basics function  for the package
 */
+
 /*
 * isDef(u: any variable)
 *
 * Return:
 *   True if the variable is defined, false otherwise
  */
-function isDef(u) = (version_num() > 20190100) ? !isUndef(u) : (u != undef);
+function isDef(u) = ((version_num() > 20190100) ? !isUndef(u) : (u != undef));
 
 /*
 * isUndef(u: any variable)
@@ -20,6 +21,7 @@ function isDef(u) = (version_num() > 20190100) ? !isUndef(u) : (u != undef);
 *   True if the variable is undefined, flase otherwise
 */
 function isUndef(u) = ((version_num() > 20190100) ? (u == undef) : !isDef(u));
+
 /*
 * echoMsg(msg : message to write in the console)
 *
@@ -40,8 +42,8 @@ module echoError(msg, pfx="ERROR"){
     echo(str("<p style=\"background-color: #ffb0b0\"><b>", pfx, ":</b> ", msg, "</p>"));
 }
 
-function echoError(msg, pfx= "ERROR") = echoMsg(str("<p style=\"background-color: #ffb0b0\"><b>",
-                                                     pfx, ":</b> ", msg, "</p>"));
+function echoError(msg, pfx= "ERROR") = echoMsg(str("<p style=\"background-color: #ffb0b0\"><b>", pfx, ":</b> ", msg, "</p>"));
+
 /*
 * assertion(succ: bool, if the test is false, echo an error
 *           msg: message to write in the console if succ is false)
@@ -124,6 +126,11 @@ function regularRadius(nbS= 4, lengthS= 1) =
  */
 module writeOnFace(pos= [0, 0, 0], color= "white", text= "Test", size= 1, font, halign, valign, spacing, direction, language, script, fn= 30, h= 0.1, rot= ROT_Top, diff= false){
 
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(0 < h, "h shouldbe greater than 0");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+
+
     if(diff){
 
         difference(){
@@ -175,7 +182,7 @@ writeOnFace(pos= [0, 0, -5], text= "Bottom", color= "grey", size= 2, valign= "ce
 * Return:
 *   The factorial of n.
 */
-function factorial(n) = (n==0 ? 1 : factorial(n - 1)*n);
+function factorial(n) = (n == 0 ? 1 : factorial(n - 1)*n);
 
 /*
 * choose(n: top coefficient,
@@ -189,7 +196,7 @@ function factorial(n) = (n==0 ? 1 : factorial(n - 1)*n);
 function choose(n, k) =
     ((n >= k) && (k >= 0) ? (factorial(n)/(factorial(k)*factorial(n - k))
                         ) : (
-                             echoError(msg= "n must be greater or equal than k and k must be greater or equal than 0"))
+                             echoError(msg= "n should be greater or equal than k and k should be greater or equal than 0"))
     );
 
 function getTranslateRot(rot) =

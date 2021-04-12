@@ -11,14 +11,14 @@ HORIZONTAL  = [123];    // Arbitrary values
 VERTICAL    = [-123];
 
     // Vectors
-TRANS_Null   = [0, 0, 0];
-TRANS_Top    = [0, 0, 1];
-TRANS_Bot    = [0, 0, -1];
-TRANS_Frt    = [0, -1, 0];
-TRANS_Back   = [0, 1, 0];
-TRANS_Rgt    = [1, 0, 0];
-TRANS_Lft    = [-1, 0, 0];
-TRANS_AllPos = [1, 1, 1];
+TRANS_Null   = [0,  0,  0];
+TRANS_Top    = [0,  0,  1];
+TRANS_Bot    = [0,  0,  -1];
+TRANS_Frt    = [0,  -1, 0];
+TRANS_Back   = [0,  1,  0];
+TRANS_Rgt    = [1,  0,  0];
+TRANS_Lft    = [-1, 0,  0];
+TRANS_AllPos = [1,  1,  1];
 TRANS_AllNeg = [-1, -1, -1];
 
     // Rotations
@@ -57,12 +57,12 @@ ORIENT_4 = [-90];
     // Edges
 
 // Edges of plans
-EDGE_Top    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 1], [0, 0, 0, 1]];  // Top edges position
-EDGE_Bot    = [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, -1], [0, 0, 0, 1]]; // Bottom edges position
-EDGE_Frt    = [[1, 0, 0, 0], [0, 1, 0, -1], [0, 0, 1, 0], [0, 0, 0, 1]]; // Front edges position
-EDGE_Back   = [[1, 0, 0, 0], [0, 1, 0, 1], [0, 0, 1, 0], [0, 0, 0, 1]];  // Back edges position
-EDGE_Rgt    = [[1, 0, 0, 1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]];  // Right edges position
-EDGE_Lft    = [[1, 0, 0, -1], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]]; // Left edges position
+EDGE_Top    = [[1, 0, 0, 0],  [0, 1, 0, 0],  [0, 0, 1, 1],  [0, 0, 0, 1]];  // Top edges position
+EDGE_Bot    = [[1, 0, 0, 0],  [0, 1, 0, 0],  [0, 0, 1, -1], [0, 0, 0, 1]]; // Bottom edges position
+EDGE_Frt    = [[1, 0, 0, 0],  [0, 1, 0, -1], [0, 0, 1, 0],  [0, 0, 0, 1]]; // Front edges position
+EDGE_Back   = [[1, 0, 0, 0],  [0, 1, 0, 1],  [0, 0, 1, 0],  [0, 0, 0, 1]];  // Back edges position
+EDGE_Rgt    = [[1, 0, 0, 1],  [0, 1, 0, 0],  [0, 0, 1, 0],  [0, 0, 0, 1]];  // Right edges position
+EDGE_Lft    = [[1, 0, 0, -1], [0, 1, 0, 0],  [0, 0, 1, 0],  [0, 0, 0, 1]]; // Left edges position
 
 // Unique edge:
 EDGE_TopFrt     = EDGE_Top * EDGE_Frt;

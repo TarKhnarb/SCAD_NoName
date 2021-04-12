@@ -40,11 +40,14 @@ function pointBezier(pts, n, t, k= 0) =
 module bezierCurve(pts, fn= 10, ang= undef){
 
     n = len(pts) - 1;
+    assertion(n > 0, "You should give at least two points in a vector");
+    for(i= [0 : n]){
+
+        assertion(len(pts[i]) == 3, "pts should be a vector of 3D vectors");
+    }
 
     assertion(1 < fn, "nbSegment should be greater than 1");
-    assertion(n > 0, "You should give at least two points");
     assertion($children == 1, "You should give a single 'children()'");
-
     if(isDef(ang)){
         
         assertion(len(ang) == 3, "ang should correspond to the following vector [angX, angY, angZ]");
@@ -109,13 +112,13 @@ bezierCurve(10*pts2, 50, ang= [90, 0, 0])
 *   Points to generate an arc with a Bezier curve.
 */
 function bezierArcPts(alpha, r, A) =
-    let(L= r*tan(alpha/4)*(4/3),
-        alphaP= atan(r/L),
-        h= sqrt(r*r + L*L),
-        a= (A.x == 0 ? r : r*r/A.x),
-        b= (A.x == 0 ? L : A.y/A.x),
-        yP= (a*b + sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
-        yM= (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1))
+    let(L = r*tan(alpha/4)*(4/3),
+        alphaP = atan(r/L),
+        h = sqrt(r*r + L*L),
+        a = (A.x == 0 ? r : r*r/A.x),
+        b = (A.x == 0 ? L : A.y/A.x),
+        yP = (a*b + sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
+        yM = (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1))
     (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y should both be differnet than 0")       // A.x && A.y == 0 => centre du cercle
                          ) : (
                               (A.y > 0 ? ([[-L, A.y, A.z], [L, A.y, A.z]]                       // Tests pour placer P,P' si A.x == 0
@@ -146,10 +149,14 @@ function bezierArcPts(alpha, r, A) =
 */
 module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot= false, theta= [0, 0, 0]){
 
-    assertion((-181 < alpha) && (alpha < 181), "alpha should belong to ]0, 180]");
-    assertion(r > 0, "r should be strictly greater than 0");
-    assertion(A != TRANS_Null, "'A' should be different than the center of the cicle ([0,0,0])");
+    assertion(len(A) == 3, "A should be a point (3D vector)");
+    assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
     assertion(abs(mod([A.x, A.y])) == r, "A should belong to the circle of radius r");
+    assertion((-181 < alpha) && (alpha < 181), "alpha should be within ]0, 180]");
+    assertion(0 < r, "r should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(theta) == 3, "theta should be a 3D vector");
 
     A_ = bezierArcPts(alpha, r, A);
     As = [A.x*cos(alpha) - A.y*sin(alpha), A.x*sin(alpha)+ A.y*cos(alpha), A.z];
@@ -157,7 +164,6 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot
 
     toDraw = [A, A_[0], As_[1], As];
 
-     // Affiche les points de contrôle
     if($preview){
         
         for(i= [0 : len(toDraw) - 1]){
@@ -167,7 +173,6 @@ module bezierArcCurve(A= [1, 0, 0], alpha= 45, r= 1, fn= 10, pos= [0, 0, 0], rot
                     children();
         }
     }
-
 
     mTranslate(pos)
         bezierCurve(toDraw, fn, ang= (rot ? theta : undef))
@@ -219,12 +224,14 @@ function parametricPoint(M, n, m, u, v, i= 0) =
 module bezierSurface(M, U= undef, V= undef, fn= 10){
 
     n = len(M) - 1;
-    m = len(M[0]) - 1;
-
-    assertion(1 < fn, "nbSegment should be greater than 1");
     assertion(n > 0, "You should give at least two rows in the matrix M");
+
+    m = len(M[0]) - 1;
     assertion(m > 0, "You should give at least two columns in the matrix M");
-    assertion($children == 1, "You should give a single 'children()'");
+    for(i= [1 : n]){
+
+        assertion((len(M[i]) - 1) == m, "The matrix passed as parameter isn't correct, please check that it is consistent");
+    }
 
     if(isDef(U)){
 
@@ -236,10 +243,8 @@ module bezierSurface(M, U= undef, V= undef, fn= 10){
         assertion((0 < V) && (V < 1), "V should be within ]0, 1[");
     }
 
-    for(i= [1 : n]){
-
-        assertion((len(M[i]) - 1) == m, "The matrix passed as parameter isn't correct, please check that it is consistent");
-    }
+    assertion(1 < fn, "fn should be greater than 1");
+    assertion($children == 1, "You should give a single 'children()'");
 
     u = (isDef(U) ? U : 1/fn);
     v = (isDef(V) ? V : 1/fn);

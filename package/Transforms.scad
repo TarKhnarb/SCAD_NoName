@@ -15,7 +15,7 @@ module rotX(ang= 0){
 
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matRotX(ang= ang)){
+        multmatrix(m= matRotX(ang)){
 
             children(i);
         }
@@ -31,7 +31,7 @@ module rotY(ang= 0){
 
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matRotY(ang= ang)){
+        multmatrix(m= matRotY(ang)){
 
             children(i);
         }
@@ -47,7 +47,7 @@ module rotZ(ang= 0){
 
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matRotZ(ang= ang)){
+        multmatrix(m= matRotZ(ang)){
 
             children(i);
         }
@@ -61,9 +61,11 @@ module rotZ(ang= 0){
 */
 module mRotate(ang= [0, 0, 0]){
 
+    assertion(len(ang) == 3, "ang should be a 3D vector");
+
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matRot(ang= ang)){
+        multmatrix(m= matRot(ang)){
 
             children(i);
         }
@@ -77,9 +79,11 @@ module mRotate(ang= [0, 0, 0]){
 */
 module mTranslate(v= [0, 0, 0]){
 
+    assertion(len(v) == 3, "v should be a 3D vector");
+
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matTrans(v= v)){
+        multmatrix(m= matTrans(v)){
 
             children(i);
         }
@@ -93,9 +97,11 @@ module mTranslate(v= [0, 0, 0]){
 */
 module mScale(v= [1, 1, 1]){
 
+    assertion(len(v) == 3, "v should be a 3D vector");
+
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matScale(v= v)){
+        multmatrix(m= matScale(v)){
 
             children(i);
         }
@@ -109,9 +115,11 @@ module mScale(v= [1, 1, 1]){
 */
 module mScale(k= [1, 1, 1]){
 
+    assertion(len(k) == 3, "v should be a 3D vector");
+
     for(i= [0 : $children - 1]){
 
-        multmatrix(m= matScale(v= [ifNullGetUnit(k.x), ifNullGetUnit(k.y), ifNullGetUnit(k.z)])){
+        multmatrix(m= matScale([ifNullGetUnit(k.x), ifNullGetUnit(k.y), ifNullGetUnit(k.z)])){
 
             children(i);
         }

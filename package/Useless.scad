@@ -89,3 +89,30 @@ module bezierCurve2(pts, fn= 10){
         }
     }
 }
+
+
+module chamferAngBase(chamfer, fs, ang= 45){
+
+    side = chamfer/cos(ang) + 0.06;
+
+    x = [chamfer, 0, 0];
+    y = [0.03*cos(ang), -0.03*sin(ang), 0];
+    z = [side*cos(135-ang)*sqrt(2)/2, side*sin(135-ang)*sqrt(2)/2, 0];
+
+
+
+    h = chamfer*tan(ang) + (-y.y);
+
+    union(){
+
+        difference(){
+
+            mTranslate([-0.01, -0.01, -(fs + 0.02)/2])
+            cube([chamfer + 0.015, h, fs + 0.02]);
+
+            mTranslate(x + y + z)
+            mRotate([0, 0, -ang])
+            cube([side, side, fs + 0.03], center= true);
+        }
+    }
+}

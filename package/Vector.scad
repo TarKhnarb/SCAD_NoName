@@ -51,7 +51,7 @@ function angleVectors(u= [1, 0, 0], v= [0, 1, 0]) =
 * Return:
 *   X-axis rotation matrix of a 3D vector
 */
-function matVectRotX(ang= 0) = [[1,        0, 0],
+function matVectRotX(ang= 0) = [[1, 0,        0],
                                 [0, cos(ang), -sin(ang)],
                                 [0, sin(ang), cos(ang)]];
 
@@ -62,7 +62,7 @@ function matVectRotX(ang= 0) = [[1,        0, 0],
 * Return:
 *   The vector v rotated along the X-axis.
  */
-function applyVectRotX(v=[1, 1, 1], ang= 0) = v*matVectRotX(ang);
+function applyVectRotX(v= [1, 1, 1], ang= 0) = v*matVectRotX(ang);
 
 /*
 * matVectRotY(ang: angle in degree)
@@ -81,7 +81,7 @@ function matVectRotY(ang= 0) = [[cos(ang),  0, sin(ang)],
 * Return:
 *   The vector v rotated along the Y-axis.
  */
-function applyVectRotY(v=[1, 1, 1], ang= 0) = v*matVectRotY(ang);
+function applyVectRotY(v= [1, 1, 1], ang= 0) = v*matVectRotY(ang);
 
 /*
 * matVectRotZ(ang: angle in degree)
@@ -100,7 +100,7 @@ function matVectRotZ(ang= 0) = [[cos(ang), -sin(ang), 0],
 * Return:
 *   The vector v rotated along the Z-axis.
  */
-function applyVectRotZ(v=[1, 1, 1], ang= 0) = v*matVectRotZ(ang);
+function applyVectRotZ(v= [1, 1, 1], ang= 0) = v*matVectRotZ(ang);
 
 
 /*

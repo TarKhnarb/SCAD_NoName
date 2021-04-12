@@ -1,10 +1,9 @@
+use<Basics.scad>
+include<Constants.scad>
 /*
 * Matrix.scad
 *   All function for lineaar transformation with matrix and other matrix specifications
 */
-
-use<Basics.scad>
-include<Constants.scad>
 
 /*
 * Representation of a linear transformation matrix :
