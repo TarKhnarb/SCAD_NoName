@@ -43,7 +43,7 @@ module bezierCurve(pts, fn= 10, ang= undef){
 
     assertion(1 < fn, "nbSegment should be greater than 1");
     assertion(n > 0, "You should give at least two points");
-    assertion(len($children) == 1, "You should give a single 'children()'");
+    assertion($children == 1, "You should give a single 'children()'");
 
     if(isDef(ang)){
         
