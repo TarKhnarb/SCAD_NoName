@@ -155,7 +155,7 @@ module baseSpiral(A, nbTurn, r, fn){
     union(){
 
         union(){
-
+            
             center= spiralCenters(A, r);
             for(i= [0 : nbTurn - 1]){
 
@@ -172,6 +172,21 @@ module baseSpiral(A, nbTurn, r, fn){
                 bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, -90])
                     children();
             }
+        }
+        bezierArcCurve(A= [-r/2, 0, 0], alpha= 90, r= r/2, fn= fn, pos= [-r/2, 0, 0], rot= true, theta= [0, 0, 90])
+            children();
+        
+        hull(){
+            mTranslate([-r/2, -r/2, 0])
+                children();
+            rotZ(45)
+                children();
+        }
+        hull(){
+            mTranslate([-r -nbTurn*4*r, 0, 0])
+                children();
+            mTranslate([-r -nbTurn*4*r, r + (nbTurn - 1)*4*r, 0])
+                children();
         }
     }
 }
@@ -207,6 +222,6 @@ module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, p
         }
 }
 
-spiral(nbTurn= 5, r= 0.04, direction=ANTICLOCKWIRE)
-    cube(0.01, center= true);
+spiral(nbTurn= 5, r= 0.02, direction=CLOCKWIRE)
+    cube([0.01, 0.01, 0.05], center= true);
 //    sphere(0.01, $fn= 20);
