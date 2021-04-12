@@ -150,7 +150,7 @@ function spiralCenters(A, r)= [[A.x,     A.y,     A.z],
                                     [A.x - r, A.y - r, A.z],
                                     [A.x - r, A.y,     A.z]];
 
-module baseSpiral(A, nbTurn, r, fn, dir){
+module baseSpiral(A, nbTurn, r, fn){
 
     union(){
 
@@ -160,16 +160,16 @@ module baseSpiral(A, nbTurn, r, fn, dir){
             for(i= [0 : nbTurn - 1]){
 
                 pts = spiralPoints(A, r, i);
-                bezierArcCurve(A= pts[0], alpha= dir*90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, dir*90])
+                bezierArcCurve(A= pts[0], alpha= -90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, -90])
                     children();
 
-                bezierArcCurve(A= pts[1], alpha= dir*90, r= (2*r + i*4*r), fn= fn, pos= center[1], rot= true, theta= [0, 0, dir*90])
+                bezierArcCurve(A= pts[1], alpha= -90, r= (2*r + i*4*r), fn= fn, pos= center[1], rot= true, theta= [0, 0, -90])
                     children();
 
-                bezierArcCurve(A= pts[2], alpha= dir*90, r= (3*r + i*4*r), fn= fn, pos= center[2], rot= true, theta= [0, 0, dir*90])
+                bezierArcCurve(A= pts[2], alpha= -90, r= (3*r + i*4*r), fn= fn, pos= center[2], rot= true, theta= [0, 0, -90])
                     children();
 
-                bezierArcCurve(A= pts[3], alpha= dir*90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, dir*90])
+                bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, -90])
                     children();
             }
         }
@@ -187,25 +187,26 @@ module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, p
     assertion((direction == CLOCKWIRE) || (direction == ANTICLOCKWIRE), "The direction shoulb only be CLOCKWIRE or ANTICLOCKWIRE");
     
     mTranslate(pos)
-        mRotate(rot){
+        mRotate(rot)
+        rotX((1 + direction[0])*90){
             
             if(isDef(r)){
                 
                 assertion(r > 0, "r should be greater than 0");
             
-                baseSpiral(A, nbTurn, r, fn, direction[0])
+                baseSpiral(A, nbTurn, r, fn)
                     children();
             }
             else{
                 
                 assertion(p > 0, "p should be greater than 0");
 
-                baseSpiral(A, nbTurn, p/4, fn, direction[0])
+                baseSpiral(A, nbTurn, p/4, fn)
                     children();
             }
         }
 }
 
-spiral(nbTurn= 5, r= 0.04)
+spiral(nbTurn= 5, r= 0.04, direction=ANTICLOCKWIRE)
     cube(0.01, center= true);
 //    sphere(0.01, $fn= 20);
