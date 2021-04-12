@@ -116,3 +116,152 @@ module chamferAngBase(chamfer, fs, ang= 45){
         }
     }
 }
+
+
+function getGearDim(alpha, m, Z) = [m*PI,              // Pas
+        m*Z,               // Diamètre primitif
+        m*(Z + 2),         // Diamètre de tête
+        m*(Z-2.5),         // Diamètre depied
+    m,                 // Saillie
+        1.25*m,            // Creux
+            m*Z*cos(alpha),    // Rayon de placement de la développante de cercle pour les dents
+                m*Z*cos(alpha)/2];   // Rayon de la réveloppante de cercle
+
+function invulteCircle(r, t) = [r*(cos(t*180/PI) + t*sin(t*180/PI)),
+        r*(sin(t*180/PI) - t*cos(t*180/PI)),
+    0];
+
+function toothPts(r, t, n, k= 0) =
+(k < n ? (concat([invulteCircle(r, k*t)], toothPts(r, t, n, k + 1))
+) : (
+    [invulteCircle(r, k*t)])
+);
+
+module tooth(m, d, fn= 10){
+
+    t = 1/fn;
+    pts = toothPts(d[7], t, fn - 1);
+    echo(d[7]);
+    pts2 = let(v = [])toothPts(d[7], -t, fn - 1);
+
+
+    for(i= [0 : len(pts)-2]){
+
+        hull(){
+
+            mTranslate(pts[i])
+            sphere(0.1, $fn= 50);
+
+            mTranslate(pts[i + 1])
+            sphere(0.1, $fn= 50);
+        }
+        /*   color("blue")
+               mTranslate(pts2[i])
+                   sphere(0.1, $fn= 50);*/
+    }
+
+    mTranslate([d[2]/2, -5, 0])
+    cube(5, 5);
+}
+
+function invulteCircle2(r, t) = [r*(cos(t) + t*sin(t)),
+        r*(sin(t) - t*cos(t)),
+    0];
+
+function toothPts2(r, t, n, k= 0) =
+(k < n ? (concat([invulteCircle2(r, k*t)], toothPts2(r, t, n, k + 1))
+) : (
+    [invulteCircle2(r, k*t)])
+);
+
+module tooth2(m, Z, d, fn){
+
+    fa = 360/Z;
+    t = 1/fn;
+
+    pts = toothPts(d[7], t, fn);
+    pts2 = toothPts(d[7], -t, fn);
+
+    for(i= [0 : len(pts) - 2]){
+
+        hull(){
+
+            mTranslate(pts[i])
+            sphere(0.1, $fn= 20);
+
+            rotZ(20)
+            mTranslate(pts2[i])
+            sphere(0.1, $fn= 20);
+
+            mTranslate(pts[i + 1])
+            sphere(0.1, $fn= 20);
+
+            rotZ(20)
+            mTranslate(pts2[i + 1])
+            sphere(0.1, $fn= 20);
+        }
+
+        /*// Ancienne version
+        hull(){
+
+            mTranslate(pts[i])
+                sphere(0.1, $fn= 20);
+
+            mTranslate(pts[i + 1])
+                sphere(0.1, $fn= 20);
+        }
+
+        rotZ(fa)
+        hull(){
+
+            mTranslate(pts2[i])
+                sphere(0.1, $fn= 20);
+
+            mTranslate(pts2[i + 1])
+                sphere(0.1, $fn= 20);
+        }
+
+        */
+        /*   color("blue")
+               mTranslate(pts2[i])
+                   sphere(0.1, $fn= 50);*/
+    }
+}
+
+//alpha= 20 ou 14.5
+module gear2(m= 1, Z= 13, alpha= 20, fn= 20){
+
+    d= getGearDim(alpha, m, Z);
+
+    mTranslate([0, 0, -0.05])
+    cylinder(d= d[1], h= 0.1, $fn= fn);
+
+    color("blue")
+        mTranslate([0, 0, 0.1])
+        cylinder(d= d[3], h= 0.1, $fn=fn);
+    /*
+    color("red")
+        mTranslate([0, 0, -0.1])
+            cylinder(d= d[2], h= 0.1, $fn= fn);
+    */
+    fa = 360/Z;
+
+    difference(){
+
+        union(){
+            for(i= [0 /*: Z - 1*/]){
+
+                rotZ(i*fa)
+                tooth2(m, Z, d, fn);
+            }
+        }
+
+        difference(){
+
+            cylinder(d= d[2]*6/5, h= 1, $fn= 10+fn, center= true);
+            cylinder(d= d[2], h= 1, $fn= 10+fn, center= true);
+        }
+    }
+}
+
+//    gear2(fn= 50);
