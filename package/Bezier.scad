@@ -119,7 +119,7 @@ function bezierArcPts(alpha, r, A) =
         b = (A.x == 0 ? L : A.y/A.x),
         yP = (a*b + sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1),
         yM = (a*b - sqrt(abs(h*h*b*b - a*a + h*h)))/(b*b + 1))
-    (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y should both be differnet than 0")       // A.x && A.y == 0 => centre du cercle
+    (A.x == 0 ? ((A.y == 0 ? (echoError(msg= "A.x and A.y should both be different than 0")       // A.x && A.y == 0 => centre du cercle
                          ) : (
                               (A.y > 0 ? ([[-L, A.y, A.z], [L, A.y, A.z]]                       // Tests pour placer P,P' si A.x == 0
                                      ) : (

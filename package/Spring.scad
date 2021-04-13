@@ -166,33 +166,52 @@ module baseSpiral(A, nbTurn, r, fn){
         union(){
             
             center = spiralCenters(A, r);
-            for(i= [0 : nbTurn - 1]){
 
-                pts = spiralPoints(A, r, i);
-                bezierArcCurve(A= pts[0], alpha= -90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, -90])
+            pts = spiralPoints(A, r, 0);
+
+            rotZ(-90)
+                bezierArcCurve(A= pts[0], alpha= -asin(1/4) + 90, r= r, fn= fn, pos= center[0], rot= true, theta= [0, 0, -asin(1/4) + 90])
                     children();
 
-                bezierArcCurve(A= pts[1], alpha= -90, r= (2*r + i*4*r), fn= fn, pos= center[1], rot= true, theta= [0, 0, -90])
-                    children();
+            bezierArcCurve(A= pts[1], alpha= -90, r= 2*r, fn= fn, pos= center[1], rot= true, theta= [0, 0, -90])
+                children();
+            
+            bezierArcCurve(A= pts[2], alpha= -90, r= 3*r, fn= fn, pos= center[2], rot= true, theta= [0, 0, -90])
+                children();
 
-                bezierArcCurve(A= pts[2], alpha= -90, r= (3*r + i*4*r), fn= fn, pos= center[2], rot= true, theta= [0, 0, -90])
-                    children();
+            bezierArcCurve(A= pts[3], alpha= -90, r= 4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, -90])
+                children();
 
-                bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, -90])
-                    children();
+            if(1 < nbTurn){
+
+                for(i= [1 : nbTurn - 1]){
+
+                    pts = spiralPoints(A, r, i);
+                    
+                    bezierArcCurve(A= pts[0], alpha= -90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, -90])
+                        children();
+
+                    bezierArcCurve(A= pts[1], alpha = -90, r= (2*r + i*4*r), fn= fn, pos= center[1], rot= true, theta= [0, 0, -90])
+                        children();
+
+                    bezierArcCurve(A= pts[2], alpha= -90, r= (3*r + i*4*r), fn= fn, pos= center[2], rot= true, theta= [0, 0, -90])
+                        children();
+
+                    bezierArcCurve(A= pts[3], alpha= -90, r= (1 + i)*4*r, fn= fn, pos= center[3], rot= true, theta= [0, 0, -90])
+                        children();
+                }
             }
         }
 
-        bezierArcCurve(A= [-r/2, 0, 0], alpha= 90, r= r/2, fn= fn, pos= [-r/2, 0, 0], rot= true, theta= [0, 0, 90])
+        bezierArcCurve(A= [-r/4, 0, 0], alpha= 90, r= r/4, fn= fn, pos= [-r*(cos(asin(1/4)) - 1/4), r/4, 0], rot= true, theta= [0, 0, 90])
             children();
         
         hull(){
 
-            mTranslate([-r/2, -r/2, 0])
+            mTranslate([-r*(cos(asin(1/4)) - 1/4), 0, 0])
                 children();
 
-            rotZ(45)
-                children();
+            children();
         }
 
         hull(){
@@ -207,7 +226,7 @@ module baseSpiral(A, nbTurn, r, fn){
 
 module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top, fn= 20){
     
-    assertion((len(A) == 3), "A should be a 3S vector");
+    assertion((len(A) == 3), "A should be a 3D vector");
     assertion(0 < nbTurn, "nbTurn should be greater than 0");
     assertion(!(isDef(r) && isDef(p)) || !(isUndef(r) && isUndef(p)), "Only one of the parameters (r, p) should be defined");
     assertion((direction == CLOCKWIRE) || (direction == ANTICLOCKWIRE), "The direction should only be CLOCKWIRE or ANTICLOCKWIRE");
@@ -237,6 +256,7 @@ module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, p
             }
 }
 
-spiral(nbTurn= 5, r= 0.02, direction=CLOCKWIRE)
-    cube([0.01, 0.01, 0.05], center= true);
+spiral(nbTurn= 5, r= 0.2, direction= ANTICLOCKWIRE)
+    cylinder(r= 0.05, h= 0.05, $fn= 30);
+//    cube([0.01, 0.01, 0.05], center= true);
 //    sphere(0.01, $fn= 20);
