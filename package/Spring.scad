@@ -1,15 +1,15 @@
-use <Bezier.scad>
-use <Transforms.scad>
-use <Basics.scad>
-use <Vector.scad>
-include <Constants.scad>
+use<Bezier.scad>
+use<Transforms.scad>
+use<Basics.scad>
+use<Vector.scad>
+include<Constants.scad>
 
 function stepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
                                P.x * sin(ang) + P.y * cos(ang),
                                P.z + ang*p/360];
 
 /*
-* helicoid(A: point in the helicoid
+* helicoid(A: point of the helicoid
 *          r: The radius of the helicoid
 *          nbTurn: The number of turn of the helicoid
 *          p: The pitch between two step of the helicoid
@@ -18,17 +18,8 @@ function stepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
 * Result:
 *   Create an helicoid of the form passed in children.
 */
-module helicoid(A= [1,0,0], r= 1, nbTurn= 1, p= 1, fa= 1){
+module helicoidMod(A, r, nbTurn, p, fa){
 
-    assertion(len(A) == 3, "A should be a 3D vector");
-    assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
-    assertion(abs(mod([A.x, A.y])) == r, "A should belong to the circle of radius r");
-    assertion(0 < r, "r should be greater than 0");
-    assertion(0 < nbTurn, "nbTurn should be greater than 0");
-    assertion(0 < p, "p should be greater than 0");
-    assertion(0 < fa, "fa should be greater than 0");
-    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa should be equal to 0");
-    
     iMax = nbTurn*360/fa;
     union(){
 
@@ -48,9 +39,28 @@ module helicoid(A= [1,0,0], r= 1, nbTurn= 1, p= 1, fa= 1){
     }
 }
 
+module helicoid(A= [1, 0, 0], r= 1, nbTurn= 1, p= 1, fa= 10, pos= [0, 0, 0], rot= ROT_Top){
+
+    assertion(len(A) == 3, "A should be a 3D vector");
+    assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
+    assertion(abs(mod([A.x, A.y])) == r, "A should belong to the circle of radius r");
+    assertion(0 < r, "r should be greater than 0");
+    assertion(0 < nbTurn, "nbTurn should be greater than 0");
+    assertion(0 < p, "p should be greater than 0");
+    assertion(0 < fa, "fa should be greater than 0");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa should be equal to 0");
+    assertion(len(pos) == 3, "pos should be a 3D Vector");
+    assertion(len(rot) == 3, "rot should be a 3D Vector");
+
+    mTranslate(pos)
+        mRotate(rot)
+            helicoidMod(A, r, nbTurn, p, fa)
+                children();
+}
+
 /*
-    helicoid(r= 1, nbTurn= 3, p= 1)
-        sphere(0.1);
+helicoid(r= 1, nbTurn= 3, p= 1)
+    sphere(0.1, $fn= 20);
 */
 
 module circularCompressionSpringBase(r, fn, length){
@@ -74,21 +84,7 @@ module circularCompressionSpringBase(r, fn, length){
 * Result:
 *   Create a circular compression spring.
 */
-module circularCompressionSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTurnEnd= undef, p= 1, fa= 1, fn= 20){
-
-    assertion(len(A) == 3, "A should be a 3D vector");
-    assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
-    assertion(0 < R, "R should be strictly greater than 0");
-    assertion(abs(mod([A.x, A.y])) == R, "A should belong to the circle of radius R");
-
-    assertion(0 < r, "r should be greater than 0");
-    assertion(0 < nbTurn, "nbTurn should be greater than 0");
-    assertion(0 < nbTurnStart, "nbTurnStart should be greater than 0");
-    assertion((isDef(nbTurnEnd) ? (nbTurnEnd > 0) : (true)), "nbTurnEnd should be greater than 0");
-    assertion(2*r < p, "p should be strictly greater than 2*r");
-    assertion(0 < fa, "fa should be greater than 0");
-    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa should be equal to 0");
-    assertion(0 < fn, "fn should be greater than 0");
+module circularCompressionSpringMod(A, r, R, nbTurn, nbTurnStart, nbTurnEnd, p, fa, fn){
 
     length = (R - r)*tan(fa);
     startIncr = nbTurnStart*360/fa;
@@ -142,9 +138,31 @@ module circularCompressionSpring(A= [1,0,0], r= 0.1, R= 1, nbTurn= 1, nbTurnStar
         }
     }
 }
-/*
-    circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
-*/
+
+module circularCompressionSpring(A= [1, 0, 0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTurnEnd= undef, p= 1, fa= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top){
+
+    assertion(len(A) == 3, "A should be a 3D vector");
+    assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
+    assertion(0 < R, "R should be strictly greater than 0");
+    assertion(abs(mod([A.x, A.y])) == R, "A should belong to the circle of radius R");
+    assertion(0 < r, "r should be greater than 0");
+    assertion(0 < nbTurn, "nbTurn should be greater than 0");
+    assertion(0 < nbTurnStart, "nbTurnStart should be greater than 0");
+    assertion((isDef(nbTurnEnd) ? (nbTurnEnd > 0) : (true)), "nbTurnEnd should be greater than 0");
+    assertion(2*r < p, "p should be strictly greater than 2*r");
+    assertion(0 < fa, "fa should be greater than 0");
+    assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa should be equal to 0");
+    assertion(0 < fn, "fn should be greater than 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+
+    mTranslate(pos)
+        mRotate(rot)
+            circularCompressionSpringMod(A, r, R, nbTurn, nbTurnStart, nbTurnEnd, p, fa, fn);
+}
+
+//circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
+
 /*
     circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
 */
@@ -159,7 +177,7 @@ function spiralCenters(A, r)= [[A.x,     A.y,     A.z],
                                [A.x - r, A.y - r, A.z],
                                [A.x - r, A.y,     A.z]];
 
-module baseSpiral(A, nbTurn, r, fn){
+module spiralBase(A, nbTurn, r, fn){
 
     union(){
 
@@ -224,8 +242,29 @@ module baseSpiral(A, nbTurn, r, fn){
     }
 }
 
-module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top, fn= 20){
-    
+module spiralMod(A, nbTurn, r, p, direction, fn){
+
+    rotX((1 + direction[0])*90){
+
+        if(isDef(r)){
+
+            assertion(0 < r, "r should be greater than 0");
+
+            spiralBase(A, nbTurn, r, fn)
+                children();
+        }
+        else{
+
+            assertion(0 < p, "p should be greater than 0");
+
+            spiralBase(A, nbTurn, p/4, fn)
+                children();
+        }
+    }
+}
+
+module spiralSpring(A= [0, 0, 0], nbTurn= 1, r= undef, p= undef, fn= 20, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top){
+
     assertion((len(A) == 3), "A should be a 3D vector");
     assertion(0 < nbTurn, "nbTurn should be greater than 0");
     assertion(!(isDef(r) && isDef(p)) || !(isUndef(r) && isUndef(p)), "Only one of the parameters (r, p) should be defined");
@@ -233,30 +272,16 @@ module spiral(A= [0,0,0], nbTurn= 1, r= undef, p= undef, direction= CLOCKWIRE, p
     assertion((len(pos) == 3), "pos should be a 3D vector");
     assertion((len(rot) == 3), "rot should be a 3D vector");
     assertion(0 < fn, "fn should be greater than 0");
-    assertion($children == 1, "This module requires a minimum of one 'children()'");
+    assertion($children == 1, "This module requires only one children()");
 
     mTranslate(pos)
         mRotate(rot)
-            rotX((1 + direction[0])*90){
-
-                if(isDef(r)){
-
-                    assertion(0 < r, "r should be greater than 0");
-
-                    baseSpiral(A, nbTurn, r, fn)
-                        children();
-                }
-                else{
-
-                    assertion(0 < p, "p should be greater than 0");
-
-                    baseSpiral(A, nbTurn, p/4, fn)
-                        children();
-                }
-            }
+            spiralMod(A, nbTurn, r, p, direction, fn)
+                children();
 }
 
-spiral(nbTurn= 5, r= 0.2, direction= ANTICLOCKWIRE)
-    cylinder(r= 0.05, h= 0.05, $fn= 30);
-//    cube([0.01, 0.01, 0.05], center= true);
+
+spiralSpring(nbTurn= 5, r= 0.2, direction= ANTICLOCKWIRE)
+//    cylinder(r= 0.05, h= 0.05, $fn= 30);
+    cube([0.01, 0.01, 0.05], center= true);
 //    sphere(0.01, $fn= 20);

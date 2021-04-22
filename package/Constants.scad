@@ -6,6 +6,10 @@
 CLOCKWIRE = [-1];
 ANTICLOCKWIRE = [1];
 
+    // Gears
+RIGHT_HAND = [-1];
+LEFT_HAND = [1];
+
     // Orientation
 HORIZONTAL  = [123];    // Arbitrary values
 VERTICAL    = [-123];

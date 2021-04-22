@@ -532,7 +532,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                     length = l*tan(ang);
                     pa = fn*length;
                     nbTurn = h/pa;
-                    iMax = nbTurn*fn;
+                    jMax = nbTurn*fn;
 
                     //echo(rotAng, length, nbTurn, fn, iMax);
 
@@ -543,7 +543,7 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                             k = pow(-1, i);
                             rotZ(i*rotAng)
                             union(){
-                                for(j= [0 : iMax - 1]){
+                                for(j= [0 : jMax - 1]){
 
                                     hull(){
 
@@ -616,16 +616,21 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
 }
 
 /*
-knurling(h= 1.2, ang= 30, moduleNb= 10, p = 0.4, fa= 5){
+knurling(h= 1.2, ang= 45, moduleNb= 10, p = 0.4, fa= 5){
 
-//    mTranslate([0, 0, 0.05])
-    cylinder(r= 1, h=1, $fn= 360/10);
-    mTranslate([0.01, 0, 0])rotZ(90)rotX(45)cube([0.001, 0.1, 0.1], center= true);
+    mTranslate([0, 0, 0.05])
+        cylinder(r= 1, h=1, $fn= 360/10);
+    
+    mTranslate([0.01, 0, 0])
+        rotZ(90)
+            rotX(45)
+                cube([0.001, 0.1, 0.1], center= true);
 }
 
 color("red")
 mTranslate([1, 0, 0]) rotX(30) cube(0.1);
 */
+
 /*
 knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
     
@@ -633,6 +638,7 @@ knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
     mTranslate([-0.025, -0.025, 0]) cube(0.05);
 }
 */
+
 /*
 knurling(r= 1, h= 1, p= 0.5, orient= HORIZONTAL, moduleNb= 6, fa= 10){
     
