@@ -3,7 +3,6 @@ use<Basics.scad>
 use<Transforms.scad>
 use<Vector.scad>
 
-
 module bevelMod(r, length, fn, orient){
 
     rotZ(orient)
@@ -26,10 +25,7 @@ module bevelMod(r, length, fn, orient){
 *            [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *       orient: use constant or sum of constant ORIENT_* to orient the bevel,
 *       center: if true center the bevel)
-*
-* Result:
-*  A bevel to placed or placed on a corner.
- */
+*/
 module bevel(r= 1, length= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, orient= ORIENT_1, center= false){
 
     assertion(0 < r, "r should be greater than 0");
@@ -47,7 +43,7 @@ module bevel(r= 1, length= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, orient= ORIE
 
 //bevel(rot= ROT_Rgt, orient= ORIENT_2, r= 5, length= 10);
 
-module cylindricalBevelMod(r, R, fn){
+module cylindricalBevelMod(r, R, fn, fnB){
 
     difference(){
 
@@ -59,11 +55,21 @@ module cylindricalBevelMod(r, R, fn){
         mTranslate([0, 0, r + 0.1])
             rotate_extrude($fn= fn)
                 mTranslate([R + r, 0, 0])
-                    circle(r= r, $fn= fn);
+                    circle(r= r, $fn= 4*fnB);
     }
 }
 
-module cylindricalBevel(r= 1, R= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, center= false){
+/*
+* cylindricalbevel(r: radius of the bevel,
+*                  R: radius of the axel to set the bevel
+*                  fn: number of segment for the arc circle,
+*                  fnB: number of segment for the bevel,
+*                  pos: final position of the bevel,
+*                  rot: use sum of constants ROT_* to orient the bevel OR custom rotation vector as
+*                       [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                  center: if true center the bevel)
+*/
+module cylindricalBevel(r= 1, R= 1, fn= 20, fnB= 20, pos= [0, 0, 0], rot= ROT_Top, center= false){
 
     assertion(0 < r, "r should be greater than 0");
     assertion(0 < R, "R should be greater than 0");
@@ -74,10 +80,10 @@ module cylindricalBevel(r= 1, R= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, center
     mTranslate(pos)
         mTranslate((center ? -getTranslateRot(rot)*(r + 0.1)/2 : [0, 0, 0]))
             mRotate(rot)
-                cylindricalBevelMod(r, R, fn);
+                cylindricalBevelMod(r, R, fn, fnB);
 }
 
-//cylindricalBevel(r= 0.2, R= 2, fn= 100, rot= ROT_Bot);
+cylindricalBevel(r= 0.2, R= 2, fn= 100, rot= ROT_Bot);
 
 module chamferMod(chamfer, length, ang,  orient){
 
@@ -94,7 +100,7 @@ module chamferMod(chamfer, length, ang,  orient){
 }
 
 /*
-* chamfer(chamfer: idth of the chamfer,
+* chamfer(chamfer: width of the chamfer,
 *         length: length of the chamfer,
 *         chamferAng: angle of the chamfer,it should be within [20,
 *         pos: final position of the chamfer,
@@ -102,10 +108,7 @@ module chamferMod(chamfer, length, ang,  orient){
 *              [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *         orient: use constant or sum of constant ORIENT_* to orient the chamfer,
 *         center: if true center the chamfer)
-*
-* Result:
-*  A bevel to placed or placed on a corner.
- */
+*/
 module chamfer(chamfer= 1, length= 1, chamferAng= 45, pos= [0, 0, 0], rot= ROT_Top, orient= ORIENT_1, center= false){
 
     assertion(0 < chamfer, "chamfer should be greater than 0");
@@ -139,10 +142,19 @@ module cylindricalChamferMod(chamfer, chamferAng, R, fn){
         }   
     
         mTranslate([0, 0, -0.15])
-            cylinder(r= R - 0.1, h= chamfer + 0.2, $fn= fn);
+            cylinder(r= R - 0.1, h= chamfer + 0.2, $fn= fnB);
     }
 }
 
+/*
+* cylindricalchamfer(chamfer: width of the chamfer,
+*                    chamferAng: angle of the chamfer,it should be within [20,
+*                    pos: final position of the chamfer,
+*                    rot: use sum of constants ROT_* to orient the chamfer OR custom rotation vector as
+*                         [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
+*                    orient: use constant or sum of constant ORIENT_* to orient the chamfer,
+*                    center: if true center the chamfer)
+*/
 module cylindricalChamfer(chamfer= 1, chamferAng= 45, R= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, center= false){
     
     assertion(0 < chamfer, "chamfer should be greater than 0");

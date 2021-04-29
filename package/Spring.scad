@@ -8,16 +8,6 @@ function stepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
                                P.x * sin(ang) + P.y * cos(ang),
                                P.z + ang*p/360];
 
-/*
-* helicoid(A: point of the helicoid
-*          r: The radius of the helicoid
-*          nbTurn: The number of turn of the helicoid
-*          p: The pitch between two step of the helicoid
-*          fa: angular accuracy between each sub-module
-*
-* Result:
-*   Create an helicoid of the form passed in children.
-*/
 module helicoidMod(A, r, nbTurn, p, fa){
 
     iMax = nbTurn*360/fa;
@@ -39,6 +29,19 @@ module helicoidMod(A, r, nbTurn, p, fa){
     }
 }
 
+/*
+* helicoid(A: point of the helicoid,
+*          r: The radius of the helicoid,
+*          nbTurn: The number of turn of the helicoid,
+*          p: The pitch between two step of the helicoid,
+*          fa: angular accuracy between each sub-module,
+*          pos: final position of the helicoid,
+*          rot: use sum of constants ROT_* for orient the helicoid OR custom rotation vector as
+*               [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction))
+*
+* Result:
+*   Create an helicoid of the form passed in children.
+*/
 module helicoid(A= [1, 0, 0], r= 1, nbTurn= 1, p= 1, fa= 10, pos= [0, 0, 0], rot= ROT_Top){
 
     assertion(len(A) == 3, "A should be a 3D vector");
@@ -70,20 +73,6 @@ module circularCompressionSpringBase(r, fn, length){
             circle(r= r, $fn= fn);
 }
 
-/*
-* circularCompressionSpring(A: point in the helicoid
-*                           r: The radius of the base circle
-*                           R: The radius of the helicoid
-*                           nbTurn: The number of turn of the helicoid
-*                           nbTurnStart: The number of turn for start the helicoid
-*                           nbTurnEnd: The number of turn for end the helicoid
-*                           p: The pitch between two step of the helicoid
-*                           fa: angular accuracy between each sub-module
-*                           fn: precision of the base circle
-*
-* Result:
-*   Create a circular compression spring.
-*/
 module circularCompressionSpringMod(A, r, R, nbTurn, nbTurnStart, nbTurnEnd, p, fa, fn){
 
     length = (R - r)*tan(fa);
@@ -139,6 +128,23 @@ module circularCompressionSpringMod(A, r, R, nbTurn, nbTurnStart, nbTurnEnd, p, 
     }
 }
 
+/*
+* circularCompressionSpring(A: point in the helicoid,
+*                           r: The radius of the base circle,
+*                           R: The radius of the helicoid,
+*                           nbTurn: The number of turn of the helicoid,
+*                           nbTurnStart: The number of turn for start the helicoid,
+*                           nbTurnEnd: The number of turn for end the helicoid,
+*                           p: The pitch between two step of the helicoid,
+*                           fa: angular accuracy between each sub-module,
+*                           fn: precision of the base circle,
+*                           pos: final position of the helicoid,
+*                           rot: use sum of constants ROT_* for orient the spring OR custom rotation vector as
+*                                [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction))
+*
+* Result:
+*   Create a circular compression spring.
+*/
 module circularCompressionSpring(A= [1, 0, 0], r= 0.1, R= 1, nbTurn= 1, nbTurnStart= 1, nbTurnEnd= undef, p= 1, fa= 1, fn= 20, pos= [0, 0, 0], rot= ROT_Top){
 
     assertion(len(A) == 3, "A should be a 3D vector");
@@ -163,9 +169,7 @@ module circularCompressionSpring(A= [1, 0, 0], r= 0.1, R= 1, nbTurn= 1, nbTurnSt
 
 //circularCompressionSpring(A= [1, 0, 0], r= 0.1, nbTurn= 3, nbTurnStart= 2, p= 1, fa= 1);
 
-/*
-    circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
-*/
+//circularCompressionSpring(A= [3, 0, 0], r= 0.3, R= 3, nbTurn= 4, nbTurnStart= 1, nbTurnEnd= 3, p= 2, fa= 1);
 
 function spiralPoints(A, r, i)= [[A.x - r - i*4*r,      A.y,                A.z],
                                  [A.x,                  A.y + 2*r + i*4*r,  A.z],
@@ -177,12 +181,12 @@ function spiralCenters(A, r)= [[A.x,     A.y,     A.z],
                                [A.x - r, A.y - r, A.z],
                                [A.x - r, A.y,     A.z]];
 
-module spiralBase(A, nbTurn, r, fn){
+module spiralBase(A, nbTurn, r, fn, startEnd){
 
     union(){
 
         union(){
-            
+
             center = spiralCenters(A, r);
 
             pts = spiralPoints(A, r, 0);
@@ -193,7 +197,7 @@ module spiralBase(A, nbTurn, r, fn){
 
             bezierArcCurve(A= pts[1], alpha= -90, r= 2*r, fn= fn, pos= center[1], rot= true, theta= [0, 0, -90])
                 children();
-            
+
             bezierArcCurve(A= pts[2], alpha= -90, r= 3*r, fn= fn, pos= center[2], rot= true, theta= [0, 0, -90])
                 children();
 
@@ -205,7 +209,7 @@ module spiralBase(A, nbTurn, r, fn){
                 for(i= [1 : nbTurn - 1]){
 
                     pts = spiralPoints(A, r, i);
-                    
+
                     bezierArcCurve(A= pts[0], alpha= -90, r= (r + i*4*r), fn= fn, pos= center[0], rot= true, theta= [0, 0, -90])
                         children();
 
@@ -221,28 +225,31 @@ module spiralBase(A, nbTurn, r, fn){
             }
         }
 
-        bezierArcCurve(A= [-r/4, 0, 0], alpha= 90, r= r/4, fn= fn, pos= [-r*(cos(asin(1/4)) - 1/4), r/4, 0], rot= true, theta= [0, 0, 90])
-            children();
-        
-        hull(){
+        if(startEnd){
 
-            mTranslate([-r*(cos(asin(1/4)) - 1/4), 0, 0])
+            bezierArcCurve(A= [-r/4, 0, 0], alpha= 90, r= r/4, fn= fn, pos= [-r*(cos(asin(1/4)) - 1/4), r/4, 0], rot= true, theta= [0, 0, 90])
                 children();
 
-            children();
-        }
+            hull(){
 
-        hull(){
-            mTranslate([-r -nbTurn*4*r, 0, 0])
-                children();
+                mTranslate([-r*(cos(asin(1/4)) - 1/4), 0, 0])
+                    children();
 
-            mTranslate([-r -nbTurn*4*r, r + (nbTurn - 1)*4*r, 0])
                 children();
+            }
+
+            hull(){
+                mTranslate([-r -nbTurn*4*r, 0, 0])
+                    children();
+
+                mTranslate([-r -nbTurn*4*r, r + (nbTurn - 1)*4*r, 0])
+                    children();
+            }
         }
     }
 }
 
-module spiralMod(A, nbTurn, r, p, direction, fn){
+module spiralMod(A, nbTurn, r, p, direction, fn, startEnd){
 
     rotX((1 + direction[0])*90){
 
@@ -250,20 +257,33 @@ module spiralMod(A, nbTurn, r, p, direction, fn){
 
             assertion(0 < r, "r should be greater than 0");
 
-            spiralBase(A, nbTurn, r, fn)
+            spiralBase(A, nbTurn, r, fn, startEnd)
                 children();
         }
         else{
 
             assertion(0 < p, "p should be greater than 0");
 
-            spiralBase(A, nbTurn, p/4, fn)
+            spiralBase(A, nbTurn, p/4, fn, startEnd)
                 children();
         }
     }
 }
 
-module spiralSpring(A= [0, 0, 0], nbTurn= 1, r= undef, p= undef, fn= 20, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top){
+/*
+* spiralSpring(A: point in the helicoid,
+*              nbTurn: The number of turn of the helicoid,
+*              r: The radius of the base circle,
+*              nbTurn: The number of turn for the spring,
+*              p: The pitch between two step of the spring,
+*              fn: precision of the base circle,
+*              startEnd: if true set the start ang the end of the spiral spring,
+*              direction: should be CLOCKWIRE or ANTICLOCKWIRE,
+*              pos: final position of the spring,
+*              rot: use sum of constants ROT_* for orient the helicoid OR custom rotation vector as
+*                   [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction))
+*/
+module spiralSpring(A= [0, 0, 0], nbTurn= 1, r= undef, p= undef, fn= 20, startEnd= false, direction= CLOCKWIRE, pos= [0,0,0], rot= ROT_Top){
 
     assertion((len(A) == 3), "A should be a 3D vector");
     assertion(0 < nbTurn, "nbTurn should be greater than 0");
@@ -276,12 +296,13 @@ module spiralSpring(A= [0, 0, 0], nbTurn= 1, r= undef, p= undef, fn= 20, directi
 
     mTranslate(pos)
         mRotate(rot)
-            spiralMod(A, nbTurn, r, p, direction, fn)
+            spiralMod(A, nbTurn, r, p, direction, fn, startEnd)
                 children();
 }
 
-
+/*
 spiralSpring(nbTurn= 5, r= 0.2, direction= ANTICLOCKWIRE)
-//    cylinder(r= 0.05, h= 0.05, $fn= 30);
-    cube([0.01, 0.01, 0.05], center= true);
+    cylinder(r= 0.05, h= 0.05, $fn= 30);
+//    cube([0.01, 0.01, 0.05], center= true);
 //    sphere(0.01, $fn= 20);
+*/

@@ -6,9 +6,6 @@ include<Constants.scad>
 * hole(pos: position of each holes to be pierced,
 *      rots: rotation to applied to the hole base)
 *
-* Result: 
-*   Pierce a hole in the first "action()" with the subsequent "actions()" as a pattern
-* 
 * WARNINGS: 
 *      1. The hole patterns must be positioned in the centre of the system axes. In addition, if you wish to pierce a hole along the Z axis, you will have to place and size your part (to be removed) so that : 
 *
@@ -39,11 +36,7 @@ module hole(pos= [[0, 0, 0]], rots= [ROT_Top]){
         }
     }
 }
- 
-// Exemple:
-/*
-* Pierce at the top and the bottom of a cube(size= 2) with a cylinder(r= 0.5, h= 0.5)
-*/
+
 /*
 hole([[0, 0, 0.5], [0, 0, -0.5]], [ROT_Top, ROT_Bot]){
     
@@ -90,15 +83,19 @@ hole([[0, 0, 0.5], [0, 0, -0.5]], [ROT_Top, ROT_Bot]){
 *                   [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction
 *              H: Height of the hole cylinder above the chamfer (if a height greater than 0.01 is required, only with the chamfer))
 *
-* Result: 
-*   A cylinder hole chamfered or not
-* 
 * Note:
 *   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
 */
 module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top, H= 0){
 
-    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(0 < r, "r should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
+    assertion(0 < chamferSize, "chamferSize should be greater than 0");
+    assertion((0 < chamferAng) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+    assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
     assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
@@ -132,10 +129,6 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
     }
 }
 
-// Exemple:
-/*
-* Pierce at the Left of a cube(size= 5) with a cylinder(r= 1, h= 2) and chamfer it with an angle of 30° and a width of 0.5
-*/
 /*
 cylinderHole(pos= [2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0.5, rot= ROT_Rgt)
     cube(5, center= true);
@@ -153,16 +146,18 @@ cylinderHole(pos= [2.5, 0, 0], r= 1, h= 2, fn= 50, chamfer= true, chamferSize= 0
 *          rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as 
 *               [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction
 *          H: Height of the hole cylinder above the chamfer (if a height greater than 0.01 is required, only with the chamfer))
-*
-* Result: 
-*   A cube hole chamfered or not
 */
 module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top, H= 0){
-    
-    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(0 < c, "c should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < chamferSize, "chamferSize should be greater than 0");
+    assertion((0 < chamferAng) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+    assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
-    
     assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize"); 
     
     r = c*sqrt(2)/2;
@@ -196,10 +191,6 @@ module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, ch
     }
 }
 
-// Exemple:
-/*
-* Pierce at the Bottom of a cube(size= 5) with a square(width= 1, height= 2) and chamfer it with an angle of 30° and a width of 0.5
-*/
 /*
 cubeHole(pos= [0, 0, -2.5], c= 1, h= 2, chamfer= true, chamferSize= 0.5, rot= ROT_Bot)
     cube(5, center= true);
@@ -217,13 +208,17 @@ cubeHole(pos= [0, 0, -2.5], c= 1, h= 2, chamfer= true, chamferSize= 0.5, rot= RO
 *            rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
 *                 [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction
 *            H: Height of the hole cylinder above the chamfer (if a height greater than 0.01 is required, only with the chamfer))
-*
-* Result:
-*   A square hole chamfered or not
 */
 module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSize= 0.01, chamferAng= 30, rot= ROT_Top, H= 0){
 
-    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(size) == 2, "size should be a 2D vector");
+    assertion((0 < size[0]) || (0 < size[1]),"The size of the square should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < chamferSize, "chamferSize should be greater than 0");
+    assertion((0 < chamferAng) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+    assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
 
@@ -275,11 +270,6 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
       }
 }
 
-// Exemple:
-/*
-* Pierce at the Top and the Front of a cube(size= 5) with a square(width [x, y]= [1, 3], height= 2),
-* only the Top is chamfered with an angle of 30° and a width of 0.5
-*/
 /*
 squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, rot= ROT_Frt)
     squareHole(pos= [0, 0, 2.50], size= [1, 3], h= 2, chamfer= true, chamferSize= 0.5)
@@ -314,21 +304,27 @@ squareHole(pos= [0, -2.50, 0], size= [1, 3], h= 2, rot= ROT_Frt)
 *                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction
 *             H: Height of the hole cylinder above the chamfer (if a height greater than 0.01 is required, only with the chamfer))
 *
-* Result:
-*   A counterbore chamfered or not
-*
 * Note:
 *   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
 */
 module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer= false, chamferSize= 0.1, chamferAng= 30, rot= ROT_Top, H= 0){
 
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(0 < D, "D should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < D1, "D1 should be greater than 0");
+    assertion(0 < h1, "h1 should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
+    assertion(0 < chamferSize, "chamferSize should be greater than 0");
     assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(len(rot) == 3, "rotshould be a 3D vector");
+    assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
-    assertion(D < D1, "D must be less than D1");
-    assertion(h1 < h, "h1 must be less than h");
+    assertion(chamferSize*lgth < h, "h should be greater than tan(chamferAng)*chamferSize");
+    assertion(D < D1, "D should be less than D1");
+    assertion(h1 < h, "h1 should be less than h");
 
     r = D/2;
     r1 = D1/2;
@@ -372,10 +368,6 @@ module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer
     }
 }
 
-// Exemple:
-/*
-* Pierce at the Top ofa cube(size= 2) a counterbore(D= 0.5, h= 1, D1= 1, h1= 0.5) chamfered with an angle of 30°and a width of 0.1
-*/
 /*
 counterbore(pos= [0, 0, 1], chamfer= true)
     cube(2, center= true);
@@ -390,22 +382,27 @@ counterbore(pos= [0, 0, 1], chamfer= true)
 *                     h: full depth of the hole,
 *                     fn: precision for the cylinder,
 *                     rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
-*                          [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction
+*                          [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *                     chamfer: if true set a chamfer,
 *                     chamferSize: width of the chamfer,
 *                     chamferAng: angle of the chamfer should be ranged in ]0, 90[,
 *                     edges: if(chamfer) place the chamfer to the correspnding face (Top or Bot only)
 *                     H: Height of the hole cylinder above the chamfer (if a height greater than 0.01 is required, only with the chamfer))
 *
-* Result:
-*   A cylindrical axle hole chamfered or not with a diameter gap
-*
 * Note:
 *   You can modify the value of fn in order to create regular shapes (equilateral triangle, square, pentagon, ...)
 */
 module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, rot= ROT_Top, chamfer= false, chamferSize= 0.1, chamferAng= 30, edges= [EDGE_Top, EDGE_Bot], H= 0){
 
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(0 < Daxe, "Daxe should be greater than 0");
+    assertion(0 < deltaD, "deltaD should be greater than 0");
+    assertion(0 < h, "h should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+    assertion(0 < chamferSize, "chamferSize should be greater than 0");
     assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
 

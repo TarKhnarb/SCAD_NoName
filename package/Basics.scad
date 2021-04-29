@@ -1,42 +1,25 @@
 use<Transforms.scad>
 include<Constants.scad>
-/*
-
-  Basics.scad
-    Contain all basics function  for the package
-*/
 
 /*
 * isDef(u: any variable)
-*
-* Return:
-*   True if the variable is defined, false otherwise
- */
+*/
 function isDef(u) = ((version_num() > 20190100) ? !isUndef(u) : (u != undef));
 
 /*
 * isUndef(u: any variable)
-*
-* Return:
-*   True if the variable is undefined, flase otherwise
 */
 function isUndef(u) = ((version_num() > 20190100) ? (u == undef) : !isDef(u));
 
 /*
 * echoMsg(msg : message to write in the console)
-*
-* Return:
-*   Write in the console the message (if it was defined)
- */
+*/
 function echoMsg(msg) = (isDef(msg) ? echo(msg) : 0);
 
 /*
 * echoError(msg: message to write in the console, string,
 *           pfx: error prefix, by default as "ERROR")
-*
-* Return:
-*   Writes in the console an error message highlighted in red with "prefix, message".
- */
+*/
 module echoError(msg, pfx="ERROR"){
 
     echo(str("<p style=\"background-color: #ffb0b0\"><b>", pfx, ":</b> ", msg, "</p>"));
@@ -47,10 +30,7 @@ function echoError(msg, pfx= "ERROR") = echoMsg(str("<p style=\"background-color
 /*
 * assertion(succ: bool, if the test is false, echo an error
 *           msg: message to write in the console if succ is false)
-*
-* Return:
-*   If
- */
+*/
 function assertion(succ, msg) = (version_num() > 20190100) ? let(FAILED = succ) assert(FAILED, msg) : 0;
 
 module assertion(succ, msg){
@@ -68,10 +48,6 @@ module assertion(succ, msg){
 
 /*
 * ifNullGetUnit(value: variable to test)
-*
-* Return:
-*   Test if the value is undef or equal to 0, return 1 otherwise return the value.
-*   Mainly used for testing scale paraleters
 */
 function ifNullGetUnit(value) = (isUndef(value) || (value == 0) ? 1 : value);
 
@@ -80,9 +56,6 @@ function ifNullGetUnit(value) = (isUndef(value) || (value == 0) ? 1 : value);
 /*
 * regularDiameter(nbS: number of sides,
 *                 lengthS: length of a side)
-*
-* Return:
-*   Diameter of the circumscribed circle of the regular polygon with nbS sides
 */
 function regularDiameter(nbS= 4, lengthS= 1) =
     (nbS > 2 ? (
@@ -94,9 +67,6 @@ function regularDiameter(nbS= 4, lengthS= 1) =
 /*
 * regularRadius(nbS: number of sides,
 *               lengthS: length of a side)
-*
-* Result:
-*   Radius of the circumscribed circle of the regular polygon with nbS sides
 */
 function regularRadius(nbS= 4, lengthS= 1) =
     (nbS > 2 ? (
@@ -120,16 +90,12 @@ function regularRadius(nbS= 4, lengthS= 1) =
 *             rot: use sum of constants ROT_* for orient the hole OR custom rotation vector as
 *                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *             diff: if true pierce the face with a depth of h, otherwise add the texte with a height of h)
-*
-* Result:
-*   Add or remove a text on a face
- */
+*/
 module writeOnFace(pos= [0, 0, 0], color= "white", text= "Test", size= 1, font, halign, valign, spacing, direction, language, script, fn= 30, h= 0.1, rot= ROT_Top, diff= false){
 
     assertion(len(pos) == 3, "pos should be a 3D vector");
     assertion(0 < h, "h shouldbe greater than 0");
     assertion(len(rot) == 3, "rot should be a 3D vector");
-
 
     if(diff){
 
@@ -160,10 +126,7 @@ module writeOnFace(pos= [0, 0, 0], color= "white", text= "Test", size= 1, font, 
         }
     }
 }
-// Exemple:
-/*
-* Adds the name of the applied rotation constant on the corresponding side 
-*/
+
 /*
 writeOnFace(pos= [0, 0, 5], text= "Top", color= "grey", size= 3, valign= "center", halign= "center")
 writeOnFace(pos= [0, 5, 0], text= "Back", color= "grey", size= 3, valign= "center", halign= "center", rot= ROT_Back + [0, 0, 180])
@@ -178,9 +141,6 @@ writeOnFace(pos= [0, 0, -5], text= "Bottom", color= "grey", size= 2, valign= "ce
 * factorial(n: integer)
 *
 * Warning only integer or you will get an error on the recursion
-*
-* Return:
-*   The factorial of n.
 */
 function factorial(n) = (n == 0 ? 1 : factorial(n - 1)*n);
 
@@ -189,9 +149,6 @@ function factorial(n) = (n == 0 ? 1 : factorial(n - 1)*n);
 *        k: bottom coefficient)
 *
 * Warning only integer or you will get an error on the recursion
-*
-* Return:
-*   n choose k.
 */
 function choose(n, k) =
     ((n >= k) && (k >= 0) ? (factorial(n)/(factorial(k)*factorial(n - k))

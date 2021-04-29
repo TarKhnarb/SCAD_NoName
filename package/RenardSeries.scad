@@ -6,7 +6,7 @@ use<Basics.scad>
 *                    B: base number)
 * Return:
 *   Return the corresponding normal number.
- */
+*/
 function normalNumbersSerie(R, n, B) = B*pow(exp(ln(10)/R), n);
 
 /*
@@ -15,7 +15,7 @@ function normalNumbersSerie(R, n, B) = B*pow(exp(ln(10)/R), n);
 *                    B: base number)
 * Return:
 *   Return the corresponding normal number.
- */
+*/
 function renardSerie(R= undef, n= undef, B= undef) = 
     (isDef(R) && isDef(n) && isDef(B) ? (
                                          (search(R, [5, 10, 20, 40])) ? (

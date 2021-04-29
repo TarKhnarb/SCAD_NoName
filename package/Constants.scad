@@ -1,8 +1,5 @@
-/*
-    constants.scad
-        Constants allowing the placement of pieces
-*/
-    // Rotation direction
+
+    // Spring
 CLOCKWIRE = [-1];
 ANTICLOCKWIRE = [1];
 
@@ -10,7 +7,7 @@ ANTICLOCKWIRE = [1];
 RIGHT_HAND = [-1];
 LEFT_HAND = [1];
 
-    // Orientation
+    // Knurling orientation
 HORIZONTAL  = [123];    // Arbitrary values
 VERTICAL    = [-123];
 

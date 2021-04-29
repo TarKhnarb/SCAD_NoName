@@ -1,7 +1,3 @@
-/*
-  Transforms.scad
-
-*/
 include<Constants.scad>
 use<Basics.scad>
 use<Matrix.scad>
@@ -84,24 +80,6 @@ module mTranslate(v= [0, 0, 0]){
     for(i= [0 : $children - 1]){
 
         multmatrix(m= matTrans(v)){
-
-            children(i);
-        }
-    }
-}
-
-/*
-* mScale(v: respectively the [X, Y, Z] scaling)
-*
-* Result: scales $children
-*/
-module mScale(v= [1, 1, 1]){
-
-    assertion(len(v) == 3, "v should be a 3D vector");
-
-    for(i= [0 : $children - 1]){
-
-        multmatrix(m= matScale(v)){
 
             children(i);
         }

@@ -49,10 +49,7 @@ module colorCube(size= 1){
                 cube([s, s, s]);
     }
 }
-// Exemple:
-/*
-* Adds on a colorCube(size= 10) the name of the applied rotation constant on the corresponding side
-*/
+
 /*
 writeOnFace(pos= [0, 0, 5], text= "Top", color= "grey", size= 3, valign= "center", halign= "center")
 writeOnFace(pos= [0, 5, 0], text= "Back", color= "grey", size= 3, valign= "center", halign= "center", rot= ROT_Back + [0, 0, 180])
@@ -62,6 +59,7 @@ writeOnFace(pos= [-5, 0, 0], text= "Left", color= "grey", size= 3, valign= "cent
 writeOnFace(pos= [0, 0, -5], text= "Bottom", color= "grey", size= 2, valign= "center", halign= "center", rot= ROT_Bot)
     colorCube(10);
 */
+
     // Chamfers :
 module chamferBase(chamfer, size){
 
@@ -70,16 +68,13 @@ module chamferBase(chamfer, size){
 }
 
 /*
-* chamferCube(size: the size of the cube according to [X, Y, Z],
+* chamferCube(chamfer: chamfer size (chamfer < min(size)/2),
+*             size: the size of the cube according to [X, Y, Z],
 *             pos: position to place the cube,
 *             rot: use sum of constants ROT_* for orient the cube OR custom rotation vector as
 *                  [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
-*             chamfer: chamfer size (chamfer < min(size)/2),
 *             edges: vector of the edges to be chamfered,
 *             center: boolean, centrer or not the cube)
-*
-* Result:
-*   Custom chamfered cube
 */
 module chamferCube(chamfer= 0.1, size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, edges= EDGE_All, center= false){
 
@@ -244,12 +239,11 @@ module chamferCube(chamfer= 0.1, size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, 
         }
     }
 }
-/*
-chamferCube(size= [1, 2, 2], chamfer= 0.1, edges= [EDGE_Top, EDGE_Bot]);
-*/
-/*
-chamferCube(chamfer= 0.2);
-*/
+
+//chamferCube(size= [1, 2, 2], chamfer= 0.1, edges= [EDGE_Top, EDGE_Bot]);
+
+//chamferCube(chamfer= 0.2);
+
 
 module chamferAngBase(chamfer, fs, ang= 45){
 
@@ -270,15 +264,14 @@ module chamferAngBase(chamfer, fs, ang= 45){
 /*
 * chamferCylinder(h: height of the cylinder,
 *                 r: radius of the cylinder],
+*                 chamfer: chamfer size (chamfer < r/2),
+*                 chamferAng: chamfer angle [20, 60],
+*                 fn: precision of the cylinder,
 *                 pos: position to place the cube,
 *                 rot: use sum of constants ROT_* for orient the cylinder OR custom rotation vector as
 *                      [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
-*                 chamfer: chamfer size (chamfer < r/2),
-*                 chamferAng: chamfer angle [20, 60],
 *                 edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot,
 *                 center: boolean, centrer or not the cube)
-*
-* Result: custom chamfered cylinder
 */
 module chamferCylinder(h= 1, r= 1, chamfer= 0.1, chamferAng= 45, fn= 50, pos= [0, 0, 0], rot= ROT_Top, edges= [EDGE_Top, EDGE_Bot], center= false){
 
@@ -328,9 +321,8 @@ module chamferCylinder(h= 1, r= 1, chamfer= 0.1, chamferAng= 45, fn= 50, pos= [0
 
 //chamferCylinder(r= 2,chamferAng= 20);
 
-/*
-chamferCylinder(h= 3, chamfer= 0.4, edges= [EDGE_Top]);
-*/
+//chamferCylinder(h= 3, chamfer= 0.4, edges= [EDGE_Top]);
+
 
     // Bevels:
 
@@ -342,23 +334,21 @@ module bevelBase(bevel, size, fn){
             cube([bevel + 0.01, bevel + 0.01, size + 0.01], center= true);
         
             mTranslate([bevel/2, bevel/2, 0])
-                cylinder(r= bevel, h= size + 0.02, center= true, $fn= fn);
+                cylinder(r= bevel, h= size + 0.02, center= true, $fn= 4*fn);
         }        
 }
 
 /*
 * bevelCube(size: the size of the cube according to [X, Y, Z],
+*           bevel: bevel radius (bevel < min(size)/2),
+*           fn: precision of the bevel pitch,
 *           pos: position to place the cube,
 *           rot: use sum of constants ROT_* for orient the cube OR custom rotation vector as
 *                [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
-*           bevel: bevel radius (bevel < min(size)/2),
-*           fn: precision of the bevel pitch,
 *           edges: vector of the edges to be beveled,
 *           center: boolean, centrer or not the cube)
-*
-* Result: custom beveled cube
 */
-module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, pos= [0, 0, 0], rot= ROT_Top, edges= EDGE_All, center= false){
+module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 20, pos= [0, 0, 0], rot= ROT_Top, edges= EDGE_All, center= false){
 
     assertion(len(size) == 3, "size should be a 3D vector");
     for(i= [0 : 2]){
@@ -569,49 +559,44 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 100, pos= [0, 0, 0], rot= ROT_
     }
 }
 
-/*
-bevelCube(size= [1, 2, 2], edges= [EDGE_Top, EDGE_Bot]);
-*/
-/*
-bevelCube(bevel= 0.2);
-*/
+//bevelCube(size= [1, 2, 2], edges= [EDGE_Top, EDGE_Bot]);
+
+//bevelCube(bevel= 0.2);
 
 module cylindBevelBase(r, bevel, fn){
 
     mTranslate([0, 0, -bevel])
-    difference(){
-        
-        mTranslate([0, 0, (bevel + 0.01)/2])
-            cylinder(r= r + 0.01, h= bevel + 0.01, $fn= fn, center= true);
-        
-        union(){
-            
-            cylinder(r= r - bevel, h= 2*bevel, $fn= fn, center= true);
-            
-            rotate_extrude($fn= fn){
-                
-                mTranslate([r - bevel, 0, 0])
-                    circle(r= bevel, $fn= fn);
+        difference(){
+
+            mTranslate([0, 0, (bevel + 0.01)/2])
+                cylinder(r= r*3/2 + 0.01, h= bevel + 0.01, $fn= fn, center= true);
+
+            union(){
+
+                cylinder(r= r - bevel, h= 2*bevel, $fn= fn, center= true);
+
+                rotate_extrude($fn= fn){
+
+                    mTranslate([r - bevel, 0, 0])
+                        circle(r= bevel, $fn= fn);
+                }
             }
         }
-    }
 }
 
 /*
 * bevelCylinder(h: height of the cylinder,
 *               r: radius of the cylinder,
-*               pos: position to place the cube,
-*               rot: use sum of constants ROT_* for orient the cylinder OR custom rotation vector as
-*                    [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *               bevel: bevel radius (chamfer < r/2),
 *               fn: precision of the cylinder pitch,
 *               fnB: precision of the bevel pitch,
+*               pos: position to place the cube,
+*               rot: use sum of constants ROT_* for orient the cylinder OR custom rotation vector as
+*                    [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction,
 *               edges: vector of the edges to be chamfered ONLY EDGE_Top or EDGE_Bot,
 *               center: boolean, centrer or not the cube)
-*
-* Result: custom beveled cylinder
 */
-module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, fnB= 100, pos= [0, 0, 0], rot= ROT_Top, edges= [EDGE_Top, EDGE_Bot], center= false){
+module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 20, fnB= 20, pos= [0, 0, 0], rot= ROT_Top, edges= [EDGE_Top, EDGE_Bot], center= false){
 
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < r, "r should be greater than 0");
@@ -651,12 +636,9 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 100, fnB= 100, pos= [0, 0, 0], 
     }
 }
 
-/*
 bevelCylinder(r= 0.5);
-*/
-/*
-bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
-*/
+
+//bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
 
     // Linear pipe
 /*
@@ -677,7 +659,7 @@ bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
 * linearPipe(r: bottom outer radius of the pipe,
 *            thick: thickness of the pipe,
 *            r1: if def, top outer radius of the pipe,
-*            r2: if def thickness isn't used, top inner radius od the pipe,
+*            r2: if def thickness isn't used, top inner radius of the pipe,
 *            h: height of the pipe,
 *            pos: position to place the cube,
 *            fn: precision of the cylinders,
@@ -767,12 +749,43 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, pos=[0, 
     }
 }
 
+//linearPipe(r= 2, r1= 1, thick= 0.5, h= 10, center= true, rot= ROT_Lft);
+
+//linearPipe(r= 2, r1= 3, r2= 2.9, h= 4, center= true);
+
 /*
-* Create a centered pipe of height= 10, oriented at the Left with a thickness of 0.5, a bottom radius of r=2 and a top radius r1= 1
+* regularIcosahedron(t: length of an edges,
+*                  pos: final positionof the regular isocaedre,
+*                  rot: use sum of constants ROT_* for orient the pipe OR custom rotation vector as
+*                       [angX, angY, anfZ], note that the rotation is in the anti-clockwise direction)
  */
-/*
-linearPipe(r= 2, r1= 1, thick= 0.5, h= 10, center= true, rot= ROT_Lft);
-*/
-/*
-linearPipe(r= 2, r1= 3, r2= 2.9, h= 4, center= true);
-*/
+module regularIcosahedron(t= 1, pos= [0, 0, 0], rot= ROT_Top){
+
+    assertion(0 < t, "t should be greater than 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
+
+    t = t/2;
+    phi = (1 + sqrt(5))/2;
+
+    pts = [[-t*phi, -t, 0], [t*phi, -t, 0], [t*phi, t, 0], [-t*phi, t, 0],
+            [0, -t*phi, -t], [0, t*phi, -t], [0, t*phi, t], [0, -t*phi, t],
+            [t, 0, -t*phi], [-t, 0, -t*phi], [-t, 0, t*phi], [t, 0, t*phi]];
+
+    face = [[0, 3, 10], [0, 3, 9],
+            [1, 2, 8], [1, 2, 11],
+            [10, 11, 6], [10, 11, 7],
+            [4, 7, 1], [4, 7, 0],
+            [5, 6, 2], [5, 6, 3],
+            [8, 9, 5], [8, 9, 4],
+            [0, 7, 10], [0, 9, 4],
+            [3, 6, 10], [3, 9, 5],
+            [2, 6, 11], [2, 5, 8],
+            [1, 7, 11], [1, 4, 8]];
+
+    mTranslate(pos)
+        mRotate(rot)
+            polyhedron(points= pts, faces= face);
+}
+
+//regularIcosahedron(t= 5);
