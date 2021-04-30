@@ -74,16 +74,17 @@ module cylindricalBevel(r= 1, R= 1, fn= 20, fnB= 20, pos= [0, 0, 0], rot= ROT_To
     assertion(0 < r, "r should be greater than 0");
     assertion(0 < R, "R should be greater than 0");
     assertion(0 < fn, "fn should be greater than 0");
+    assertion(0 < fnB, "fnB should be greater than 0");
     assertion((len(pos) == 3), "You should given pos as a 3D vector according [X, Y, Z]");
     assertion((len(rot) == 3), "You should given rot as a 3D vector according [X, Y, Z]");
 
     mTranslate(pos)
-        mTranslate((center ? -getTranslateRot(rot)*(r + 0.1)/2 : [0, 0, 0]))
+        mTranslate((center ? -getTranslateRot(rot)*0.1 : [0, 0, 0]))
             mRotate(rot)
                 cylindricalBevelMod(r, R, fn, fnB);
 }
 
-cylindricalBevel(r= 0.2, R= 2, fn= 100, rot= ROT_Bot);
+//cylindricalBevel(r= 0.2, R= 2, fn= 100, rot= ROT_Bot, center= true);
 
 module chamferMod(chamfer, length, ang,  orient){
 
@@ -119,7 +120,7 @@ module chamfer(chamfer= 1, length= 1, chamferAng= 45, pos= [0, 0, 0], rot= ROT_T
     assertion(len(orient) == 1, "You should given a ORIENT_* constant");
 
     mTranslate(pos)
-        mTranslate((center ? [0, 0, -length/2] : [0, 0, 0]))
+        mTranslate((center ? -getTranslateRot(rot)*length/2 : [0, 0, 0]))
             mRotate(rot)
                 chamferMod(chamfer, length, chamferAng, orient[0]);
 }
@@ -142,7 +143,7 @@ module cylindricalChamferMod(chamfer, chamferAng, R, fn){
         }   
     
         mTranslate([0, 0, -0.15])
-            cylinder(r= R - 0.1, h= chamfer + 0.2, $fn= fnB);
+            cylinder(r= R - 0.1, h= chamfer + 0.2, $fn= fn);
     }
 }
 
@@ -159,11 +160,13 @@ module cylindricalChamfer(chamfer= 1, chamferAng= 45, R= 1, fn= 20, pos= [0, 0, 
     
     assertion(0 < chamfer, "chamfer should be greater than 0");
     assertion((19 < chamferAng) && (chamferAng < 61), "chamferAng should be within [20, 60]°");
+    assertion(0 < R, "R should be greater than 0");
+    assertion(0 < fn, "fn should be greater than 0");
     assertion((len(pos) == 3), "You should given pos as a 3D vector according [X, Y, Z]");
     assertion((len(rot) == 3), "You should given rot as a 3D vector according [X, Y, Z]");
 
     mTranslate(pos)
-        mTranslate((center ? [0, 0, -length/2] : [0, 0, 0]))
+        mTranslate((center ? [0, 0, 0] : getTranslateRot(rot)*0.1))
             mRotate(rot)
                 cylindricalChamferMod(chamfer, chamferAng, R, fn);
 }

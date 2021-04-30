@@ -7,22 +7,22 @@ include<Constants.scad>
 *      rots: rotation to applied to the hole base)
 *
 * WARNINGS: 
-*      1. The hole patterns must be positioned in the centre of the system axes. In addition, if you wish to pierce a hole along the Z axis, you will have to place and size your part (to be removed) so that : 
+*      1. The hole patterns should be positioned in the centre of the system axes. In addition, if you wish to pierce a hole along the Z axis, you will have to place and size your part (to be removed) so that :
 *
 *           - the volume of the part is positioned entirely in Z-negative
 *           - the part has an additional portion of at least 0.01mm in Z-positive
 *
-*      2. You must necessarily indicate the translation to be applied to each of the parts, [0, 0, 0] if not desired. Note that you must pass in parameter a vector containing the translation vectors (1 vector for each hole parts).
+*      2. You should necessarily indicate the translation to be applied to each of the parts, [0, 0, 0] if not desired. Note that you should pass in parameter a vector containing the translation vectors (1 vector for each hole parts).
 */
 module hole(pos= [[0, 0, 0]], rots= [ROT_Top]){
     
-    assertion($children > 1, "this module requires a minimum of two sub-objects(/'action()')");
+    assertion($children > 1, "this module requires a minimum of two 'children()'");
     
-    assertion(len(pos) > 0, "pos must be contain a minimum of 1 vector [x, y, z]");
-    assertion(len(rots) > 0, "rots must be contain a minimum of 1 ROT_ constant");
+    assertion(len(pos) > 0, "pos should be contain a minimum of 1 vector [x, y, z]");
+    assertion(len(rots) > 0, "rots should be contain a minimum of 1 ROT_ constant");
 
-    assertion(len(pos) == ($children - 1), "pos must be contain the same number of vectors as the number of sub-objects(/'action()') to be pierced");
-    assertion(len(rots) == ($children - 1), "rots must be contain the same number of vectors as the number of sub-objects(/'action()') to be pierced");
+    assertion(len(pos) == ($children - 1), "pos should be contain the same number of vectors as the number of 'children()' to be pierced");
+    assertion(len(rots) == ($children - 1), "rots should be contain the same number of vectors as the number of 'children()' to be pierced");
 
     difference(){
         
@@ -47,27 +47,6 @@ hole([[0, 0, 0.5], [0, 0, -0.5]], [ROT_Top, ROT_Bot]){
     cylinder(r= 0.5, h= 0.5 + 0.01, $fn= 50);
 }
 */
-
-    // Chamfer representation
-/*
-*
-*     |   |
-*  H  |   |
-*     |   |
-*     v   |
-*     _   | _ _ _ _ _ _ _ _ _
-*     A   |\            \
-*     |   |  \           |
-*  l  |   |    \         | chamferAng
-*  g  |   |      \      /
-*  t  |   |        \   /
-*  h  |   |          \
-*    _v_  |____________\
-*         |             |
-*         |<----------->|
-*           chamferSize
-*/
-
 
     // CylinderHole
 
@@ -98,7 +77,7 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
     assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
-    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
+    assertion(chamferSize*lgth < h, "h should be greater than tan(chamferAng)*chamferSize");
     
     hole([pos], [rot]){
         
@@ -158,7 +137,7 @@ module cubeHole(pos= [0, 0, 0], c= 1, h= 1, chamfer= false, chamferSize= 0.1, ch
     assertion(0 <= H, "H should be greater than or equal to 0");
 
     lgth = tan(chamferAng);
-    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize"); 
+    assertion(chamferSize*lgth < h, "h should be greater than tan(chamferAng)*chamferSize");
     
     r = c*sqrt(2)/2;
     chamfSize = chamferSize*sqrt(2);
@@ -222,7 +201,7 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
+    assertion(chamferSize*lgth < h, "h should be greater than tan(chamferAng)*chamferSize");
 
     hole([pos], [rot]){
         
@@ -239,26 +218,22 @@ module squareHole(pos= [0, 0, 0], size= [1, 1], h= 1, chamfer= false, chamferSiz
                                     [-size.x/2,                 size.y/2,                   -chamferSize*lgth],
                                     [size.x/2,                  size.y/2,                   -chamferSize*lgth],
                                     [size.x/2,                  -size.y/2,                  -chamferSize*lgth],
-                                    [-chamferSize - size.x/2,   -chamferSize - size.y/2,    0],                         // Top of the chamfer
+                                    [-chamferSize - size.x/2,   -chamferSize - size.y/2,    0],                    // Top of the chamfer
                                     [-chamferSize - size.x/2,   chamferSize + size.y/2,     0],
                                     [chamferSize + size.x/2,    chamferSize + size.y/2,     0],
                                     [chamferSize + size.x/2,    -chamferSize - size.y/2,    0],
-                                    [-chamferSize - size.x/2,   -chamferSize - size.y/2,    H + 0.02],                      // Top addition of the chamfer
+                                    [-chamferSize - size.x/2,   -chamferSize - size.y/2,    H + 0.02],             // Top addition of the chamfer
                                     [-chamferSize - size.x/2,   chamferSize + size.y/2,     H + 0.02],
                                     [chamferSize + size.x/2,    chamferSize + size.y/2,     H + 0.02],
                                     [chamferSize + size.x/2,    -chamferSize - size.y/2,    H + 0.02]],
 
-                           faces= [[0, 3, 2, 1],                                  // Bottom face
-
+                           faces= [[0, 3, 2, 1],                      // Bottom face
                                    [0, 1, 5, 4],   [1, 2, 6, 5],      // Slide bottom to top
                                    [2, 3, 7, 6],   [0, 4, 7, 3],
-
                                    [4, 5, 6, 7],                      // Top face
-
                                    [4, 5, 9, 8],   [5, 6, 10, 9],     // Slide top to top addition
                                    [6, 7, 11, 10], [4, 7, 11, 8],
-
-                                   [8, 9, 10, 11]]                                // Top addition face
+                                   [8, 9, 10, 11]]                    // Top addition face
                         );
                 }
         }
@@ -316,7 +291,7 @@ module counterbore(pos= [0, 0, 0], D= 0.5, h= 1, D1= 1, h1= 0.5, fn= 50, chamfer
     assertion(0 < h1, "h1 should be greater than 0");
     assertion(0 < fn, "fn should be greater than 0");
     assertion(0 < chamferSize, "chamferSize should be greater than 0");
-    assertion((chamferAng > 0) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion((0 < chamferAng) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
     assertion(len(rot) == 3, "rotshould be a 3D vector");
     assertion(0 <= H, "H should be greater than or equal to 0");
 
@@ -396,7 +371,7 @@ module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, r
 
     assertion(len(pos) == 3, "pos should be a 3D vector");
     assertion(0 < Daxe, "Daxe should be greater than 0");
-    assertion(0 < deltaD, "deltaD should be greater than 0");
+    assertion(0 <= deltaD, "deltaD should be greater than equal to 0");
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < fn, "fn should be greater than 0");
     assertion(len(rot) == 3, "rot should be a 3D vector");
@@ -406,7 +381,7 @@ module cylindricalAxleHole(pos= [0, 0, 0], Daxe = 1, deltaD = 0, h= 1, fn= 50, r
 
     lgth = tan(chamferAng);
 
-    assertion(chamferSize*lgth < h, "h must be greater than tan(chamferAng)*chamferSize");
+    assertion(chamferSize*lgth < h, "h should be greater than tan(chamferAng)*chamferSize");
     assertion((len(edges) <= 2), "edges should only be [EDGE_Top], [EDGE_Bot] or both.");
 
     r = (Daxe + deltaD)/2;

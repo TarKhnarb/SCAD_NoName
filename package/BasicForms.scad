@@ -21,32 +21,32 @@ module colorCube(size= 1){
             cube([s, s, s]);
 
         color([1, 0, 0])
-            translate([-s, 0, 0])
-                cube([s, s, s]);
+            mTranslate([-s, 0, 0])
+                cube(s);
 
         color([0, 1, 0])
-            translate([0, -s, 0])
-                cube([s, s, s]);
+            mTranslate([0, -s, 0])
+                cube(s);
 
         color([0, 0, 1])
-            translate([0, 0, -s])
-                cube([s, s, s]);
+            mTranslate([0, 0, -s])
+                cube(s);
 
         color([1, 1, 0])
-            translate([-s, -s, 0])
-                cube([s, s, s]);
+            mTranslate([-s, -s, 0])
+                cube(s);
 
         color([1, 0, 1])
-            translate([-s, 0, -s])
-                cube([s, s, s]);
+            mTranslate([-s, 0, -s])
+                cube(s);
 
         color([0, 1, 1])
-            translate([0, - s, - s])
-                cube([s, s, s]);
+            mTranslate([0, -s, -s])
+                cube(s);
 
         color([1, 1, 1])
-            translate([- s, - s, - s])
-                cube([s, s, s]);
+            mTranslate([-s, -s, -s])
+                cube(s);
     }
 }
 
@@ -78,7 +78,7 @@ module chamferBase(chamfer, size){
 */
 module chamferCube(chamfer= 0.1, size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, edges= EDGE_All, center= false){
 
-    assertion((0 < chamfer) && (chamfer < min(size)/2), "chamfer should be greater than 0 and less than half of the smallest size of the cube");
+    assertion((0 < chamfer) && (chamfer <= min(size)/2), "chamfer should be greater than 0 and less than half of the smallest size of the cube");
     assertion(len(size) == 3, "size should be a 3D vector");
     for(i= [0 : 2]){
 
@@ -244,7 +244,6 @@ module chamferCube(chamfer= 0.1, size= [1, 1, 1], pos= [0, 0, 0], rot= ROT_Top, 
 
 //chamferCube(chamfer= 0.2);
 
-
 module chamferAngBase(chamfer, fs, ang= 45){
 
     L = chamfer/cos(ang) + 0.02;
@@ -277,7 +276,7 @@ module chamferCylinder(h= 1, r= 1, chamfer= 0.1, chamferAng= 45, fn= 50, pos= [0
 
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < r, "r should be greater than 0");
-    assertion((0 < chamfer) && (chamfer < r/2), "chamfer should be greater than 0 and less than r/2");
+    assertion((0 < chamfer) && (chamfer <= r), "chamfer should be greater than 0 and less than r/2");
     assertion((19 < chamferAng) && (chamferAng < 61), "chamferAng should be within [20, 60]°");
     assertion(1 < fn, "fn should be greater than 1");
     assertion(len(pos) == 3, "pos should be a 3D vector");
@@ -321,8 +320,7 @@ module chamferCylinder(h= 1, r= 1, chamfer= 0.1, chamferAng= 45, fn= 50, pos= [0
 
 //chamferCylinder(r= 2,chamferAng= 20);
 
-//chamferCylinder(h= 3, chamfer= 0.4, edges= [EDGE_Top]);
-
+//chamferCylinder(h= 3, chamfer= 0.5, edges= [EDGE_Top]);
 
     // Bevels:
 
@@ -356,7 +354,7 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 20, pos= [0, 0, 0], rot= ROT_T
         assertion(0 < size[i], "The size of the cube should be greater than 0");
     }
 
-    assertion((0 < bevel ) && (bevel < min(size)/2), "bevel should be greater than 0 and less than half of the smallest size of the cube");
+    assertion((0 < bevel ) && (bevel <= min(size)/2), "bevel should be greater than 0 and less than half of the smallest size of the cube");
     assertion(0 < fn, "fn should be greater than 0");
     assertion(len(pos) == 3, "pos should be a 3D vector");
     assertion(len(rot) == 3, "rot should be a 3D vector");
@@ -559,7 +557,7 @@ module bevelCube(size= [1, 1, 1], bevel= 0.1, fn= 20, pos= [0, 0, 0], rot= ROT_T
     }
 }
 
-//bevelCube(size= [1, 2, 2], edges= [EDGE_Top, EDGE_Bot]);
+//bevelCube(size= [1, 1, 2], bevel= 0.4, edges= [EDGE_Top, EDGE_Bot]);
 
 //bevelCube(bevel= 0.2);
 
@@ -600,7 +598,7 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 20, fnB= 20, pos= [0, 0, 0], ro
 
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < r, "r should be greater than 0");
-    assertion((0 < bevel) && (bevel < r/2), "bevel should be greater than 0 and less than r/2");
+    assertion((0 < bevel) && (bevel <= r/2), "bevel should be greater than 0 and less than r/2");
     assertion(1 < fn, "fn should be greater than 1");
     assertion(1 < fnB, "fnB chamfer should be greater than 1");
     assertion(len(pos) == 3, "pos should be a 3D vector");
@@ -636,9 +634,9 @@ module bevelCylinder(h= 1, r= 1, bevel= 0.1, fn= 20, fnB= 20, pos= [0, 0, 0], ro
     }
 }
 
-bevelCylinder(r= 0.5);
+//bevelCylinder(r= 0.5);
 
-//bevelCylinder(h= 3, bevel= 0.4, edges= [EDGE_Top]);
+//bevelCylinder(h= 3, bevel= 0.5, edges= [EDGE_Top]);
 
     // Linear pipe
 /*
@@ -690,7 +688,6 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, pos=[0, 
                     if(isDef(r2)){
 
                         assertion(r2 < r1, "r1 should be strictly greater than r2");
-
                         x = tan(atan((r - (r1 - r2) - r2)/h))*0.01;
                         
                         difference(){
@@ -704,7 +701,6 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, pos=[0, 
                     else{
                         
                         assertion(thick < r1, "r1 should be strictly greater than thick");
-                        
                         x = tan(atan((r - thick - (r1 - thick))/h))*0.01;
                         
                         difference(){
@@ -722,7 +718,6 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, pos=[0, 
                 if(isDef(r2)){
                     
                     assertion(r2 < r, "r should be strictly greater than r2");
-                    
                     difference(){
                         
                         cylinder(r= r, h= h, center= center, $fn= fn);
@@ -734,7 +729,6 @@ module linearPipe(r= 1, thick= 0.1, r1= undef, r2= undef, h= 1, fn= 50, pos=[0, 
                 else{
                     
                     assertion(thick < r, "r should be strictly greater than thick");
-                    
                     difference(){
                         
                         cylinder(r= r, h= h, center= center, $fn= fn);

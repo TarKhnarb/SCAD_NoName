@@ -103,7 +103,7 @@ intersection(){
 }
 */
 
-
+// Ne fonctionne pas
 module helicoidalGearTooth(m= 1, toothNb= 1, width= 1, ang= 20, beta= 20, pos= [0, 0, 0], rot= ROT_Top){
 
     assertion(0 < m, "m should be greater than 0");
@@ -150,30 +150,6 @@ module helicoidalGearMod(m, Z, width, ang, beta, fn, pitch){
     d = getGearDim(m, Z);
     fa = 360/fn;
     rotAng = 360/Z;
-    
-    pos= [0, 0, 0];
-    
-    difference(){
-        
-        cylinder(d= d[2], h= width, $fn= fn);
-        
-        #union(){
-            
-            for(i= [0 /*: Z - 1*/]){
-                
-                rotZ(i*rotAng)
-                    helicoidalGearTooth(m= m, width= 2*width, ang= ang, beta= pitch[0]*beta, pos= [d[1]/2, 0, width/2]);
-            }
-        }
-    }
-}
-
-module helicoidalGearMod2(m, Z, width, ang, beta, fn, pitch){
-    
-     
-    d = getGearDim(m, Z);
-    fa = 360/fn;
-    rotAng = 360/Z;
     delta = -d[1]*pitch[0]*cos(beta)*fa*PI/360;
     delta_ = -d[1]*pitch[0]*sin(beta)*fa*PI/360;
     
@@ -199,7 +175,7 @@ module helicoidalGear(m= 1, Z= 13, width= 1, ang= 20, beta= 20, fn= 50, pitch= L
     
     d = getGearDim(m, Z);
     
-    helicoidalGearMod2(m, Z, width, ang, beta, fn, pitch);
+    helicoidalGearMod(m, Z, width, ang, beta, fn, pitch);
 }
 
 //helicoidalGear(m= 10, Z= 13, width= 10, ang= 20, beta= 30, fn= 50);
@@ -222,23 +198,23 @@ module tooth(m, Z, d, ang, width, t, rot, pts, pts2, pos1, pos2, r, R, A, C, fn,
     
     for(i= [0 : len(pts) - 2]){
            
-//        hull(){
+        hull(){
             rotZ(-rot/4)
                 mTranslate(pts[i] + [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
-        /*   
+           
             rotZ(-rot/4)
                 mTranslate(pts[i + 1] + [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
-            */
+            
             rotZ(rot/4)
                 mTranslate(pts2[i] - [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
-           /*
+           
             rotZ(rot/4)
                 mTranslate(pts2[i + 1] - [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
-        }*/
+        }
     }
 
     difference(){
@@ -259,11 +235,11 @@ module gearTooth(m, Z, d, ang, width, fn, helicoidal= false){
     t = 1/fn;
     rot = 360/Z;
     
-    pts = toothPts(m*Z*cos(ang)/2, t, fn); // Développante de cercle x+
-//    pts = toothPts(m*Z/2, t, fn);
+//    pts = toothPts(m*Z*cos(ang)/2, t, fn); // Développante de cercle x+
+    pts = toothPts(m*Z/2, t, fn);
     
-    pts2 = toothPts(m*Z*cos(ang)/2, -t, fn); // Développante de cercle x-
-//    pts2 = toothPts(m*Z/2, -t, fn);
+//    pts2 = toothPts(m*Z*cos(ang)/2, -t, fn); // Développante de cercle x-
+    pts2 = toothPts(m*Z/2, -t, fn);
     
     
     pos2 = matVectRotZ(-rot/4)*pts[0] - [0, 0.005, 0];  // Point de départ des développantes de cercle
@@ -294,7 +270,7 @@ module gearTooth(m, Z, d, ang, width, fn, helicoidal= false){
     color("yellow") rotZ(2*m*PI) mTranslate(t1 + [0, 0, 0.5]) sphere(0.02, $fn= 30);
     echo(t2);
     
-   # tooth(m, Z, d, ang, width, t, t2, pts, pts2, pos1, pos2, r, R, A, C, fn, helicoidal);
+    tooth(m, Z, d, ang, width, t, t2, pts, pts2, pos1, pos2, r, R, A, C, fn, helicoidal);
 }
 
 module linearGear(m= 1, Z= 13, width= 1, ang= 20, fn= 20){
@@ -303,7 +279,7 @@ module linearGear(m= 1, Z= 13, width= 1, ang= 20, fn= 20){
     
     
     color("red") cylinder(d= d[1], h= 0.005, $fn= fn, center= true);
-//    color("blue") cylinder(d= d[3], h= 0.15, $fn= fn, center= true);
+    color("blue") cylinder(d= d[3], h= 0.15, $fn= fn, center= true);
 
     difference(){
         
@@ -320,11 +296,11 @@ module linearGear(m= 1, Z= 13, width= 1, ang= 20, fn= 20){
 
 //hull(){
     
-    linearGear(fn= 100, width= 0.1);
-
+//    linearGear(fn= 100, width= 0.1);
+/*
 rotZ(360/(4*13))
     gear();
-    
+    */
 //    mTranslate([0, 0, 0.5])
 //        rotZ(2)
 //            linearGear(m= 5,fn= 100, width= 0.01);

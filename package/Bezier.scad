@@ -37,7 +37,7 @@ module bezierCurve(pts, fn= 10, ang= undef){
         assertion(len(pts[i]) == 3, "pts should be a vector of 3D vectors");
     }
 
-    assertion(1 < fn, "nbSegment should be greater than 1");
+    assertion(0 < fn, "fn should be greater than 0");
     assertion($children == 1, "You should give a single 'children()'");
     if(isDef(ang)){
         
@@ -228,7 +228,7 @@ module bezierSurface(M, U= undef, V= undef, fn= 10){
         assertion((0 < V) && (V < 1), "V should be within ]0, 1[");
     }
 
-    assertion(1 < fn, "fn should be greater than 1");
+    assertion(0 < fn, "fn should be greater than 0");
     assertion($children == 1, "You should give a single 'children()'");
 
     u = (isDef(U) ? U : 1/fn);

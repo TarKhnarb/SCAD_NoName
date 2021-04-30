@@ -58,8 +58,7 @@ function ifNullGetUnit(value) = (isUndef(value) || (value == 0) ? 1 : value);
 *                 lengthS: length of a side)
 */
 function regularDiameter(nbS= 4, lengthS= 1) =
-    (nbS > 2 ? (
-                lengthS/cos(360/(2*nbS))
+    (nbS > 2 ? (lengthS/cos(360/(2*nbS))
            ) : (
                 echoError("nbS must be greater than 2"))
     );
@@ -69,8 +68,7 @@ function regularDiameter(nbS= 4, lengthS= 1) =
 *               lengthS: length of a side)
 */
 function regularRadius(nbS= 4, lengthS= 1) =
-    (nbS > 2 ? (
-                lengthS/(2*cos(360/(2*nbS)))
+    (nbS > 2 ? (lengthS/(2*cos(360/(2*nbS)))
            ) : (
                 echoError("nbS must be greater than 2"))
     );
