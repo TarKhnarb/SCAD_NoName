@@ -1,3 +1,7 @@
+use<Transforms.scad>
+use<Vector.scad>
+use<Basics.scad>
+
 //______________ TEST algo Casteljau ______________
 function linearCombination(A, B, u, v) = A*u + B*v;
 
@@ -34,13 +38,20 @@ module bezierCurve2(pts, fn= 10){
     union(){
         for(i = [0 : len(finalPts) - 1]){
 
-            echo(mod(makeVector(finalPts[i],finalPts[i+1])));
             color([1,0,0])
                 mTranslate(finalPts[i])
                 children();
         }
     }
 }
+
+
+pts = [[0,-2,0], [-2,-5,10], [3,9,2], [6,3,1], [-3,-1,2], [3,-2,1.5]];
+
+/*
+bezierCurve2(pts, fn= 20)
+    sphere(0.1, $fn= 30);
+*/
 
 module chamferAngBase(chamfer, fs, ang= 45){
 

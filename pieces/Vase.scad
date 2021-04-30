@@ -27,7 +27,7 @@ pts = [[[c1*cos(12*fa1), c1*sin(12*fa1), z1],    [c1*cos(11*fa1), c1*sin(11*fa1)
        [[c1*cos(19*fa1), c1*sin(19*fa1), z1],    [c2*cos(15*fa2), c2*sin(15*fa2), z2],     [c2*cos(16*fa2), c2*sin(16*fa2), z2],        [c2*cos(17*fa2), c2*sin(17*fa2), z2],      [c2*cos(18*fa2), c2*sin(18*fa2), z2],      [c2*cos(19*fa2), c2*sin(19*fa2), z2],      [c2*cos(20*fa2), c2*sin(20*fa2), z2],      [c2*cos(21*fa2), c2*sin(21*fa2), z2],     [c1*cos(29*fa1), c1*sin(29*fa1), z1]],
        [[c1*cos(20*fa1), c1*sin(20*fa1), z1],    [c1*cos(21*fa1), c1*sin(21*fa1), z1],     [c1*cos(22*fa1), c1*sin(22*fa1), z1],        [c1*cos(23*fa1), c1*sin(23*fa1), z1],      [c1*cos(24*fa1), c1*sin(24*fa1), z1],      [c1*cos(25*fa1), c1*sin(25*fa1), z1],      [c1*cos(26*fa1), c1*sin(26*fa1), z1],      [c1*cos(27*fa1), c1*sin(27*fa1), z1],     [c1*cos(28*fa1), c1*sin(28*fa1), z1]]];
 
-bezierSurface(M= pts, fn= 80)
+bezierSurface(M= pts, fn= 50)
        sphere(1, $fn= 30);
 /*
 

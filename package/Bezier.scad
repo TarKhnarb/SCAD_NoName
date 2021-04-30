@@ -73,6 +73,12 @@ module bezierCurve(pts, fn= 10, ang= undef){
 }
 
 pts = [[0,-2,0], [-2,-5,10], [3,9,2], [6,3,1], [-3,-1,2], [3,-2,1.5]];
+
+/*
+bezierCurve(pts, fn= 20)
+    sphere(0.1, $fn= 30);
+*/
+
 /*
 for(i = [0 : len(pts) - 1]){
     

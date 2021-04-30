@@ -199,35 +199,36 @@ module tooth(m, Z, d, ang, width, t, rot, pts, pts2, pos1, pos2, r, R, A, C, fn,
     for(i= [0 : len(pts) - 2]){
            
         hull(){
-            rotZ(-rot/4)
+            rotZ(-ang/4)
                 mTranslate(pts[i] + [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
            
-            rotZ(-rot/4)
+            rotZ(-ang/4)
                 mTranslate(pts[i + 1] + [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
             
-            rotZ(rot/4)
+            rotZ(ang/4)
                 mTranslate(pts2[i] - [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
            
-            rotZ(rot/4)
+            rotZ(ang/4)
                 mTranslate(pts2[i + 1] - [0, 0.005, 0])
                     cylinder(r= 0.01, h= width, $fn= fn, center= true);
         }
     }
 
-    difference(){
-        
-        mTranslate([pos1.x - r*3/2, -A.y, -width/2])
-            cube([r*3/2, 2*A.y , width]);
-    
-        mTranslate(C)
-            cylinder(r= r, h= width + 0.01, $fn= 4*fn, center= true);
+    color("purple")
+        difference(){
             
-        mTranslate([C.x, -C.y, C.z])
-            cylinder(r= r, h= width + 0.01, $fn= 4*fn, center= true);
-    }
+            mTranslate([pos1.x - r*3/2, -A.y, -width/2])
+                cube([r*3/2, 2*A.y , width]);
+        
+            mTranslate(C)
+                cylinder(r= r, h= width + 0.01, $fn= 4*fn, center= true);
+                
+            mTranslate([C.x, -C.y, C.z])
+                cylinder(r= r, h= width + 0.01, $fn= 4*fn, center= true);
+        }
 }
 
 module gearTooth(m, Z, d, ang, width, fn, helicoidal= false){
@@ -266,11 +267,10 @@ module gearTooth(m, Z, d, ang, width, fn, helicoidal= false){
     t2 = angleVectors(matVectRotZ(-2*m*PI)*[m*Z/2, 0, 0], t1); // Angle entre l'intersection de la developpante et du cercle primitif, et l'axe x
     
     
-    color("green") mTranslate(t1 + [0, 0, 0.5]) sphere(0.02, $fn= 30);
-    color("yellow") rotZ(2*m*PI) mTranslate(t1 + [0, 0, 0.5]) sphere(0.02, $fn= 30);
-    echo(t2);
+//    color("green") mTranslate(t1 + [0, 0, 0.5]) sphere(0.02, $fn= 30);
+//    color("yellow") rotZ(2*m*PI) mTranslate(t1 + [0, 0, 0.5]) sphere(0.02, $fn= 30);
     
-    tooth(m, Z, d, ang, width, t, t2, pts, pts2, pos1, pos2, r, R, A, C, fn, helicoidal);
+    tooth(m, Z, d, rot, width, t, t2, pts, pts2, pos1, pos2, r, R, A, C, fn, helicoidal);
 }
 
 module linearGear(m= 1, Z= 13, width= 1, ang= 20, fn= 20){
@@ -293,15 +293,5 @@ module linearGear(m= 1, Z= 13, width= 1, ang= 20, fn= 20){
         }
     }
 }
-
-//hull(){
-    
-//    linearGear(fn= 100, width= 0.1);
-/*
-rotZ(360/(4*13))
-    gear();
-    */
-//    mTranslate([0, 0, 0.5])
-//        rotZ(2)
-//            linearGear(m= 5,fn= 100, width= 0.01);
-//}
+ 
+//linearGear(fn= 50, width= 0.1);
