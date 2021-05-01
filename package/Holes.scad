@@ -72,7 +72,7 @@ module cylinderHole(pos= [0, 0, 0], r= 1, h= 1, fn= 50, chamfer= false, chamferS
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < fn, "fn should be greater than 0");
     assertion(0 < chamferSize, "chamferSize should be greater than 0");
-    assertion((0 < chamferAng) && (chamferAng < 90), "chamferAng should be ranged in ]0, 90[ °");
+    assertion((20 <= chamferAng) && (chamferAng <= 80), "chamferAng should be ranged in ]0, 90[ °");
     assertion(len(rot) == 3, "rot should be a 3D vector");
     assertion(0 <= H, "H should be greater than or equal to 0");
 

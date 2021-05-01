@@ -2,7 +2,7 @@
 ___
 ## Présentation
 
-SCAD_NoName est un bibliothèque additionnelle pour OpenSCAD __https://openscad.org/__.
+SCAD_NoName est une bibliothèque additionnelle pour OpenSCAD __https://openscad.org/__.
 Cette bibliothèque à pour but d'ajouter les principaux modules nécessaires pour la réalisation de pièces destinées à l'impression 3D.
 ___
 ## Contenu de l'archive

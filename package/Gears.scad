@@ -9,7 +9,7 @@ module rackTooth(m= 1, toothNb= 1, width= 1, ang= 20, pos= [0, 0, 0], rot= ROT_T
     assertion(0 < m, "m should be greater than 0");
     assertion(1 <= toothNb, "toothNb should be greater than or equal to 1");
     assertion(0 < width, "width should be greater than 0");
-    assertion((0 < ang) && (ang <= 90), "ang should bewithin ]0, 90]°");
+    assertion((ang == 20) || (ang == 14.5), "ang should bewithin ]0, 90]°");
     assertion(len(pos) == 3, "pos should be a 3D vector");
     assertion(len(rot) == 3, "rot should be a 3D vector");
 
@@ -39,7 +39,7 @@ module rackTooth(m= 1, toothNb= 1, width= 1, ang= 20, pos= [0, 0, 0], rot= ROT_T
                 }
 }
 
-//rackTooth(m= 5, toothNb= 2, center= false);
+//rackTooth(m= 2, width= 5, toothNb= 3);
 
 function getGearDim(m, Z) = [m*PI,              // Pas
                              m*Z,               // Diamètre primitif
@@ -74,7 +74,7 @@ module gear(m= 1, Z= 13, width= 1, ang= 20, fn= 50, pos= [0, 0, 0], rot= ROT_Top
     assertion(0 < m, "m shoul be greater than 0");
     assertion(1 < Z, "Z shoul be greater than 1");
     assertion(0 < width, "width shoul be greater than 0");
-    assertion((0 < ang) && (ang < 90), "width shoul be within ]0, 90[°");
+    assertion((ang == 20) || (ang == 14.5), "width shoul be within ]0, 90[°");
     assertion(0 < fn, "fn shoul be greater than 0");
     assertion(len(pos) == 3, "pos should be a 3D vector");
     assertion(len(rot) == 3, "rot should be a 3D vector");
@@ -83,6 +83,9 @@ module gear(m= 1, Z= 13, width= 1, ang= 20, fn= 50, pos= [0, 0, 0], rot= ROT_Top
         mRotate(rot)
             gearMod(m, Z, width, ang, fn);
 }
+/*
+gear(m= 2, Z= 13, width= 5, fn= 50);
+*/
 
 /*
 fn= 50;

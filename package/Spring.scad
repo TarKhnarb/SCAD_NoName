@@ -149,7 +149,7 @@ module circularCompressionSpring(A= [1, 0, 0], r= 0.1, R= 1, nbTurn= 1, nbTurnSt
 
     assertion(len(A) == 3, "A should be a 3D vector");
     assertion(A != TRANS_Null, "A should be different than the center of the cicle ([0,0,0])");
-    assertion(0 < R, "R should be strictly greater than 0");
+    assertion(0 < R, "R should be greater than 0");
     assertion(abs(mod([A.x, A.y])) == R, "A should belong to the circle of radius R");
     assertion(0 < r, "r should be greater than 0");
     assertion(0 < nbTurn, "nbTurn should be greater than 0");
@@ -271,7 +271,7 @@ module spiralMod(A, nbTurn, r, p, direction, fn, startEnd){
 }
 
 /*
-* spiralSpring(A: point in the helicoid,
+* spiralSpring(A: starting point of the spring,
 *              nbTurn: The number of turn of the helicoid,
 *              r: The radius of the base circle,
 *              nbTurn: The number of turn for the spring,
