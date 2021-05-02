@@ -288,15 +288,15 @@ module trapezoidalThreadmod(D, p, h, fa, gap){
             [1, 9, 8, 0], [0, 8, 15, 7], [7, 15, 14, 6], [6, 14, 13, 5],
             [5, 13, 12, 4], [4, 12, 11, 3], [3, 11, 10, 2], [2, 10, 9, 1],
             [9, 10, 15, 8], [10, 11, 12, 13], [13, 14, 15, 10]];
- 
-    basePts = [[D/2 + gap,            0,  (p - d[2])/2],
-               [D/2 + gap,            0,  (p + d[2])/2],
-               [d[1]/2 + gap,         0,  (p + d[3])/2],
-               [d[1]/2 + gap,         0,  p],
-               [-0.1 + d[1]/2 + gap, 0,   p],
-               [-0.1 + d[1]/2 + gap, 0,   0],
-               [d[1]/2 + gap,         0,  0],
-               [d[1]/2 + gap,         0,  (p - d[3])/2]];
+
+    basePts = [[D/2 + gap,                  0,  p*(1 + tan(15))/4],
+               [D/2 + gap,                  0,  p*(3 - tan(15))/4],
+               [D/2 - p/2 - a + gap,        0,  3*p/4 + (p/4 + a)*tan(15)],
+               [D/2 - p/2 - a + gap,        0,  p],
+               [D/2 - p/2 - a - 0.1 + gap,  0,  p],
+               [D/2 - p/2 - a - 0.1 + gap,  0,  0],
+               [D/2 - p/2 - a + gap,        0,  0],
+               [D/2 - p/2 - a + gap,        0,  p/4 - (p/4 + a)*tan(15)]];
 
     mTranslate([0, 0, -p])
         difference(){
@@ -310,14 +310,14 @@ module trapezoidalThreadmod(D, p, h, fa, gap){
 
                     polyhedron(points= pts, faces= path);
                 }
-                    cylinder(r= d[1]/2, h= h + 3*p, $fn= 360/fa);
+                    cylinder(r= D/2 - p/2 - a, h= h + 3*p, $fn= fn);
             }
 
             mTranslate([0, 0, h + 5*p/2])
-                cube([D + 0.2 + 2*gap, D + 0.2 + 2*gap, 3*p], center= true);
+                cube([2*(D + 0.1 + gap), 2*(D + 0.1 + gap), 3*p], center= true);
                 
             mTranslate([0, 0, -p/2])
-                cube([D + 0.2 + 2*gap, D + 0.2 + 2*gap, 3*p], center= true);
+                cube([2*(D + 0.1 + gap), 2*(D + 0.1 + gap), 3*p], center= true);
         }
 }
 
@@ -335,13 +335,11 @@ module trapezoidalThreadmod(D, p, h, fa, gap){
 module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
     assertion(0 < D, "D should be greater than 0");
-    assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
     assertion(0 < h, "h should be greater than 0");
     assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
     assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
-    assertion(len(pos) == 3, "pos should be a3D vector");
-    assertion(len(rot) == 3, "rot should be a3D vector");
-    assertion(0 <= gap, "gap should be greater than or equal to 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
@@ -349,17 +347,8 @@ module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_To
            
 }
 
+//trapezoidalThread(D= 10, p= 2, h= 15, gap= -0.2, fa= 6);
 
-//trapezoidalThread(fa= 10, p = 0.4, rot= ROT_Bot);
-/*
-difference(){
-    
-    trapezoidalThread(D= 13.157, p= 1.337, h= 4, fa= 10);
-    mTranslate([5.5, 0.02,1])
-    cube(1);
-    
-}
-*/
     // Threadtap
 
 /*
@@ -383,13 +372,14 @@ difference(){
 *   |_________________|___|___________>
 *                    6     5          x
 */
-module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
+module trapezoidalThreadTapmod(D, p, h, fa, gap= 0){
 
     a = getTrapezoidalThreadGap(p);
     d = getTrapezoidalDim(D, p, a);
-    
+
     nbTurns = 2 + h/p;
-    iMax = nbTurns*(360/fa);
+    fn = 360/abs(fa);
+    iMax = nbTurns*(fn);
 
     path = [[0, 1, 2, 7],   [2, 3, 4, 5], [2, 5, 6, 7],       // Face 1
 
@@ -400,16 +390,16 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 
             [15, 10, 9, 8], [13, 12, 11, 10], [15, 14, 13, 10]];   // Face 2
 
-    basePts = [[(D - p)/2 + gap,            0,  (p - d[2])/2],
-               [(D - p)/2 + gap,            0,  (p + d[2])/2],
-               [a + D/2 + gap,         0,  (p + d[3])/2],
-               [a + D/2 + gap,         0,  p],
-               [0.1 + a + D/2 + gap, 0,  p],
-               [0.1 + a + D/2 + gap, 0,  0],
-               [a + D/2 + gap,         0,  0],
-               [a + D/2 + gap,         0,  (p - d[3])/2]];
+    basePts = [[D/2 - p/2 + gap,        0,  p/4 + p*tan(15)/4],
+               [D/2 - p/2 + gap,        0,  3*p/4 - p*tan(15)/4],
+               [D/2 + a + gap,          0,  3*p/4 + (p/4 + a)*tan(15)],
+               [D/2 + a + gap,          0,  p],
+               [D/2 + a + 0.1 + gap,    0,  p],
+               [D/2 + a + 0.1 + gap,    0,  0],
+               [D/2 + a + gap,        0,  0],
+               [D/2 + a + gap,        0,  p/4 - (p/4 + a)*tan(15)]];
 
-    echo(iMax, nbTurns);
+
     mTranslate([0, 0, -p])
         difference(){
             
@@ -423,7 +413,7 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
                     polyhedron(points= pts, faces= path);
                 }
             }
-            
+           
             mTranslate([0, 0, h + 5*p/2])
                 cube([D + 0.4 + 2*a + 2*gap, D + 0.4 + 2*a + 2*gap, 3*p], center= true);
                 
@@ -446,33 +436,18 @@ module trapezoidalThreadTapmod(D= 1, p= 0.1, h= 1, fa= 1, gap= 0){
 module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_Top, gap= 0, center= false){
 
     assertion(0 < D, "D should be greater than 0");
-    assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
     assertion(0 < h, "h should be greater than 0");
     assertion(0 < fa, "fa should be greater than 0");
     assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
-    assertion(len(pos) == 3, "pos should be a3D vector");
-    assertion(len(rot) == 3, "rot should be a3D vector");
-    assertion(0 <= gap, "gap should be greater than or equal to 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
             trapezoidalThreadTapmod(D, p, h, fa, gap);      
 }
-
-//trapezoidalThreadTap(D= 6, p=1, h=5, fa= 10);
-/*
-union(){
     
-    difference(){
-        
-        cylinder(r= 4, h= 2.5, $fn= 360, center= true);
-
-        cylinder(r= 2.5 + getTrapezoidalThreadGap(0.5), h= 2.6, $fn= 360, center= true);
-        
-    }
-    
-    trapezoidalThreadTap(D= 5, p= 0.5, h= 2, center= true);
-}*/
+//trapezoidalThreadTap(D= 10, p= 4, h= 10, fa= 2);
 
 /*
 * knurling(r: radius of the knurling piece,
