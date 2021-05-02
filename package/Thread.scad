@@ -7,7 +7,7 @@ include<Constants.scad>
     // Runtime function
 function stepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
                                P.x * sin(ang) + P.y * cos(ang),
-                               P.z + ang*p/360];
+                               P.z + abs(ang)*p/360];
 
 function polyhedronAtI(ang, Pts, p, k= 0) =
     (k == (len(Pts) - 1) ? ([stepper(Pts[k], ang, p)]
@@ -45,7 +45,8 @@ module ISOTriangularThreadMod(D, p, h, fa, gap){
 
     d = getISOTriangularDim(D, p);
     nbTurns = 2 + h/p;
-    iMax = nbTurns*(360/fa);
+    fn = 360/abs(fa);
+    iMax = nbTurns*(fn);
 
     sides = [[0, 5, 2,  1],  [5, 4, 3,  2],                  // Face 1
              [0, 1, 7,  6],  [1, 2, 8,  7],   [2, 3, 9,  8], // Side
@@ -71,7 +72,7 @@ module ISOTriangularThreadMod(D, p, h, fa, gap){
                     polyhedron(points= pts, faces= sides);
                 }
 
-                cylinder(r= -d[6] + d[3]/2 + gap, h= h + 3*p, $fn= 360/fa);
+                cylinder(r= -d[6] + d[3]/2 + gap, h= h + 3*p, $fn= fn);
             }
             
             mTranslate([0, 0, h + 5*p/2])
@@ -100,37 +101,15 @@ module ISOTriangularThread(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_T
     assertion(0 < h, "h should be greater than 0");
     assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
     assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
-    assertion(len(pos) == 3, "pos should be a3D vector");
-    assertion(len(rot) == 3, "rot should be a3D vector");
-    assertion(0 <= gap, "gap should be greater than or equal to 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
             ISOTriangularThreadMod(D, p, h, fa, gap);
 }
 
-//ISOTriangularThread(D= 4, p= 0.7, h= 5, fa= 4);
-/*
-D = 20;
-fa = 10;
-d= 6;
-
-union(){
-    
-    difference(){
-        
-        union(){
-        
-            ISOTriangularThread(D= D, p= 2.5, h= 20, fa= fa, gap= -1);
-                mTranslate([0, 0, -5]) cylinder(d= D, h= 5, $fn= 360/fa);
-        }
-        
-        cylinder(d= d, h= 20.1, $fn= 360/fa);
-    }
-    
-    ISOTriangularThreadTap(D= d, p= 1, h= 20, fa= fa);
-}
-*/
+//ISOTriangularThread(D= 4, p= 0.7, h= 5, fa= -4);
 
     // Thread
 
@@ -153,7 +132,8 @@ module ISOTriangularThreadTapMod(D, p, h, fa, gap){
 
     d = getISOTriangularDim(D, p);
     nbTurns = 2 + h/p;
-    iMax = nbTurns*(360/fa);
+    fn = 360/abs(fa);
+    iMax = nbTurns*(fn);
 
     sides = [[0, 1, 2, 5],  [2, 3, 4, 5],
              [0, 6, 7, 1],  [1, 7, 8, 2],   [2, 8, 9, 3],
@@ -181,10 +161,10 @@ module ISOTriangularThreadTapMod(D, p, h, fa, gap){
             }
             
             mTranslate([0, 0, h + 5*p/2])
-                cube([d[6] + d[4] + 0.2 + 2*gap, d[6] + d[4] + 0.2 + 2*gap, 3*p], center= true);
+                cube([2*(D + 0.1 + gap), 2*(D + 0.1 + gap), 3*p], center= true);
             
             mTranslate([0, 0, -p/2])
-                cube([d[6] + d[4] + 0.2 + 2*gap, d[6] + d[4] + 0.2 + 2*gap, 3*p], center= true);
+                cube([2*(D + 0.1 + gap), 2*(D + 0.1 + gap), 3*p], center= true);
         }
 }
 
@@ -206,36 +186,15 @@ module ISOTriangularThreadTap(D= 1, p= 0.1, h= 1, fa= 1, pos= [0, 0, 0], rot= RO
     assertion(0 < h, "h should be greater than 0");
     assertion((-180 < fa) && (fa != 0) && (fa < 180), "fa must be within [-180, 0[ U ]0, 180[°");
     assertion((360%fa) == 0, "The remainder of the Euclidean division of 360 per fa must be equal to 0");
-    assertion(len(pos) == 3, "pos should be a3D vector");
-    assertion(len(rot) == 3, "rot should be a3D vector");
-    assertion(0 <= gap, "gap should be greater than or equal to 0");
+    assertion(len(pos) == 3, "pos should be a 3D vector");
+    assertion(len(rot) == 3, "rot should be a 3D vector");
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
-            ISOTriangularThreadTapMod(D, p, h, fa, gap);
+           union(){ ISOTriangularThreadTapMod(D, p, h, fa, gap);}
 }
 
-//ISOTriangularThreadTap(D= 4, p= 0.7, h= 5, fa= 4, gap= 0.5);
-/*
-D= 6;
-fa= 20;
-
-ISOTriangularThreadTapMod(D= D, h= 10, p= 1, fa= fa);
-*/
-/*
-union(){
-    
-    ISOTriangularThreadTap(D= D, p= 2.5, h= 10, fa= fa, gap= 1);
-    
-    difference(){
-        
-        cylinder(d= D + 10, h= 10, $fn= 6);
-        
-        mTranslate([0,0,-1])
-            cylinder(d= D, h= 12, $fn= 360/fa);
-    }
-}
-*/
+//ISOTriangularThreadTap(D= 4, p= 0.7, h= 5, fa= 10, gap= -0.15);
 
     // Trapezoidal
 function getTrapezoidalThreadGap(p) =
@@ -281,8 +240,8 @@ module trapezoidalThreadmod(D, p, h, fa, gap){
     assertion((p + 2*a)*(2 - sqrt(3)) < p, "The choosen pitch is too small");
     
     nbTurns = 2 + h/p;
-    iMax = nbTurns*(360/fa);
-    echo(iMax);
+    fn = 360/abs(fa);
+    iMax = nbTurns*(fn);
 
     path = [[0, 7, 2, 1], [2, 5, 4, 3], [2, 7, 6, 5],
             [1, 9, 8, 0], [0, 8, 15, 7], [7, 15, 14, 6], [6, 14, 13, 5],
@@ -453,7 +412,7 @@ module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT
 * knurling(r: radius of the knurling piece,
 *          h: height of the knurling piece,
 *          p: knurling pitch (only used with orient),
-*          moduleNb: if ang defined, represent the number of knurling grooves, it should be even (only used with ang and orient= VERTICAL),
+*          moduleNb: if ang defined, represent the number of knurling grooves (only used with ang and orient= VERTICAL),
 *          ang: if defined with an angle of 30 or 45, makes a diamond knurl,
 *          orient: if defined with the VERTICAL or HORIZONTAL constant, makes a linear knurl,
 *          fa: precision of the angle of rotation (only used with ang and orient= HORIZONTAL),
@@ -465,11 +424,7 @@ module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT
 *   - The pitch (p) is used when orient is defined. It is used to define the distance between two HORIZONTAL grooves.
 *   - The number of modules (moduleNb) is used when ang or orient(= VERTICAL) are defined to determine the number of circular repetitions to be made.
 *   - If you want to make a vertical knurling of a precise length, consider subtracting the height of the knurling piece from the total height. The first piece was placed on X axis with a translation of r, the other will been placed according a Z anti-clockwire rotation of the first piece.
-*   -
-*/
-function knurlStepper(P, ang, p) = [P.x * cos(ang) - P.y * sin(ang),
-                                    P.x * sin(ang) + P.y * cos(ang),
-                                    P.z + abs(ang)*p/360];                               
+*/                              
 
 module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 10, pos= [0, 0, 0], rot= ROT_Top){
 
@@ -509,8 +464,6 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
                     nbTurn = h/pa;
                     jMax = nbTurn*fn;
 
-                    //echo(rotAng, length, nbTurn, fn, iMax);
-
                     union(){
                     
                         for(i= [0 : moduleNb - 1]){
@@ -522,12 +475,12 @@ module knurling(r= 1, h= 1, p= 0.1, moduleNb= 4, ang= undef, orient= undef, fa= 
 
                                     hull(){
 
-                                        mTranslate(knurlStepper(A, k*j*fa, pa))
+                                        mTranslate(stepper(A, k*j*fa, pa))
                                             rotZ(k*j*fa)
                                                 rotX(k*ang)
                                                     children(1);
 
-                                        mTranslate(knurlStepper(A, k*(j + 1)*fa, pa))
+                                        mTranslate(stepper(A, k*(j + 1)*fa, pa))
                                             rotZ(k*(j + 1)*fa)
                                                 rotX(k*ang)
                                                     children(1);
@@ -601,9 +554,6 @@ knurling(h= 1.2, ang= 45, moduleNb= 10, p = 0.4, fa= 5){
             rotX(45)
                 cube([0.001, 0.1, 0.1], center= true);
 }
-
-color("red")
-mTranslate([1, 0, 0]) rotX(30) cube(0.1);
 */
 
 /*
@@ -615,10 +565,9 @@ knurling(r= 1, h= 1 - 0.05, p= 0.2, orient= VERTICAL, moduleNb= 19, fa= 10){
 */
 
 /*
-knurling(r= 1, h= 1, p= 0.5, orient= HORIZONTAL, moduleNb= 6, fa= 10){
+knurling(r= 1, h= 1, p= 0.2, orient= HORIZONTAL, moduleNb= 6, fa= 10){
     
     cylinder(r= 1, $fn= 30);
     mTranslate([-0.025, -0.025, 0]) cube(0.05);
 }
 */
-//mTranslate([0, 0, 1])cube(1);
