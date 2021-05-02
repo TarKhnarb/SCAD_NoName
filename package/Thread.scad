@@ -206,13 +206,7 @@ function getTrapezoidalThreadGap(p) =
                                       ) : (1)))))
     );
 
-function getTrapezoidalDim(D, p, a) = [a + p/2,                           // h: hauteur du trapèze
-                                       D - (a + p/2),                     // d1: diamètre interne du filetage
-                                       (p - (p + 2*a)*(2 - sqrt(3)))/2,   // t:  longueur du sommet du trapèze
-                                       (p + (p + 2*a)*(2 - sqrt(3)))/2];  // b:  longueur de la base du trapèze
-
     // Thread
-
 /*
 * z A
 *   |           4 ___ 3
@@ -232,7 +226,7 @@ function getTrapezoidalDim(D, p, a) = [a + p/2,                           // h: 
 *   |____________|___|___________>
 *               5     6          x
 */
-module trapezoidalThreadmod(D, p, h, fa, gap){
+module trapezoidalThreadMod(D, p, h, fa, gap){
 
     a = getTrapezoidalThreadGap(p);
     d = getTrapezoidalDim(D, p, a);
@@ -302,7 +296,7 @@ module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_To
 
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
-            trapezoidalThreadmod(D, p, h, fa, gap);
+            trapezoidalThreadMod(D, p, h, fa, gap);
            
 }
 
@@ -331,7 +325,7 @@ module trapezoidalThread(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT_To
 *   |_________________|___|___________>
 *                    6     5          x
 */
-module trapezoidalThreadTapmod(D, p, h, fa, gap= 0){
+module trapezoidalThreadTapMod(D, p, h, fa, gap= 0){
 
     a = getTrapezoidalThreadGap(p);
     d = getTrapezoidalDim(D, p, a);
@@ -403,7 +397,7 @@ module trapezoidalThreadTap(D= 1, p= 0.12, h= 1, fa= 1, pos= [0, 0, 0], rot= ROT
    
     mTranslate((center ? [pos.x, pos.y, pos.z - (h + p)/2] : pos))
         mRotate(rot)
-            trapezoidalThreadTapmod(D, p, h, fa, gap);      
+            trapezoidalThreadTapMod(D, p, h, fa, gap);
 }
     
 //trapezoidalThreadTap(D= 10, p= 4, h= 10, fa= 2);
