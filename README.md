@@ -28,6 +28,7 @@ SCAD_NoName
 |   |   Vector.scad
 |
 |___ pieces
+|   |   AllExemples.scad
 |   |   Box.scad
 |   |   Vase.scad
 ```
